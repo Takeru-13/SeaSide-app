@@ -8,5 +8,5 @@ export type RegisterReq = {
   userName: string;
   email: string;
   password: string;
-  gender?: string;
+  gender: string;
 };

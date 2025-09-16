@@ -8,7 +8,7 @@ export default function RegisterSection() {
   const navigate = useNavigate();
 
   async function handleSubmit(data: RegisterReq) {
-    const user = await register(data.userName, data.email, data.password);
+    const user = await register(data.userName, data.email, data.password, data.gender);
     if (user) {
       navigate('/login');
     }

@@ -9,7 +9,7 @@ export default function LoginSection() {
 
   async function handleSubmit(data: LoginReq) {
     const u = await login(data);
-    if (u) navigate('/mypage');
+    if (u) navigate('/Home');
   }
 
   return (

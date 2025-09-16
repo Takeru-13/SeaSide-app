@@ -13,7 +13,7 @@ export default function RegisterForm({ onSubmit }: Props) {
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        onSubmit({ userName, email, password, gender: gender || undefined });
+        onSubmit({ userName, email, password, gender });
       }}
     >
       <label htmlFor="userName">ユーザーネーム</label>
