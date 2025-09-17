@@ -16,7 +16,7 @@ export default function RegisterSection() {
 
   return (
     <section>
-      <h1>Register</h1>
+      <h1>新規登録</h1>
       <RegisterForm onSubmit={handleSubmit} />
       {loading && <p>処理中...</p>}
       {error && <p style={{ color: 'crimson' }}>{error}</p>}
