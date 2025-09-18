@@ -1,39 +1,33 @@
-// features/home/components/EditModal/EditModal.tsx
-import { useState } from 'react';
-import type { DaySummary, EditPayload } from '../../types';
+// ダイアログ表示・閉じる制御
+// EditForm を呼び出して onSave に結果を渡す
+
+import EditForm from "./EditForm";
+import type { EditFormValue } from './types';
 
 type Props = {
-  target: DaySummary;
+  date: string;
+  open: boolean;
+  initial?: Partial<EditFormValue>;
   onClose: () => void;
-  onSave: (p: EditPayload) => Promise<void> | void;
+  onSave: (v: EditFormValue) => void;
 };
 
-export default function EditModal({ target, onClose, onSave }: Props) {
-  const [score, setScore] = useState<number>(target.score ?? 5);
-  const [note, setNote] = useState<string>(target.note ?? '');
+
+export default function EditModal({ date, open, initial, onClose, onSave }: Props) {
+  if (!open) return null;
 
   return (
-    <dialog open style={{ padding:16, borderRadius:8 }}>
-      <h3>{target.date} の記録</h3>
-      <label>
-        スコア(0-10):
-        <input
-          type="number"
-          min={0} max={10}
-          value={score}
-          onChange={(e)=>setScore(Number(e.target.value))}
-        />
-      </label>
-      <label>
-        メモ:
-        <textarea value={note} onChange={(e)=>setNote(e.target.value)} />
-      </label>
-      <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-        
-        <button onClick={onClose}>キャンセル</button>
-        <button onClick={() => onSave({ date: target.date, score, note })}>保存</button>
+    <dialog open style={{ padding: 16, borderRadius: 8 }}>
+      <header style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+        <h3>{date} の記録</h3>
+        <button onClick={onClose} aria-label="close">×</button>
+      </header>
 
-      </div>
+      <EditForm
+        date={date}
+        initial={initial}
+        onSubmit={onSave}
+      />
     </dialog>
   );
 }

@@ -1,4 +1,4 @@
-// features/home/HomeSection.tsx
+// useHomeフックを使ってカレンダー日記アプリの全パーツを組み立てる最上位コンポーネント
 import useHome from './hooks/useHome';
 import CalendarView from './components/Calendar/Calendar';
 import ScopeToggle from './components/ScopeToggle';
@@ -31,12 +31,19 @@ export default function HomeSection() {
       )}
 
       {editTarget && (
-        <EditModal
-          target={editTarget}
-          onClose={() => setEditTarget(null)}
-          onSave={save}
-        />
-      )}
+  <EditModal
+    date={editTarget.date}
+    open={!!editTarget}
+    initial={undefined}        // 後で既存値があるならここに詰める
+    onClose={() => setEditTarget(null)}
+    onSave={(form) => {
+      // ひとまず score だけ保存していた既存の save(payload) を拡張していく
+      // まずは通すために emotion をスコアとして流用してOK
+      save({ date: form.date, score: form.emotion, note: '' })
+        .catch(console.error);
+    }}
+  />
+)}
     </section>
   );
 }

@@ -1,4 +1,4 @@
-// features/home/hooks/useHome.ts
+// 月単位のデータ表示・編集・ナビゲーションを管理するReactカスタムフック
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { DaySummary, EditPayload, MonthData, Scope } from '../types';
 import { fetchMonth, updateDay } from '../api';
@@ -65,6 +65,7 @@ export default function useHome() {
     }
   }, [data, scope]);
 
+//stateとactionsを分けて返す
   return {
     state: { scope, ym, data, loading, editTarget },
     actions: { setScope, nextMonth, prevMonth, startEdit, save, reload: load, setEditTarget },

@@ -1,18 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model User {
   id        Int      @id @default(autoincrement())
-  userName  String
   email     String   @unique
   password  String
+  userName  String
+  iconUrl   String?  // プロフィール画像のURL
   gender    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  records   Record[]
+
+  // ペア関連（どちら側でも所属できる）
+  pairA Pair? @relation("PairA")
+  pairB Pair? @relation("PairB")
+}
+
+model Record {
+  id        Int      @id @default(autoincrement())
+  date      DateTime // その日の記録（00:00固定）
+  meal      Json     // { breakfast: bool, lunch: bool, dinner: bool }
+  sleep     Json     // { time: "23:30" }
+  medicine  Json     // { items: [...] }
+  period    String   // 'none' | 'start' | 'during'
+  emotion   Int      // 1〜10
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+
+  @@unique([userId, date]) // ユーザー×日付は必ず1件だけ（上書き保存用）
+}
+
+model Pair {
+  id        Int      @id @default(autoincrement())
+  userA     User     @relation("PairA", fields: [userAId], references: [id])
+  userAId   Int      @unique
+  userB     User     @relation("PairB", fields: [userBId], references: [id])
+  userBId   Int      @unique
+  createdAt DateTime @default(now())
 }
