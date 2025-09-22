@@ -1,30 +1,34 @@
-// features/home/api/index.ts
 import { get, put } from '../../../shared/api/http';
-import type { MonthData } from '../types';
+import type { MonthData, Scope } from '../types'; // ← カレンダー表示用は既存のまま
+import type {
+  EditFormValue, UpdateRecordPayload, DayRecordResponse,
+} from '../components/EditModal/types';
 
-export async function fetchMonth(ym: string, scope: 'me' | 'pair'): Promise<MonthData> {
+// 月のスコア（emotion→score の要約を使う）
+export async function fetchMonth(ym: string, scope: Scope): Promise<MonthData> {
   const days = await get<{ date: string; score?: number }[]>(
     `/records?ym=${ym}&scope=${scope}`
   );
   return { ym, days };
 }
 
-
-export type EditFormValue = {
-  date: string;
-  meal: { breakfast: boolean; lunch: boolean; dinner: boolean };
-  sleep: { time: string };
-  medicine: { items: string[] };
-  period: 'none' | 'start' | 'during';
-  emotion: number;
-};
+export async function fetchDay(date: string): Promise<DayRecordResponse | null> {
+  return get<DayRecordResponse | null>(`/records/${date}`);
+}
 
 export async function updateDay(v: EditFormValue) {
-  return put<{ date: string; score: number }>(`/records/${v.date}`, {
-    meal: JSON.stringify(v.meal),
-    sleep: JSON.stringify(v.sleep),
-    medicine: JSON.stringify(v.medicine),
+  const emotion = Number(v.emotion);
+  if (!Number.isInteger(emotion) || emotion < 1 || emotion > 10) {
+    throw new Error('emotion must be an integer between 1 and 10');
+  }
+
+  const payload: UpdateRecordPayload = {
+    meal: v.meal,
+    sleep: v.sleep,
+    medicine: v.medicine,
     period: v.period,
-    emotion: v.emotion,
-  });
+    emotion,
+  };
+
+  return put<DayRecordResponse>(`/records/${v.date}`, payload);
 }

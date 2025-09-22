@@ -1,33 +1,35 @@
-// ダイアログ表示・閉じる制御
-// EditForm を呼び出して onSave に結果を渡す
-
-import EditForm from "./EditForm";
+import EditForm from './EditForm';
 import type { EditFormValue } from './types';
 
-type Props = {
-  date: string;
-  open: boolean;
-  initial?: Partial<EditFormValue>;
+export default function EditModal({
+  value, onClose, onSave,
+}: {
+  value: EditFormValue | null;
   onClose: () => void;
-  onSave: (v: EditFormValue) => void;
-};
-
-
-export default function EditModal({ date, open, initial, onClose, onSave }: Props) {
-  if (!open) return null;
-
+  onSave: (v: EditFormValue) => Promise<void>;
+}) {
+  if (!value) return null;
   return (
-    <dialog open style={{ padding: 16, borderRadius: 8 }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-        <h3>{date} の記録</h3>
-        <button onClick={onClose} aria-label="close">×</button>
-      </header>
-
-      <EditForm
-        date={date}
-        initial={initial}
-        onSubmit={onSave}
-      />
-    </dialog>
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        background: 'rgba(0,0,0,.2)',
+        display: 'grid',
+        placeItems: 'center',
+        zIndex: 50,
+      }}
+    >
+      <div
+        style={{
+          background: '#fff',
+          padding: 16,
+          borderRadius: 12,
+          boxShadow: '0 10px 30px rgba(0,0,0,.15)',
+        }}
+      >
+        <EditForm initial={value} onCancel={onClose} onSave={onSave} />
+      </div>
+    </div>
   );
 }

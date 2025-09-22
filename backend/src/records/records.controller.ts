@@ -1,24 +1,31 @@
-import { Body, Controller, Get, Put, Query, Param, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Put, Param, Query, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { RecordsService } from './records.service';
-import { GetRecordsDto } from './dto/get-records.dto';
 import { UpsertRecordDto } from './dto/upsert-record.dto';
 import { AuthGuard } from '../common/guards/auth.guard';
-
 
 @Controller('records')
 @UseGuards(AuthGuard)
 export class RecordsController {
-  constructor(private readonly records: RecordsService) {}
+  constructor(private readonly service: RecordsService) {}
 
+  // 月次（カレンダー/グラフ用）
   @Get()
-  async list(@Query() q: GetRecordsDto, @Req() req: any) {
-    const meId = req.user.id as number;
-    return this.records.findMonthly(q.ym, q.scope, meId);
+  findMonthly(@Req() req: any, @Query('ym') ym: string, @Query('scope') scope: 'me'|'pair' = 'me') {
+    const meId = req.user?.id as number;
+    return this.service.findMonthly(ym, scope, meId);
   }
 
-  @Put(':date') // :date = 'YYYY-MM-DD'
-  async upsert(@Param('date') date: string, @Body() dto: UpsertRecordDto, @Req() req: any) {
-    const meId = req.user.id as number;
-    return this.records.upsertByDate(date, dto, meId);
+  @Get(':date')
+  findOne(@Param('date') date: string, @Req() req: any) {
+  const meId = req.user?.id as number;
+  return this.service.findOneByDate(date, meId);
+}
+
+  // 1日保存（厳格チェック。フロントは正しい型で送る前提）
+  @Put(':date')
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: false }))
+  upsertByDate(@Param('date') date: string, @Body() dto: UpsertRecordDto, @Req() req: any) {
+    const meId = req.user?.id as number;
+    return this.service.upsertByDate(date, dto, meId);
   }
 }

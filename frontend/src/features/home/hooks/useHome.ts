@@ -1,73 +1,44 @@
-// 月単位のデータ表示・編集・ナビゲーションを管理するReactカスタムフック
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { DaySummary, EditPayload, MonthData, Scope } from '../types';
 import { fetchMonth, updateDay } from '../api';
+import type { MonthData, Scope } from '../types'; // カレンダー表示用
+import type { EditFormValue } from '../components/EditModal/types'; // レコード用
 
-function toYM(d: Date) {
-  return d.toISOString().slice(0,7);
-}
-
-export default function useHome() {
+export function useHome() {
+  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const ymInit = today.slice(0, 7);
+  const [ym, setYm] = useState(ymInit);
   const [scope, setScope] = useState<Scope>('me');
-  const [cursor, setCursor] = useState<Date>(new Date()); // カレンダー表示中の月
-  const ym = useMemo(() => toYM(cursor), [cursor]);
+  const [month, setMonth] = useState<MonthData>({ ym: ymInit, days: [] });
+  const [editing, setEditing] = useState<EditFormValue | null>(null);
 
-  const [data, setData] = useState<MonthData | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [editTarget, setEditTarget] = useState<DaySummary | null>(null);
-
-  // 月データのロード
   const load = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetchMonth(ym, scope);
-      setData(res);
-    } finally {
-      setLoading(false);
-    }
+    const data = await fetchMonth(ym, scope);
+    setMonth(data);
   }, [ym, scope]);
 
-  useEffect(() => { load(); }, [load]);
+  useEffect(() => { load().catch(console.error); }, [load]);
 
-  // 月移動
-  const nextMonth = useCallback(() => {
-    setCursor(d => new Date(d.getFullYear(), d.getMonth() + 1, 1));
-  }, []);
-  const prevMonth = useCallback(() => {
-    setCursor(d => new Date(d.getFullYear(), d.getMonth() - 1, 1));
-  }, []);
+  // 日付クリック → 未来は無効、過去/今日なら編集を開く（初期値はデフォルト）
+  const onSelectDate = useCallback((date: string) => {
+    if (date > today) return; // 未来は開かない
+    setEditing({
+      date,
+      meal: { breakfast: false, lunch: false, dinner: false },
+      sleep: { time: '' },
+      medicine: { items: [] },
+      period: 'none',
+      emotion: 5,
+    });
+  }, [today]);
 
-  // 編集開始
-  const startEdit = useCallback((dateISO: string) => {
-    const current = data?.days.find((d: DaySummary) => d.date === dateISO) ?? { date: dateISO };
-    setEditTarget(current);
-  }, [data]);
+  const onSave = useCallback(async (v: EditFormValue) => {
+    await updateDay(v);
+    setEditing(null);
+    await load(); // 反映
+  }, [load]);
 
-  // 保存（optimistic）
-  const save = useCallback(async (payload: EditPayload) => {
-    if (!data) return;
-    // optimistic
-    const backup = data;
-    const updatedDays = data.days.map((d: DaySummary) => d.date === payload.date ? { ...d, ...payload } : d);
-    if (!updatedDays.find((d: DaySummary) => d.date === payload.date)) {
-      updatedDays.push({ date: payload.date, score: payload.score, note: payload.note });
-    }
-    setData({ ...data, days: updatedDays });
-
-    try {
-      await updateDay(payload, scope);
-    } catch (e) {
-      // rollback
-      setData(backup);
-      throw e;
-    } finally {
-      setEditTarget(null);
-    }
-  }, [data, scope]);
-
-//stateとactionsを分けて返す
   return {
-    state: { scope, ym, data, loading, editTarget },
-    actions: { setScope, nextMonth, prevMonth, startEdit, save, reload: load, setEditTarget },
+    state: { ym, scope, month, editing, todayStr: today },
+    act: { setYm, setScope, onSelectDate, setEditing, onSave },
   };
 }

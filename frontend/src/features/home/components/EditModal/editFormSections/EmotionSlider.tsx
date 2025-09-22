@@ -1,19 +1,26 @@
-import type { EmotionRecord, SectionProps } from '../types';
+// features/home/components/EditModal/editFormSections/EmotionSlider.tsx
+import type { SectionProps } from '../types';
 
+export default function EmotionSlider({ value, onChange }: SectionProps<number>) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // 入力を 1..10 の整数にクランプ
+    const n = Math.min(10, Math.max(1, Math.round(Number(e.target.value))));
+    onChange(n);
+  };
 
-export default function EmotionSlider({ value, onChange }: SectionProps<EmotionRecord>) {
   return (
     <section>
       <h4>感情</h4>
       <input
         type="range"
-        min={0}
+        min={1}
         max={10}
         step={1}
         value={value}
-        onChange={(e) => onChange(Number(e.target.value))}
+        onChange={handleChange}
+        aria-label="感情スコア（1から10）"
       />
-      <div>{value}</div>
+      <div>現在: {value}</div>
     </section>
   );
 }

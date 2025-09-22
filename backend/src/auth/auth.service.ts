@@ -17,7 +17,7 @@ export class AuthService {
     if (!user) throw new UnauthorizedException('メールアドレスまたはパスワードが違います');
 
     const ok = await bcrypt.compare(password, user.password);
-    if (!ok) throw new UnauthorizedException('メールまたはパスワードが違います。');
+    if (!ok) throw new UnauthorizedException('メールアドレスまたはパスワードが違います。');
     const safeUser = { id: user.id, userName: user.userName, email: user.email };
     const payload = { sub: user.id, email: user.email, userName: user.userName };
     const token = await this.jwt.signAsync(payload);

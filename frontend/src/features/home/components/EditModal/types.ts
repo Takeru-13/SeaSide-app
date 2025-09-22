@@ -1,32 +1,39 @@
-// EditFormValue（全入力値のオブジェクト）を定義して、onSave で返す
-export type MealRecord = {
-  breakfast: boolean;
-  lunch: boolean;
-  dinner: boolean;
-};
+// === 1日記録（Record）で使う型はここに集約 ===
 
-export type SleepRecord = {
-  time: string;
-};
-
-export type MedicineRecord = {
-  items: string[]; //何種類か飲む可能性を考慮して配列に変更
-};
-
+// DB/APIと一致する“詳細”型
+export type MealRecord = { breakfast: boolean; lunch: boolean; dinner: boolean };
+export type SleepRecord = { time: string };
+export type MedicineRecord = { items: string[] };
 export type PeriodRecord = 'none' | 'start' | 'during';
 
-export type EmotionRecord = number;
-
+// フォームで保持する値（date は path param 用。body には含めない）
 export type EditFormValue = {
-  date: string;  //もしかしたら要らないかも。将来削除予定
+  date: string;
+  meal: MealRecord;
+  sleep: SleepRecord;
+  medicine: MedicineRecord;
+  period: PeriodRecord;   // セレクトで必ずこのいずれか
+  emotion: number;        // 1..10 の整数（バーで選択）
+};
+
+// PUT /records/:date の body
+export type UpdateRecordPayload = {
   meal: MealRecord;
   sleep: SleepRecord;
   medicine: MedicineRecord;
   period: PeriodRecord;
-  emotion: EmotionRecord;
+  emotion: number;        // 1..10
 };
 
-export type SectionProps<T> = {
-  value: T;
-  onChange: (v: T) => void;
-}
+// サーバから返る“その日の完全データ”
+export type DayRecordResponse = {
+  date: string;
+  meal: MealRecord;
+  sleep: SleepRecord;
+  medicine: MedicineRecord;
+  period: PeriodRecord;
+  emotion: number;
+};
+
+// UIセクション用（必要なら使ってOK）
+export type SectionProps<T> = { value: T; onChange: (v: T) => void };
