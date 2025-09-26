@@ -1,18 +1,22 @@
-// src/app.module.ts
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { PrismaModule } from './prisma/prisma.module';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+
 import { AuthModule } from './auth/auth.module';
-import { AuthController } from './auth.controller';
+import { PrismaModule } from './prisma/prisma.module';
 import { RecordsModule } from './records/records.module';
+
+// ★ これを必ず追加
+import { PairsModule } from './pairs/pairs.module';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
-    PrismaModule,
     AuthModule,
+    PrismaModule,
     RecordsModule,
+    PairsModule, // ← 最重要：ここに入っていること
   ],
-  controllers: [AuthController],
+  controllers: [AppController],
+  providers: [AppService],
 })
 export class AppModule {}

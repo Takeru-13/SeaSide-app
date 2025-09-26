@@ -5,6 +5,12 @@ import CalendarView from './components/Calendar/Calendar';
 import ScopeToggle from './components/ScopeToggle';
 import EmptyPairCard from './components/EmptyPairCard';
 import EditModal from './components/EditModal/EditModal';
+import MonthlyGraph from './components/MonthlyGraph';
+
+//test
+import { useEffect, useState } from 'react';
+import { get } from '../../shared/api/http';
+type MeResponse = { id: number; userName: string; email: string; iconUrl?: string };
 
 function addMonths(ym: string, delta: number) {
   const y = Number(ym.slice(0, 4));
@@ -23,11 +29,27 @@ export default function HomeSection() {
   const prevMonth = () => setYm(addMonths(ym, -1));
   const nextMonth = () => setYm(addMonths(ym, +1));
 
+  //test
+  const [me, setMe] = useState<MeResponse | null>(null);
+  useEffect(() => {
+    get<MeResponse>('/auth/me')
+      .then(setMe)
+      .catch(() => setMe(null));
+  }, []);
+
+
+
+
+
+
+
+
   return (
     <section style={{ padding: 16 }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2>Home</h2>
         <ScopeToggle scope={scope} onChange={setScope} />
+           {me && <div>ログイン中: {me.userName}</div>}
       </header>
 
       {scope === 'pair' ? <EmptyPairCard /> : null}
@@ -47,6 +69,9 @@ export default function HomeSection() {
           onSave={onSave}                 // 保存（PUT /records/:date）→ 月次再取得 → モーダル閉じ
         />
       )}
+
+
+      <MonthlyGraph ym={ym} days={month.days} />
     </section>
   );
 }

@@ -3,6 +3,8 @@ import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import type { Response } from 'express';
+import {  Get, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../common/guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -31,5 +33,17 @@ export class AuthController {
 
     // フロントに返すのは安全なユーザー情報だけ
     return user;
+  }
+
+  //test
+  @Get('me')
+  @UseGuards(AuthGuard)
+  getMe(@Req() req: any) {
+    return {
+      id: req.user.id,
+      userName: req.user.userName,
+      email: req.user.email,
+      iconUrl: req.user.iconUrl,
+    };
   }
 }

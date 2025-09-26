@@ -12,26 +12,28 @@ model User {
   email     String   @unique
   password  String
   userName  String
-  iconUrl   String?  // プロフィール画像のURL
+  iconUrl   String? // プロフィール画像のURL
   gender    String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  records   Record[]
+  records Record[]
 
   // ペア関連（どちら側でも所属できる）
   pairA Pair? @relation("PairA")
   pairB Pair? @relation("PairB")
+
+  invitesCreated PairInvite[] @relation("UserInvites")
 }
 
 model Record {
   id        Int      @id @default(autoincrement())
   date      DateTime // その日の記録（00:00固定）
-  meal      Json     // { breakfast: bool, lunch: bool, dinner: bool }
-  sleep     Json     // { time: "23:30" }
-  medicine  Json     // { items: [...] }
-  period    String   // 'none' | 'start' | 'during'
-  emotion   Int      // 1〜10
+  meal      Json // { breakfast: bool, lunch: bool, dinner: bool }
+  sleep     Json // { time: "23:30" }
+  medicine  Json // { items: [...] }
+  period    String // 'none' | 'start' | 'during'
+  emotion   Int // 1〜10
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -48,4 +50,16 @@ model Pair {
   userB     User     @relation("PairB", fields: [userBId], references: [id])
   userBId   Int      @unique
   createdAt DateTime @default(now())
+}
+
+model PairInvite {
+  code      String @id // 6桁くらいの招待コード（ユニークキー）
+  creatorId Int
+  creator   User   @relation("UserInvites", fields: [creatorId], references: [id])
+
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([creatorId])
 }
