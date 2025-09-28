@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { getRecord } from "../../api/getRecord";
 import { patchRecord } from "../../api/patchRecord";
-import type { EditFormValue } from "../../types";
+import type { EditFormValue } from '../types';
 
 type Opts = { userId?: number };
 
@@ -18,8 +18,29 @@ export function useRecordDetail(dateKey: string, opts: Opts = {}) {
     getRecord(dateKey, opts.userId)
       .then((rec) => {
         if (ignore) return;
-        // 必要に応じて型マッピング（今は EditFormValue 互換想定）
-        setData(rec as EditFormValue);
+        
+        if (rec === null) {
+          // レコードが存在しない場合はハリボテを生成
+          const emptyRecord: EditFormValue = {
+            date: dateKey,
+            meal: { breakfast: false, lunch: false, dinner: false },
+            sleep: { time: '' },
+            medicine: { items: [] },
+            period: 'none',
+            emotion: 5,
+            exercise: { items: [] },
+            memo: { content: '' }
+          };
+          setData(emptyRecord);
+        } else {
+          // 既存レコードがある場合は型マッピング
+          const mappedRecord: EditFormValue = {
+            ...rec,
+            exercise: rec.exercise ?? { items: [] },
+            memo: rec.memo ?? { content: '' }
+          };
+          setData(mappedRecord);
+        }
       })
       .catch((e) => !ignore && setError(e?.message ?? "取得に失敗しました"))
       .finally(() => !ignore && setLoading(false));

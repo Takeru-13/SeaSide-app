@@ -3,14 +3,14 @@ import type { PeriodRecord, SectionProps } from '../types';
 export default function PeriodSection({ value, onChange }: SectionProps<PeriodRecord>) {
   return (
     <section>
-      <h4>生理</h4>
+      <h4>月経</h4>
       <label>
         <input
           type="radio"
           checked={value === 'none'}
           onChange={() => onChange('none')}
         />
-        生理じゃない
+        無し
       </label>
       <label>
         <input
@@ -18,7 +18,7 @@ export default function PeriodSection({ value, onChange }: SectionProps<PeriodRe
           checked={value === 'start'}
           onChange={() => onChange('start')}
         />
-        生理開始
+        開始
       </label>
       <label>
         <input
@@ -26,7 +26,7 @@ export default function PeriodSection({ value, onChange }: SectionProps<PeriodRe
           checked={value === 'during'}
           onChange={() => onChange('during')}
         />
-        生理中
+        月経中
       </label>
     </section>
   );

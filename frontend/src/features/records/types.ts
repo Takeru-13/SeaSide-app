@@ -1,12 +1,34 @@
-
+// バックエンド返却＝詳細表示用（EditFormValue と同形）
 export type RecordView = {
-  date: string;              // 'YYYY-MM-DD'
-  meal: number | null;
-  sleep: number | null;
-  medicine: number | null;
-  period: number | null;
-  emotion: number;           // 0-10
+  date: string;
+  meal: { breakfast: boolean; lunch: boolean; dinner: boolean };
+  sleep: { time: string };
+  medicine: { items: string[] };
+  period: 'none' | 'start' | 'during';
+  emotion: number;
+
+  exercise: { items: string[] };
+  memo: { content: string };
 };
 
 
-export type RecordInput = Omit<RecordView, 'date'>;
+export type RecordInput = {
+  meal: { breakfast: boolean; lunch: boolean; dinner: boolean };
+  sleep: { time: string };
+  medicine: { items: string[] };
+  period: 'none' | 'start' | 'during';
+  emotion: number;
+
+  exercise: { items: string[] };
+  memo: { content: string };
+};
+
+export type MonthlyDay = {
+  date: string;
+  emotion: number | null;
+};
+
+export type MonthlyResponse = {
+  ym: string;
+  days: MonthlyDay[];
+};

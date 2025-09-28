@@ -1,37 +1,32 @@
-// frontend/src/features/home/components/EditModal/editFormSections/MedicineSection.tsx
-import { useCallback, useMemo } from 'react';
+// frontend/src/features/records/datail/components/editFormSections/MedicineSection.tsx
+import { useCallback } from 'react';
+import type { MedicineRecord, SectionProps } from '../../types';
 
-type Medicine = { items: string[] };
-
-type Props = {
-  value: Medicine;                           // 例: { items: ["ビタミンC", "頭痛薬"] }
-  onChange: (next: Medicine) => void;        // 親(EditForm)の state を更新
-  disabled?: boolean;
-};
-
-export default function MedicineSection({ value, onChange, disabled }: Props) {
-  // items のデフォルト配列生成を useMemo に退避して参照を安定化
-  const safeItems = useMemo(() => value.items ?? [], [value.items]);
+export default function MedicineSection({ value, onChange, disabled }: SectionProps<MedicineRecord>) {
+  const items = value.items ?? [];
 
   const setItem = useCallback(
     (idx: number, text: string) => {
-      const next = [...safeItems];
+      if (disabled) return;
+      const next = [...items];
       next[idx] = text;
       onChange({ items: next });
     },
-    [safeItems, onChange],
+    [items, onChange, disabled],
   );
 
   const addItem = useCallback(() => {
-    onChange({ items: [...safeItems, ''] });
-  }, [safeItems, onChange]);
+    if (disabled) return;
+    onChange({ items: [...items, ''] });
+  }, [items, onChange, disabled]);
 
   const removeItem = useCallback(
     (idx: number) => {
-      const next = safeItems.filter((_, i) => i !== idx);
+      if (disabled) return;
+      const next = items.filter((_, i) => i !== idx);
       onChange({ items: next });
     },
-    [safeItems, onChange],
+    [items, onChange, disabled],
   );
 
   const handleKeyDown = useCallback(
@@ -39,13 +34,12 @@ export default function MedicineSection({ value, onChange, disabled }: Props) {
       if (e.key === 'Enter') {
         e.preventDefault();
         // 最後の行で Enter → 行を追加
-        if (idx === safeItems.length - 1) addItem();
+        if (idx === items.length - 1) addItem();
       }
     },
-    [safeItems, addItem],
+    [items.length, addItem],
   );
 
-  // 送信前に空要素を除外したい場合は、親でトリムする想定（toInput側でやってOK）
   return (
     <section>
       <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>
@@ -53,7 +47,7 @@ export default function MedicineSection({ value, onChange, disabled }: Props) {
       </label>
 
       <div style={{ display: 'grid', gap: 8 }}>
-        {safeItems.length === 0 && (
+        {items.length === 0 && (
           <button
             type="button"
             onClick={addItem}
@@ -64,7 +58,7 @@ export default function MedicineSection({ value, onChange, disabled }: Props) {
           </button>
         )}
 
-        {safeItems.map((v, idx) => (
+        {items.map((v, idx) => (
           <div key={idx} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
             <input
               type="text"
@@ -83,7 +77,7 @@ export default function MedicineSection({ value, onChange, disabled }: Props) {
             >
               －
             </button>
-            {idx === safeItems.length - 1 && (
+            {idx === items.length - 1 && (
               <button
                 type="button"
                 onClick={addItem}
@@ -99,3 +93,4 @@ export default function MedicineSection({ value, onChange, disabled }: Props) {
     </section>
   );
 }
+

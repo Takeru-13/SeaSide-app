@@ -1,13 +1,7 @@
-// src/features/records/api/patchRecord.ts
-const BASE = import.meta.env.VITE_API_URL ?? "http://localhost:3000";
+import { put } from '../../../shared/api/http';
+import type { RecordInput, RecordView } from '../types';
 
-export async function patchRecord(dateKey: string, body: unknown) {
-  const res = await fetch(`${BASE}/records/${dateKey}`, {
-    method: "PATCH",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) throw new Error("記録の更新に失敗しました");
-  return res.json();
+export async function patchRecord(date: string, input: RecordInput) {
+  // 実体は PUT
+  return put<RecordView>(`/records/${date}`, input);
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import type { EditFormValue, PeriodRecord } from './types';
 
 // 各フォームセクション（見た目＆入力）は分割したコンポーネントに委譲
@@ -17,12 +18,17 @@ export default function EditForm({
   onCancel: () => void;
   onSave: (v: EditFormValue) => Promise<void>;
 }) {
+  const navigate = useNavigate();
   // 司令塔：状態を握るのはここ。UIは Section に渡してもらうだけ。
   const [meal, setMeal] = useState(initial.meal);
   const [sleep, setSleep] = useState(initial.sleep);
   const [medicine, setMedicine] = useState(initial.medicine);
   const [period, setPeriod] = useState<PeriodRecord>(initial.period ?? 'none');
   const [emotion, setEmotion] = useState<number>(initial.emotion ?? 5);
+
+  const handleGoToDetail = () => {
+    navigate(`/records/${initial.date}`);
+  };
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,13 +82,30 @@ export default function EditForm({
 
       {error && <div style={{ color: 'crimson' }}>{error}</div>}
 
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-        <button type="button" onClick={onCancel} disabled={saving}>
-          キャンセル
+      <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between', alignItems: 'center' }}>
+        <button 
+          type="button" 
+          onClick={handleGoToDetail}
+          disabled={saving}
+          style={{
+            padding: '8px 16px',
+            background: '#f0f0f0',
+            border: '1px solid #ddd',
+            borderRadius: 8,
+            cursor: 'pointer',
+            fontSize: 14
+          }}
+        >
+          詳細記録へ
         </button>
-        <button type="submit" disabled={saving}>
-          保存
-        </button>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button type="button" onClick={onCancel} disabled={saving}>
+            キャンセル
+          </button>
+          <button type="submit" disabled={saving}>
+            保存
+          </button>
+        </div>
       </div>
     </form>
   );

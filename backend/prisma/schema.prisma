@@ -34,6 +34,10 @@ model Record {
   medicine  Json // { items: [...] }
   period    String // 'none' | 'start' | 'during'
   emotion   Int // 1〜10
+
+  exercise  Json @default("{}") // { items: string[] }
+  memo      Json @default("{}") // { content: string }
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

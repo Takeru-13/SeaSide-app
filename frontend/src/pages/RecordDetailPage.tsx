@@ -1,5 +1,5 @@
 // src/pages/RecordDetailPage.tsx
-import RecordDetailSection from "../features/home/components/RecordDetailSecrion";
+import RecordDetailSection from "../features/records/datail/components/RecordDetailSection";
 
 export default function RecordDetailPage() {
   return (
@@ -8,3 +8,4 @@ export default function RecordDetailPage() {
     </main>
   );
 }
+      

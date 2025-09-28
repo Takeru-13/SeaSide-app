@@ -47,7 +47,7 @@ export default function RegisterForm({ onSubmit }: Props) {
         <option value="女性">女性</option>
         <option value="その他">その他</option>
       </select>
-      <button disabled={!userName || !email || !password}>Register</button>
+      <button disabled={!userName || !email || !password}>新規登録</button>
     </form>
   );
 }

@@ -1,12 +1,14 @@
 // src/features/records/detail/components/EditForm.tsx
 import { useState } from 'react';
-import type { EditFormValue, PeriodRecord } from './types';
+import type { EditFormValue, PeriodRecord } from '../types';
 
 import MealSection from './editFormSections/MealSection';
 import SleepSection from './editFormSections/SleepSection';
 import MedicineSection from './editFormSections/MedicineSection';
 import PeriodSection from './editFormSections/PeriodSection';
 import EmotionSlider from './editFormSections/EmotionSlider';
+import ExerciseSection from './editFormSections/ExerciseSection';
+import MemoSection from './editFormSections/MemoSection';
 
 function getErrorMessage(err: unknown) {
   if (err instanceof Error) return err.message;
@@ -31,6 +33,8 @@ export default function EditForm({
   const [medicine, setMedicine] = useState(initial.medicine);
   const [period, setPeriod] = useState<PeriodRecord>(initial.period ?? 'none');
   const [emotion, setEmotion] = useState<number>(initial.emotion ?? 5);
+  const [exercise, setExercise] = useState(initial.exercise ?? { items: [] });
+  const [memo, setMemo] = useState(initial.memo ?? { content: '' });
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,10 +53,14 @@ export default function EditForm({
         meal,
         sleep,
         medicine: {
-          items: (medicine.items ?? []).map((s) => s.trim()).filter(Boolean),
+          items: (medicine.items ?? []).map((s: string) => s.trim()).filter(Boolean),
         },
         period,
         emotion,
+        exercise: {
+          items: (exercise.items ?? []).map((s: string) => s.trim()).filter(Boolean),
+        },
+        memo,
       };
       await onSave(normalized);
     } catch (err: unknown) {
@@ -71,6 +79,8 @@ export default function EditForm({
       <MedicineSection value={medicine} onChange={setMedicine} disabled={saving || readOnly} />
       <PeriodSection value={period} onChange={setPeriod} disabled={saving || readOnly} />
       <EmotionSlider value={emotion} onChange={setEmotion} disabled={saving || readOnly} />
+      <ExerciseSection value={exercise} onChange={setExercise} disabled={saving || readOnly} />
+      <MemoSection value={memo} onChange={setMemo} disabled={saving || readOnly} />
 
       {error && <div style={{ color: 'crimson' }}>{error}</div>}
 

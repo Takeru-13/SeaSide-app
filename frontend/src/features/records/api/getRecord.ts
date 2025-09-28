@@ -5,6 +5,15 @@ export async function getRecord(dateKey: string, userId?: number) {
   const url = new URL(`${BASE}/records/${dateKey}`);
   if (userId) url.searchParams.set("userId", String(userId));
   const res = await fetch(url, { credentials: "include" });
-  if (!res.ok) throw new Error("記録の取得に失敗しました");
+  
+  if (res.status === 404) {
+    // レコードが存在しない場合はnullを返す
+    return null;
+  }
+  
+  if (!res.ok) {
+    throw new Error("記録の取得に失敗しました");
+  }
+  
   return res.json();
 }

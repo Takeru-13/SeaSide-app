@@ -2,7 +2,7 @@
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import EditForm from "./EditForm";
 import { useRecordDetail } from "../hooks/useRecordDetail";
-import type { EditFormValue } from "../../types";
+import type { EditFormValue } from '../types';
 
 export default function RecordDetailSection() {
   const { dateKey = "" } = useParams();
@@ -27,8 +27,30 @@ export default function RecordDetailSection() {
   if (error) return <p style={{ color: "crimson" }}>{error}</p>;
   if (!data) return <p>記録が見つかりません。</p>;
 
+  // レコードが存在しない場合（ハリボテデータ）の表示
+  const isEmptyRecord = data.date === dateKey && 
+    !data.meal.breakfast && !data.meal.lunch && !data.meal.dinner &&
+    !data.sleep.time && data.medicine.items.length === 0 &&
+    data.period === 'none' && data.emotion === 5 &&
+    data.exercise.items.length === 0 && !data.memo.content;
+
   return (
     <section style={{ padding: 16 }}>
+      {isEmptyRecord && (
+        <div
+          style={{
+            marginBottom: 8,
+            padding: "8px 12px",
+            borderRadius: 8,
+            background: "#fff3cd",
+            color: "#856404",
+            fontSize: 13,
+            border: "1px solid #ffeaa7"
+          }}
+        >
+          📝 この日付の記録はまだありません。下記のフォームで記録を作成できます。
+        </div>
+      )}
       {readOnly && (
         <div
           style={{

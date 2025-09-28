@@ -1,7 +1,7 @@
 import LoginForm from './LoginForm';
 import { useLogin } from './useLogin';
 import type { LoginReq } from './types';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function LoginSection() {
   const { login, loading, error } = useLogin();
@@ -18,6 +18,10 @@ export default function LoginSection() {
       <LoginForm onSubmit={handleSubmit} />
       {loading && <p>処理中...</p>}
       {error && <p style={{ color:'crimson' }}>{error}</p>}
+            <div style={{ marginTop: 12 }}>
+        アカウント未作成の方は{' '}
+        <Link to="/register" style={{ color: '#06f' }}>新規登録</Link>
+      </div>
     </section>
   );
 }

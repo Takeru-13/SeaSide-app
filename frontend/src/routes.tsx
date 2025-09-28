@@ -1,19 +1,29 @@
+
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
 import HomePage from './pages/HomePage';
-// import RecordDetailPage from "./pages/RecordDetailPage"; 
+import RecordDetailPage from './pages/RecordDetailPage';
+
+import RequireAuth from './features/auth/RequireAuth';
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* 非ログインでもOK */}
         <Route path="/" element={<Navigate to="/register" replace />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
-        <Route path="/Home" element={<HomePage />}></Route>
-        {/* <Route path="/records/:dateKey" element={<RecordDetailPage />} /> */}
 
+        {/* ここから下は要ログイン */}
+        <Route element={<RequireAuth />}>
+          <Route path="/Home" element={<HomePage />} />
+          <Route path="/records/:dateKey" element={<RecordDetailPage />} />
+        </Route>
+
+        {/* 迷子はログインへ */}
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

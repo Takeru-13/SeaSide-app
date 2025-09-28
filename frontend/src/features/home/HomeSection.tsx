@@ -1,11 +1,13 @@
-// features/home/HomeSection.tsx
+// frontend/src/features/home/HomeSection.tsx
 // useHomeフックを使ってカレンダー日記アプリの全パーツを組み立てる最上位コンポーネント
-import { useHome } from './hooks/useHome';
+import useHome from './hooks/useHome';
 import CalendarView from './components/Calendar/Calendar';
 import ScopeToggle from './components/ScopeToggle';
 import EmptyPairCard from './components/EmptyPairCard';
 import EditModal from './components/EditModal/EditModal';
 import MonthlyGraph from './components/MonthlyGraph';
+
+import PairDetailModal from './components/PairDetailModal';
 
 //test
 import { useEffect, useState } from 'react';
@@ -21,13 +23,15 @@ function addMonths(ym: string, delta: number) {
 }
 
 export default function HomeSection() {
-  // ※ useHome はデフォルトエクスポートで、 state/act を返す想定
   const { state, act } = useHome();
-  const { scope, ym, month, editing } = state;
+  const { scope, ym, month, editing, todayStr } = state;
   const { setScope, setYm, onSelectDate, setEditing, onSave } = act;
 
   const prevMonth = () => setYm(addMonths(ym, -1));
   const nextMonth = () => setYm(addMonths(ym, +1));
+
+  // ペア閲覧モーダル用
+  const [pairDate, setPairDate] = useState<string | null>(null);
 
   //test
   const [me, setMe] = useState<MeResponse | null>(null);
@@ -37,19 +41,19 @@ export default function HomeSection() {
       .catch(() => setMe(null));
   }, []);
 
-
-
-
-
-
-
+  // クリック時の分岐
+  const handlePick = (date: string) => {
+    if (date > todayStr) return;       // 未来日は無効
+    if (scope === 'pair') setPairDate(date);
+    else onSelectDate(date);
+  };
 
   return (
     <section style={{ padding: 16 }}>
       <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2>Home</h2>
         <ScopeToggle scope={scope} onChange={setScope} />
-           {me && <div>ログイン中: {me.userName}</div>}
+        {me && <div>ログイン中: {me.userName}</div>}
       </header>
 
       {scope === 'pair' ? <EmptyPairCard /> : null}
@@ -57,19 +61,27 @@ export default function HomeSection() {
       <CalendarView
         ym={ym}
         days={month.days}
-        onPick={onSelectDate}   // 日付クリック → 編集開始
+        onPick={handlePick}   // ← 常に渡す（ペア時の制御はここで）
         onPrev={prevMonth}
         onNext={nextMonth}
       />
 
+      {/* 自分：編集モーダル */}
       {editing && (
         <EditModal
-          value={editing}                 // { date, meal, sleep, medicine, period, emotion }
+          value={editing}
           onClose={() => setEditing(null)}
-          onSave={onSave}                 // 保存（PUT /records/:date）→ 月次再取得 → モーダル閉じ
+          onSave={onSave}
         />
       )}
 
+      {/* ペア：閲覧モーダル */}
+      {scope === 'pair' && pairDate && (
+        <PairDetailModal
+          date={pairDate}
+          onClose={() => setPairDate(null)}
+        />
+      )}
 
       <MonthlyGraph ym={ym} days={month.days} />
     </section>

@@ -1,31 +1,58 @@
-import { Body, Controller, Get, Put, Param, Query, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  Controller, Get, Put, Body, Param, Query, Req,
+  UseGuards, NotFoundException, ForbiddenException,
+} from '@nestjs/common';
 import { RecordsService } from './records.service';
-import { UpsertRecordDto } from './dto/upsert-record.dto';
 import { AuthGuard } from '../common/guards/auth.guard';
+import { UpsertRecordDto } from './dto/upsert-record.dto';
 
-@Controller('records')
+type Scope = 'me' | 'pair';
+
 @UseGuards(AuthGuard)
+@Controller('records')
 export class RecordsController {
-  constructor(private readonly service: RecordsService) {}
+  constructor(private readonly records: RecordsService) {}
 
-  // 月次（カレンダー/グラフ用）
+  /** 月次（カレンダー用） */
   @Get()
-  findMonthly(@Req() req: any, @Query('ym') ym: string, @Query('scope') scope: 'me'|'pair' = 'me') {
-    const meId = req.user?.id as number;
-    return this.service.findMonthly(ym, scope, meId);
+  async getMonthly(
+    @Query('ym') ym: string,
+    @Query('scope') scope: Scope = 'me',
+    @Req() req: any,
+  ) {
+    const viewerId = Number(req.user.id);
+    const res = await this.records.getMonthly(ym, viewerId, scope);
+    return res; // { ym, days: [{date, emotion}] }
   }
 
+  /** 詳細：自分 or ペア（?userId= 指定。未指定なら自分） */
   @Get(':date')
-  findOne(@Param('date') date: string, @Req() req: any) {
-  const meId = req.user?.id as number;
-  return this.service.findOneByDate(date, meId);
-}
+  async getByDate(
+    @Param('date') date: string, // 'YYYY-MM-DD'
+    @Query('userId') userId: string | undefined,
+    @Req() req: any,
+  ) {
+    const viewerId = Number(req.user.id);
+    const targetUserId = userId ? Number(userId) : undefined;
 
-  // 1日保存（厳格チェック。フロントは正しい型で送る前提）
-  @Put(':date')
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: false }))
-  upsertByDate(@Param('date') date: string, @Body() dto: UpsertRecordDto, @Req() req: any) {
-    const meId = req.user?.id as number;
-    return this.service.upsertByDate(date, dto, meId);
+    const data = await this.records.getByDateForUser(date, viewerId, targetUserId);
+    if (!data) throw new NotFoundException();
+    return data;
   }
+
+  /** 保存：常に“自分”のみ（他人保存は 403） */
+@Put(':date')
+async upsert(
+  @Param('date') date: string,
+  @Body() body: UpsertRecordDto,
+  @Req() req: any,
+  @Query('userId') userId?: string,
+) {
+  console.log('DTO>', JSON.stringify(body));
+  const viewerId = Number(req.user.id);
+  if (userId && Number(userId) !== viewerId) {
+    throw new ForbiddenException('Cannot save other user record');
+  }
+  return this.records.upsert(date, viewerId, body);
+}
 }

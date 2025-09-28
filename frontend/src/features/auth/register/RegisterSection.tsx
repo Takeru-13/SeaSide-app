@@ -1,7 +1,7 @@
 import { useRegister } from './useRegister';
 import RegisterForm from './RegisterForm';
 import type { RegisterReq } from './types';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function RegisterSection() {
   const { register, loading, error } = useRegister();
@@ -20,6 +20,10 @@ export default function RegisterSection() {
       <RegisterForm onSubmit={handleSubmit} />
       {loading && <p>処理中...</p>}
       {error && <p style={{ color: 'crimson' }}>{error}</p>}
+        <div style={{ marginTop: 12 }}>
+        既にアカウントをお持ちの方は{' '}
+        <Link to="/login">ログイン</Link>
+      </div>
     </section>
   );
 }
