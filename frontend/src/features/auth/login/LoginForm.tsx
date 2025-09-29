@@ -28,7 +28,7 @@ export default function LoginForm({ onSubmit }: Props) {
         placeholder="Password"
         value={password} onChange={e => setPassword(e.target.value)}
       />
-      <button disabled={!email || !password}>Login</button>
+      <button disabled={!email || !password} className="btn btn--primary">Login</button>
     </form>
   );
 }

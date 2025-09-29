@@ -2,42 +2,36 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { EditFormValue, PeriodRecord } from './types';
 
-// 各フォームセクション（見た目＆入力）は分割したコンポーネントに委譲
 import MealSection from './editFormSections/MealSection';
 import SleepSection from './editFormSections/SleepSection';
 import MedicineSection from './editFormSections/MedicineSection';
 import PeriodSection from './editFormSections/PeriodSection';
 import EmotionSlider from './editFormSections/EmotionSlider';
 
+import './EditForm.css';
+
+function getErrorMessage(err: unknown) {
+  if (err instanceof Error) return err.message;
+  return typeof err === 'string' ? err : '保存に失敗しました';
+}
+
 export default function EditForm({
-  initial,
-  onCancel,
-  onSave,
+  initial, onCancel, onSave,
 }: {
   initial: EditFormValue;
   onCancel: () => void;
   onSave: (v: EditFormValue) => Promise<void>;
 }) {
   const navigate = useNavigate();
-  // 司令塔：状態を握るのはここ。UIは Section に渡してもらうだけ。
   const [meal, setMeal] = useState(initial.meal);
   const [sleep, setSleep] = useState(initial.sleep);
   const [medicine, setMedicine] = useState(initial.medicine);
   const [period, setPeriod] = useState<PeriodRecord>(initial.period ?? 'none');
   const [emotion, setEmotion] = useState<number>(initial.emotion ?? 5);
-
-  const handleGoToDetail = () => {
-    navigate(`/records/${initial.date}`);
-  };
-
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-
-  function getErrorMessage(err: unknown) {
-  if (err instanceof Error) return err.message;
-  return typeof err === 'string' ? err : '保存に失敗しました';
-}
+  const handleGoToDetail = () => navigate(`/records/${initial.date}`);
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -48,9 +42,7 @@ export default function EditForm({
         ...initial,
         meal,
         sleep,
-        medicine: {
-          items: (medicine.items ?? []).map((s) => s.trim()).filter(Boolean),
-        },
+        medicine: { items: (medicine.items ?? []).map((s) => s.trim()).filter(Boolean) },
         period,
         emotion,
       };
@@ -61,50 +53,53 @@ export default function EditForm({
       setSaving(false);
     }
   }
+
   return (
-    <form onSubmit={submit} style={{ display: 'grid', gap: 14, minWidth: 320 }}>
-      <h3>{initial.date} の記録</h3>
+    <form onSubmit={submit} className="edit-sheet">
+      <div className="sheet-card">
+        <div className="matrix">
+          <section className="panel panel--meal">
+            <h4 className="panel__title">食事</h4>
+            <div className="panel-box">
+              <MealSection value={meal} onChange={setMeal} disabled={saving} />
+            </div>
+          </section>
 
-      {/* 食事 */}
-      <MealSection value={meal} onChange={setMeal} disabled={saving} />
+          <section className="panel">
+            <h4 className="panel__title">睡眠</h4>
+            <SleepSection value={sleep} onChange={setSleep} disabled={saving} />
+          </section>
 
-      {/* 睡眠 */}
-      <SleepSection value={sleep} onChange={setSleep} disabled={saving} />
+          <section className="panel">
+            <h4 className="panel__title">服薬</h4>
+            <MedicineSection value={medicine} onChange={setMedicine} disabled={saving} />
+          </section>
 
-      {/* 薬：複数行入力に変更済み（カンマ区切りは廃止） */}
-      <MedicineSection value={medicine} onChange={setMedicine} disabled={saving} />
+          <section className="panel panel--period">
+            <h4 className="panel__title">生理</h4>
+            <div className="panel-box">
+              <PeriodSection value={period} onChange={setPeriod} disabled={saving} />
+            </div>
+          </section>
+        </div>
 
-      {/* 生理 */}
-      <PeriodSection value={period} onChange={setPeriod} disabled={saving} />
+        <div className="rail">
+          <EmotionSlider value={emotion} onChange={setEmotion} disabled={saving} className="v-slider" />
+        </div>
+      </div>
 
-      {/* 感情 */}
-      <EmotionSlider value={emotion} onChange={setEmotion} disabled={saving} />
+      {error && <div className="alert alert--error">{error}</div>}
 
-      {error && <div style={{ color: 'crimson' }}>{error}</div>}
-
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'space-between', alignItems: 'center' }}>
-        <button 
-          type="button" 
-          onClick={handleGoToDetail}
-          disabled={saving}
-          style={{
-            padding: '8px 16px',
-            background: '#f0f0f0',
-            border: '1px solid #ddd',
-            borderRadius: 8,
-            cursor: 'pointer',
-            fontSize: 14
-          }}
-        >
-          詳細記録へ
+      <div className="cta-row">
+        <button type="submit" disabled={saving} className="cta">
+          {saving ? '登録中…' : '登録！'}
         </button>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button type="button" onClick={onCancel} disabled={saving}>
-            キャンセル
-          </button>
-          <button type="submit" disabled={saving}>
-            保存
-          </button>
+
+        <div className="row-actions" style={{ display: 'grid', gridTemplateColumns: '1fr 72px', gap: 16 }}>
+          <button type="button" onClick={handleGoToDetail} disabled={saving}
+            className="chip chip--primary">詳しく入力・見る</button>
+          <button type="button" onClick={onCancel} disabled={saving} aria-label="閉じる"
+            className="chip chip--close">×</button>
         </div>
       </div>
     </form>

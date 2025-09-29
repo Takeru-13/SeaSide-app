@@ -1,0 +1,657 @@
+/* ================================
+   SeaSide EditForm – モバイルファーストモダン版
+   縦スライダー対応＋画像準拠デザイン
+================================== */
+
+/* テーマ変数 */
+:root {
+  --sheet-bg: #f8fcfd;
+  --sheet-border: #b4d1dc;
+  --matrix-bg: #ffffff;
+  --matrix-border: #4a6b78;
+  --panel-title-bg: #e1f0f5;
+  --panel-title-text: #2d5766;
+
+  --field-bg: #f0f7fb;
+  --field-border: #a5c2d0;
+  --field-text: #1e3d4a;
+  --field-placeholder: #7a9aaa;
+
+  --shadow-card: 0 12px 32px rgba(0,0,0,0.12);
+  --shadow-button: 0 6px 0 var(--button-shadow), 0 8px 20px rgba(0,0,0,0.15);
+  --shadow-active: 0 4px 0 var(--button-shadow), 0 6px 16px rgba(0,0,0,0.12);
+
+  --cta-gradient: linear-gradient(135deg, #ffd56b 0%, #ffb366 50%, #ff9b5e 100%);
+  --cta-text: #2c4a57;
+  --cta-shadow: #d97842;
+
+  --chip-gradient: linear-gradient(135deg, #2bb7ff 0%, #1ea7ef 100%);
+  --chip-shadow: #1a86c4;
+
+  --close-bg: #ffffff;
+  --close-shadow: #a8c1cf;
+  --close-text: #2c4a57;
+
+  --slider-gradient: linear-gradient(90deg, #10b981 0%, #06b6d4 20%, #3b82f6 40%, #8b5cf6 60%, #ec4899 80%, #ef4444 100%);
+
+  --radius-card: 24px;
+  --radius-button: 20px;
+  --radius-field: 12px;
+  --radius-small: 8px;
+
+  --font-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, system-ui, sans-serif;
+  --col-min: 210px;     
+}
+
+.matrix{
+  grid-template-columns: minmax(var(--col-min), 1fr) minmax(var(--col-min), 1fr);
+}
+
+/* ベーススタイル */
+* {
+  box-sizing: border-box;
+}
+
+/* ====== シートコンテナ ====== */
+.edit-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 16px;
+  font-family: var(--font-base);
+}
+
+/* ====== メインカード ====== */
+.sheet-card {
+  display: grid;
+  grid-template-columns: 1fr 80px;  /* 左：マトリクス、右：スライダー（固定幅） */
+  gap: 16px;
+  padding: 20px;
+  background: var(--sheet-bg);
+  border: 2px solid var(--sheet-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(8px);
+}
+
+/* ====== 2×2マトリクス ====== */
+.matrix {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  background: var(--matrix-bg);
+  border: 3px solid var(--matrix-border);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.panel {
+  padding: 16px 12px;
+  background: var(--matrix-bg);
+  position: relative;
+}
+
+.panel:nth-child(n+3) {
+  border-top: 3px solid var(--matrix-border);
+}
+
+.panel:nth-child(2),
+.panel:nth-child(4) {
+  border-left: 3px solid var(--matrix-border);
+}
+
+/* パネルタイトル */
+.panel__title {
+  margin: 0 0 12px 0;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--panel-title-text);
+  background: var(--panel-title-bg);
+  border: 2px solid var(--matrix-border);
+  border-radius: var(--radius-field);
+  padding: 6px 10px;
+  letter-spacing: 0.025em;
+}
+
+/* ====== 入力フィールド ====== */
+.panel input[type="text"],
+.panel input[type="time"],
+.panel input[type="number"],
+.panel textarea,
+.panel select {
+  width: 100%;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--field-text);
+  background: var(--field-bg);
+  border: 2px solid var(--field-border);
+  border-radius: var(--radius-small);
+  padding: 10px 12px;
+  margin-bottom: 8px;
+  outline: none;
+  font-family: var(--font-base);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.panel input:focus,
+.panel textarea:focus,
+.panel select:focus {
+  border-color: var(--chip-shadow);
+  box-shadow: 0 0 0 3px rgba(43, 183, 255, 0.1);
+}
+
+.panel input::placeholder,
+.panel textarea::placeholder {
+  color: var(--field-placeholder);
+  font-weight: 400;
+}
+
+/* 時刻入力の特別スタイル */
+.panel input[type="time"] {
+  text-align: center;
+  font-weight: 600;
+  font-size: 15px;
+}
+
+/* チェックボックス */
+.panel .checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--field-text);
+}
+
+.panel .checkbox-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--chip-shadow);
+}
+
+/* ====== 月経セクション専用スタイル（丸ボタン縦並び） ====== */
+/* 月経ボタングループのコンテナ */
+.period-buttons {
+  display: flex;
+  flex-direction: column;  /* 縦並び */
+  gap: 8px;                /* ボタン間のスペース ★ここを変えると間隔調整 */
+  width: 100%;
+}
+
+/* 月経の各ボタン（丸いピル型） */
+.period-button {
+  width: 100%;
+  padding: 10px 16px;      /* 内側の余白 ★ここを変えるとボタンサイズ調整 */
+  border: 2px solid var(--field-border);  /* ボーダー */
+  border-radius: 20px;     /* 角丸（丸いボタン） ★ここを変えると丸み調整 */
+  background: var(--field-bg);  /* 通常時の背景色 */
+  color: var(--field-text);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-base);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+/* ボタンホバー時 */
+.period-button:hover {
+  border-color: var(--chip-shadow);
+  background: rgba(43, 183, 255, 0.08);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* 選択中のボタン */
+.period-button.selected {
+  background: var(--chip-gradient);  /* 青グラデーション */
+  color: #ffffff;
+  border-color: var(--chip-shadow);
+  box-shadow: 0 4px 12px rgba(43, 183, 255, 0.3);
+  transform: scale(1.02);
+}
+
+/* 選択中ボタンのホバー */
+.period-button.selected:hover {
+  transform: scale(1.02) translateY(-1px);
+  box-shadow: 0 6px 16px rgba(43, 183, 255, 0.4);
+}
+
+/* 無効状態のボタン */
+.period-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.period-button:disabled:hover {
+  border-color: var(--field-border);
+  background: var(--field-bg);
+  transform: none;
+}
+
+/* ====== 縦スライダー（Emotion） ====== */
+/* スライダー全体を囲むコンテナ */
+.rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 320px;
+  padding: 10px 0;
+}
+
+/* スライダーのラッパー（回転用の基準点） */
+.v-slider {
+  position: relative;
+  width: 80px;        /* スライダーの表示幅（太さ） */
+  height: 300px;      /* スライダーの表示高さ（長さ） */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 縦スライダー本体 - transform: rotate(-90deg) で確実に縦化 */
+.v-slider input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  position: absolute;
+  width: 300px;       /* 実際の長さ（回転後は高さになる） ★ここを変えると長さ調整 */
+  height: 40px;       /* 実際の太さ（回転後は幅になる） ★ここを変えると太さ調整 */
+  transform: rotate(-90deg);
+  transform-origin: center center;
+  background: var(--slider-gradient);
+  border: none;
+  border-radius: 24px;  /* 角の丸み ★ここを変えると丸み調整 */
+  outline: none;
+  box-shadow: 
+    inset 0 0 0 5px #ffffff,              /* 内側の白枠 */
+    inset 0 0 0 8px var(--matrix-border), /* 内側のボーダー */
+    0 6px 16px rgba(0,0,0,0.15);          /* 外側の影 */
+  cursor: pointer;
+  margin: 0;
+}
+
+/* トラックスタイル（背景を透明に） */
+.v-slider input[type="range"]::-webkit-slider-runnable-track {
+  background: transparent;
+  border: none;
+}
+
+.v-slider input[type="range"]::-moz-range-track {
+  background: transparent;
+  border: none;
+}
+
+/* WebKit スライダーのつまみ（横長バー） */
+.v-slider input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;        /* つまみの厚み ★ここを変えるとつまみの厚み調整 */
+  height: 56px;       /* つまみの長さ ★ここを変えるとつまみの長さ調整 */
+  background: #ffffff;
+  border: 5px solid var(--matrix-border);  /* つまみの枠線 */
+  border-radius: 18px;  /* つまみの角丸 */
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.15s ease;
+}
+
+.v-slider input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+.v-slider input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+}
+
+/* Firefox スライダーのつまみ */
+.v-slider input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 56px;
+  background: #ffffff;
+  border: 5px solid var(--matrix-border);
+  border-radius: 18px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.15s ease;
+}
+
+.v-slider input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.25);
+}
+
+/* スクリーンリーダー用のラベルを非表示 */
+.v-slider .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 現在値ラベル表示（スライダーの下） */
+.v-slider .emotion-label {
+  position: absolute;
+  bottom: -32px;      /* スライダーからの距離 ★ここを変えると位置調整 */
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--panel-title-text);
+  white-space: nowrap;
+  background: var(--panel-title-bg);
+  padding: 4px 12px;
+  border-radius: 12px;
+  border: 2px solid var(--matrix-border);
+}
+
+/* ====== ボタン行 ====== */
+.cta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* メイン登録ボタン */
+.cta {
+  width: 100%;
+  border: none;
+  border-radius: var(--radius-button);
+  padding: 18px 24px;
+  font-size: 18px;
+  font-weight: 800;
+  font-family: var(--font-base);
+  color: var(--cta-text);
+  background: var(--cta-gradient);
+  box-shadow: var(--shadow-button);
+  --button-shadow: var(--cta-shadow);
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.025em;
+}
+
+.cta:active {
+  transform: translateY(2px);
+  box-shadow: var(--shadow-active);
+  --button-shadow: var(--cta-shadow);
+}
+
+.cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* アクション行 */
+.row-actions {
+  display: grid;
+  grid-template-columns: 1fr 72px;
+  gap: 16px;
+  align-items: center;
+}
+
+/* チップボタン */
+.chip {
+  border: none;
+  border-radius: var(--radius-button);
+  font-family: var(--font-base);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  letter-spacing: 0.025em;
+}
+
+.chip--primary {
+  background: var(--chip-gradient);
+  color: #ffffff;
+  font-size: 15px;
+  padding: 16px 20px;
+  box-shadow: var(--shadow-button);
+  --button-shadow: var(--chip-shadow);
+}
+
+.chip--primary:active {
+  transform: translateY(2px);
+  box-shadow: var(--shadow-active);
+  --button-shadow: var(--chip-shadow);
+}
+
+/* 閉じるボタン */
+.chip--close {
+  background: var(--close-bg);
+  color: var(--close-text);
+  border-radius: 16px;
+  font-size: 24px;
+  font-weight: 700;
+  width: 72px;
+  height: 72px;
+  display: grid;
+  place-items: center;
+  box-shadow: var(--shadow-button);
+  --button-shadow: var(--close-shadow);
+}
+
+.chip--close:active {
+  transform: translateY(2px);
+  box-shadow: var(--shadow-active);
+  --button-shadow: var(--close-shadow);
+}
+
+/* ====== エラー表示 ====== */
+.alert {
+  padding: 16px 18px;
+  border-radius: var(--radius-field);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 16px;
+  font-family: var(--font-base);
+}
+
+.alert--error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 2px solid rgba(239, 68, 68, 0.2);
+  color: #dc2626;
+}
+
+/* ====== レスポンシブ対応 ====== */
+@media (max-width: 480px) {
+  /* 全体のパディング調整 */
+  .edit-sheet {
+    padding: 12px;
+  }
+  
+  /* カード内のパディングとギャップ調整 */
+  .sheet-card {
+    padding: 16px;
+    gap: 12px;
+  }
+  
+  /* パネル内のパディング調整 */
+  .panel {
+    padding: 12px 10px;
+  }
+  
+  /* スライダーコンテナの高さ調整 */
+  .rail {
+    min-height: 280px;
+  }
+  
+  /* スライダーラッパーのサイズ調整（縦向き維持） */
+  .v-slider {
+    width: 70px;      /* 表示幅 */
+    height: 260px;    /* 表示高さ */
+  }
+  
+  /* スライダー本体のサイズ調整（回転後のサイズなので注意） */
+  .v-slider input[type="range"] {
+    width: 260px;     /* 実際の長さ（回転後は高さ） ★縦の長さ */
+    height: 36px;     /* 実際の太さ（回転後は幅） ★横の太さ */
+  }
+  
+  /* つまみのサイズも少し小さく */
+  .v-slider input[type="range"]::-webkit-slider-thumb {
+    width: 22px;
+    height: 50px;
+  }
+  
+  .v-slider input[type="range"]::-moz-range-thumb {
+    width: 22px;
+    height: 50px;
+  }
+}
+
+@media (min-width: 481px) {
+  .edit-sheet {
+    max-width: 480px;
+  }
+}
+
+/* ====== アニメーション ====== */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.edit-sheet {
+  animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ====== フォーカス可視性向上 ====== */
+.cta:focus-visible,
+.chip:focus-visible {
+  outline: 3px solid rgba(43, 183, 255, 0.4);
+  outline-offset: 2px;
+}
+
+/* =========================
+   Meal / Period を画像風に
+   （内側ボックス＋ピル形UI＋縦並び）
+========================= */
+
+/* 共通：内側の“丸枠ボックス” */
+.panel .panel-box{
+  background:#eef6fb;
+  border:3px solid var(--matrix-border);
+  border-radius:16px;
+  padding:12px;
+}
+
+/* ===== 食事 ===== */
+.panel--meal .panel-box{
+  display:grid;
+  gap:10px;
+}
+
+/* 行（朝・昼・夜）を2カラム：左バッジ + 右ピル入力 */
+.meal-row{
+  display:grid;
+  grid-template-columns: 42px 1fr;
+  align-items:center;
+  gap:10px;
+}
+
+/* 左の“朝/昼/夜”バッジ */
+.meal-badge{
+  display:grid;
+  place-items:center;
+  width:42px; height:28px;
+  font-weight:800; font-size:13px;
+  color:#4a6b78;
+  background:#e1f0f5;
+  border:2px solid var(--matrix-border);
+  border-radius:999px;
+}
+
+/* 右の入力（ピル形＆薄グレー） */
+.meal-input{
+  width:100%;
+  height:28px;
+  background:#edf4f9;
+  border:2px solid var(--field-border);
+  border-radius:999px;
+  padding:0 10px;
+  color:var(--field-text);
+  font-size:13px;
+  outline:none;
+}
+.meal-input::placeholder{ color:#a8bac8; letter-spacing:.1em; }
+
+/* 行間の薄い区切り（好みで） */
+.meal-row + .meal-row{
+  border-top:1px dashed rgba(74,107,120,.25);
+  padding-top:8px;
+}
+
+/* ===== 生理 ===== */
+.panel--period .panel-box{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+/* 3つの縦ボタン（ピル形） */
+.period-btn{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  width:100%;
+  background:#edf4f9;
+  border:2px solid var(--field-border);
+  border-radius:12px;
+  padding:8px 10px;
+  color:var(--field-text);
+  font-weight:600;
+  cursor:pointer;
+  transition:transform .05s ease, box-shadow .12s ease, border-color .12s ease;
+}
+.period-btn:hover{ border-color:var(--chip-shadow); box-shadow:0 2px 8px rgba(0,0,0,.08); }
+
+/* ラジオを見た目に溶かす */
+.period-btn input[type="radio"]{
+  appearance:none;
+  width:14px; height:14px; border-radius:50%;
+  border:2px solid var(--chip-shadow);
+  box-shadow: inset 0 0 0 4px #fff;
+}
+.period-btn input[type="radio"]:checked{
+  background: linear-gradient(135deg,#2bb7ff,#1ea7ef);
+  box-shadow: inset 0 0 0 3px #fff;
+}
+
+/* 選択中のボタンを強調 */
+.period-btn.is-selected{
+  background: linear-gradient(135deg, #e9f6ff, #eef8ff);
+  border-color: var(--chip-shadow);
+}
+
+/* セクション下の丸角強調（外枠と合わせる） */
+.panel--meal .panel-box,
+.panel--period .panel-box{
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.6);
+}
+
+/* 文字詰めを少しだけ */
+.panel--meal .panel-box,
+.panel--period .panel-box{ line-height:1.25; }
+
+/* 極小幅で詰まるのを緩和（左バッジ列を少し細く） */
+@media (max-width: 360px){
+  .meal-row{ grid-template-columns: 36px 1fr; }
+  .meal-badge{ width:36px; }
+}

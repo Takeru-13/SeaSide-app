@@ -1,33 +1,19 @@
-import type { PeriodRecord, SectionProps } from '../types';
+import type { SectionProps } from '../types';
+type PeriodRecord = 'none' | 'start' | 'during';
 
-export default function PeriodSection({ value, onChange }: SectionProps<PeriodRecord>) {
+export default function PeriodSection({ value, onChange, disabled }: SectionProps<PeriodRecord>) {
+  const Item = ({ v, label }: { v: PeriodRecord; label: string }) => (
+    <label className={`period-btn ${value === v ? 'is-selected' : ''}`}>
+      <input type="radio" name="period" value={v}
+        checked={value === v} onChange={() => onChange(v)} disabled={disabled} />
+      {label}
+    </label>
+  );
   return (
-    <section>
-      <h4>月経</h4>
-      <label>
-        <input
-          type="radio"
-          checked={value === 'none'}
-          onChange={() => onChange('none')}
-        />
-        無し
-      </label>
-      <label>
-        <input
-          type="radio"
-          checked={value === 'start'}
-          onChange={() => onChange('start')}
-        />
-        開始
-      </label>
-      <label>
-        <input
-          type="radio"
-          checked={value === 'during'}
-          onChange={() => onChange('during')}
-        />
-        月経中
-      </label>
-    </section>
+    <>
+      <Item v="none"   label="無し" />
+      <Item v="start"  label="開始" />
+      <Item v="during" label="生理中" />
+    </>
   );
 }

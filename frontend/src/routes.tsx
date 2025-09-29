@@ -6,10 +6,12 @@ import HomePage from './pages/HomePage';
 import RecordDetailPage from './pages/RecordDetailPage';
 
 import RequireAuth from './features/auth/RequireAuth';
+import Header from "./features/components/Header";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
+      <Header />
       <Routes>
         {/* 非ログインでもOK */}
         <Route path="/" element={<Navigate to="/register" replace />} />

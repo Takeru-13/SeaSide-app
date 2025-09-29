@@ -1,6 +1,5 @@
-// src/features/records/detail/components/EditForm.tsx
 import { useState } from 'react';
-import type { EditFormValue, PeriodRecord } from '../types';
+import type { EditFormValue, PeriodRecord } from '../../types';
 
 import MealSection from './editFormSections/MealSection';
 import SleepSection from './editFormSections/SleepSection';
@@ -10,6 +9,8 @@ import EmotionSlider from './editFormSections/EmotionSlider';
 import ExerciseSection from './editFormSections/ExerciseSection';
 import MemoSection from './editFormSections/MemoSection';
 
+import './recordDetail.css';
+
 function getErrorMessage(err: unknown) {
   if (err instanceof Error) return err.message;
   if (typeof err === 'string') return err;
@@ -17,17 +18,13 @@ function getErrorMessage(err: unknown) {
 }
 
 export default function EditForm({
-  initial,
-  onCancel,
-  onSave,
-  readOnly = false,
+  initial, onCancel, onSave, readOnly = false,
 }: {
   initial: EditFormValue;
   onCancel: () => void;
   onSave: (v: EditFormValue) => Promise<void>;
   readOnly?: boolean;
 }) {
-  // 司令塔：状態はここで握る
   const [meal, setMeal] = useState(initial.meal);
   const [sleep, setSleep] = useState(initial.sleep);
   const [medicine, setMedicine] = useState(initial.medicine);
@@ -41,52 +38,83 @@ export default function EditForm({
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (readOnly) {
-      setError("ペアの記録は閲覧のみです");
-      return;
-    }
-    setSaving(true);
-    setError(null);
+    if (readOnly) { setError('ペアの記録は閲覧のみです'); return; }
+    setSaving(true); setError(null);
     try {
       const normalized: EditFormValue = {
         ...initial,
         meal,
         sleep,
-        medicine: {
-          items: (medicine.items ?? []).map((s: string) => s.trim()).filter(Boolean),
-        },
+        medicine: { items: (medicine.items ?? []).map((s: string) => s.trim()).filter(Boolean) },
         period,
         emotion,
-        exercise: {
-          items: (exercise.items ?? []).map((s: string) => s.trim()).filter(Boolean),
-        },
+        exercise: { items: (exercise.items ?? []).map((s: string) => s.trim()).filter(Boolean) },
         memo,
       };
       await onSave(normalized);
     } catch (err: unknown) {
       setError(getErrorMessage(err));
-    } finally {
-      setSaving(false);
-    }
+    } finally { setSaving(false); }
   }
 
   return (
-    <form onSubmit={submit} style={{ display: 'grid', gap: 14, minWidth: 320 }}>
-      <h3>{initial.date} の記録</h3>
+    <form onSubmit={submit} className="detail-form">
+      <header className="detail-header">
+        <div className="detail-pill">○○の詳細記録</div>
+      </header>
 
-      <MealSection value={meal} onChange={setMeal} disabled={saving || readOnly} />
-      <SleepSection value={sleep} onChange={setSleep} disabled={saving || readOnly} />
-      <MedicineSection value={medicine} onChange={setMedicine} disabled={saving || readOnly} />
-      <PeriodSection value={period} onChange={setPeriod} disabled={saving || readOnly} />
-      <EmotionSlider value={emotion} onChange={setEmotion} disabled={saving || readOnly} />
-      <ExerciseSection value={exercise} onChange={setExercise} disabled={saving || readOnly} />
-      <MemoSection value={memo} onChange={setMemo} disabled={saving || readOnly} />
+      <div className="detail-grid detail-grid--hero">
+        {/* 左：2×2 */}
+        <section className="detail-card panel panel--meal">
+          <h4 className="panel__title">食事</h4>
+          <div className="panel-box">
+            <MealSection value={meal} onChange={setMeal} disabled={saving || readOnly} />
+          </div>
+        </section>
 
-      {error && <div style={{ color: 'crimson' }}>{error}</div>}
+        {/* 右：スライダー */}
+        <section className="detail-card detail-card--slider">
+          <div className="rail">
+            <EmotionSlider value={emotion} onChange={setEmotion} disabled={saving || readOnly} className="v-slider" />
+          </div>
+        </section>
 
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-        <button type="button" onClick={onCancel} disabled={saving}>キャンセル</button>
-        <button type="submit" disabled={saving || readOnly}>保存</button>
+        <section className="detail-card">
+          <h4 className="panel__title">睡眠</h4>
+          <SleepSection value={sleep} onChange={setSleep} disabled={saving || readOnly} />
+        </section>
+
+        <section className="detail-card">
+          <h4 className="panel__title">服薬</h4>
+          <MedicineSection value={medicine} onChange={setMedicine} disabled={saving || readOnly} />
+        </section>
+
+        <section className="detail-card panel panel--period">
+          <h4 className="panel__title">生理</h4>
+          <div className="panel-box">
+            <PeriodSection value={period} onChange={setPeriod} disabled={saving || readOnly} />
+          </div>
+        </section>
+
+        {/* 下段：運動・メモ（2列ぶち抜き） */}
+        <section className="detail-card detail-card--span2">
+          <h4 className="panel__title">運動</h4>
+          <ExerciseSection value={exercise} onChange={setExercise} disabled={saving || readOnly} />
+        </section>
+
+        <section className="detail-card detail-card--span2">
+          <h4 className="panel__title">メモ</h4>
+          <MemoSection value={memo} onChange={setMemo} disabled={saving || readOnly} />
+        </section>
+      </div>
+
+      {error && <div className="banner banner--error">{error}</div>}
+
+      <div className="detail-actions">
+        <button type="button" onClick={onCancel} disabled={saving} className="btn btn--ghost">戻る</button>
+        <button type="submit" disabled={saving || readOnly} className="cta">
+          {saving ? '保存中…' : '登録！'}
+        </button>
       </div>
     </form>
   );

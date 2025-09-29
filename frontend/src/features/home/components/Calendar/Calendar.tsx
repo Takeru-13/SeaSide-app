@@ -30,38 +30,53 @@ export default function CalendarView({ ym, days, onPick, onPrev, onNext }: Props
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
-        <button onClick={onPrev}>&lt;</button>
+        <button onClick={onPrev} aria-label="前の月へ">&lt;</button>
         <span className={styles.title}>{ym}</span>
-        <button onClick={onNext}>&gt;</button>
+        <button onClick={onNext} aria-label="次の月へ">&gt;</button>
       </div>
 
       <ReactCalendar
-        // 表示は月ビュー固定＋内蔵ナビ無効（上のヘッダで制御）
+        /* 表示は月ビュー固定＋内蔵ナビ無効（上のヘッダで制御） */
         view="month"
         minDetail="month"
         maxDetail="month"
         showNavigation={false}
 
-        // 表示する月を固定
+        /* ロケール（曜日ヘッダなど） */
+        locale="ja-JP"
+
+        /* 表示する月を固定 */
         activeStartDate={value}
-        // react-calendar は selected "value" を与えると選択状態が付くが
-        // 今回は選択状態不要なので undefined にしておく（クリック時は onPick を使う）
+        /* 選択状態は不要（クリック時は onPick を使う） */
         value={undefined}
 
-        // クリックで日付ISOを返す
+        /* 「◯日」の“日”を出さずに数字だけ表示 */
+        formatDay={(_, date) => String(date.getDate())}
+
+        /* スクリーンリーダー用の長い表記（例: 2025年9月29日(月)） */
+        formatLongDate={(_, date) =>
+          date.toLocaleDateString('ja-JP', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'short',
+          })
+        }
+
+        /* クリックで日付ISOを返す */
         onClickDay={(d) => onPick(formatDateLocal(d))}
 
-        // 未来日は無効（それ以外は常にクリック可）
+        /* 未来日は無効（それ以外は常にクリック可） */
         tileDisabled={({ date }) => formatDateLocal(date) > todayStr}
 
-        // 各日セルにスコアを表示（未記録は何も出さない）
+        /* 各日セルにスコアを表示（未記録は何も出さない） */
         tileContent={({ date }) => {
           const iso = formatDateLocal(date);
           const hit = days.find((d) => d.date === iso);
           return hit?.score != null ? <div className={styles.dot}>{hit.score}</div> : null;
         }}
 
-        // （任意）未記録日を薄くするなど見た目を変えたい場合は className を付与
+        /* 未記録日を薄くするなどの見た目を付けたい場合は className を付与 */
         // tileClassName={({ date }) => {
         //   const iso = formatDateLocal(date);
         //   const has = days.some((d) => d.date === iso && d.score != null);

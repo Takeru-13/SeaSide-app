@@ -1,17 +1,15 @@
-// frontend/src/features/home/HomeSection.tsx
-// useHomeフックを使ってカレンダー日記アプリの全パーツを組み立てる最上位コンポーネント
 import useHome from './hooks/useHome';
 import CalendarView from './components/Calendar/Calendar';
 import ScopeToggle from './components/ScopeToggle';
 import EmptyPairCard from './components/EmptyPairCard';
 import EditModal from './components/EditModal/EditModal';
 import MonthlyGraph from './components/MonthlyGraph';
-
 import PairDetailModal from './components/PairDetailModal';
 
-//test
 import { useEffect, useState } from 'react';
 import { get } from '../../shared/api/http';
+import styles from './homeSection.module.css'; 
+
 type MeResponse = { id: number; userName: string; email: string; iconUrl?: string };
 
 function addMonths(ym: string, delta: number) {
@@ -30,10 +28,8 @@ export default function HomeSection() {
   const prevMonth = () => setYm(addMonths(ym, -1));
   const nextMonth = () => setYm(addMonths(ym, +1));
 
-  // ペア閲覧モーダル用
   const [pairDate, setPairDate] = useState<string | null>(null);
 
-  //test
   const [me, setMe] = useState<MeResponse | null>(null);
   useEffect(() => {
     get<MeResponse>('/auth/me')
@@ -41,19 +37,26 @@ export default function HomeSection() {
       .catch(() => setMe(null));
   }, []);
 
-  // クリック時の分岐
   const handlePick = (date: string) => {
-    if (date > todayStr) return;       // 未来日は無効
+    if (date > todayStr) return;
     if (scope === 'pair') setPairDate(date);
     else onSelectDate(date);
   };
 
   return (
-    <section style={{ padding: 16 }}>
-      <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>Home</h2>
-        <ScopeToggle scope={scope} onChange={setScope} />
-        {me && <div>ログイン中: {me.userName}</div>}
+    <section className={styles.wrapper}>
+      <header className={styles.header}>
+
+        <div className={styles.scopeArea}>
+          <ScopeToggle scope={scope} onChange={setScope} />
+        </div>
+
+        {me && (
+          <div className={styles.userBadge}>
+            <span className={styles.userName}>{me.userName}</span>
+            <span>の記録</span>
+          </div>
+        )}
       </header>
 
       {scope === 'pair' ? <EmptyPairCard /> : null}
@@ -61,12 +64,11 @@ export default function HomeSection() {
       <CalendarView
         ym={ym}
         days={month.days}
-        onPick={handlePick}   // ← 常に渡す（ペア時の制御はここで）
+        onPick={handlePick}
         onPrev={prevMonth}
         onNext={nextMonth}
       />
 
-      {/* 自分：編集モーダル */}
       {editing && (
         <EditModal
           value={editing}
@@ -75,7 +77,6 @@ export default function HomeSection() {
         />
       )}
 
-      {/* ペア：閲覧モーダル */}
       {scope === 'pair' && pairDate && (
         <PairDetailModal
           date={pairDate}

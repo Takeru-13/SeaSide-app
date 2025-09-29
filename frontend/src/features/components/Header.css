@@ -1,0 +1,27 @@
+:root{
+  --header-h: 100px;              /* ヘッダー高さ */
+  --logo-h:   50px;              /* ロゴの高さ */
+  --header-bg: rgba(248,252,253,.85);
+  --header-border: #b4d1dc;
+}
+
+/* 画面最上部に固定・中央寄せ */
+.header{
+  top: 0; left: 0; right: 0;
+  height: calc(var(--header-h) + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+
+  border-bottom: 1px solid var(--header-border);
+}
+
+/* ロゴ画像を変数でコントロール */
+.logo{
+  height: var(--logo-h);
+  width: auto;
+  display: block;
+  user-select: none;
+}
+

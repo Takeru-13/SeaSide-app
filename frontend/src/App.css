@@ -40,3 +40,9 @@
 .read-the-docs {
   color: #888;
 }
+
+/* 固定ヘッダー分の余白はそのまま */
+.app-main{
+  padding-top: calc(var(--header-h) + env(safe-area-inset-top));
+}
+

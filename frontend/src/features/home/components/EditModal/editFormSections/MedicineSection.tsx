@@ -49,7 +49,7 @@ export default function MedicineSection({ value, onChange, disabled }: Props) {
   return (
     <section>
       <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>
-        お薬（1行につき1つ）
+        服薬
       </label>
 
       <div style={{ display: 'grid', gap: 8 }}>

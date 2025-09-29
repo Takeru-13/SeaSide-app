@@ -1,26 +1,25 @@
-// features/home/components/EditModal/editFormSections/EmotionSlider.tsx
+import { useId } from 'react';
 import type { SectionProps } from '../types';
 
-export default function EmotionSlider({ value, onChange }: SectionProps<number>) {
+type Props = SectionProps<number> & { className?: string; showLabel?: boolean };
+
+export default function EmotionSlider({
+  value, onChange, className = '', showLabel = true, disabled,
+}: Props) {
+  const id = useId();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // 入力を 1..10 の整数にクランプ
     const n = Math.min(10, Math.max(1, Math.round(Number(e.target.value))));
     onChange(n);
   };
-
   return (
-    <section>
-      <h4>感情</h4>
+    <div className={`emotion-slider-root ${className}`.trim()}>
+      <label htmlFor={id} className="sr-only">感情スコア（1〜10）</label>
       <input
-        type="range"
-        min={1}
-        max={10}
-        step={1}
-        value={value}
-        onChange={handleChange}
-        aria-label="感情スコア（1から10）"
+        id={id} type="range" min={1} max={10} step={1}
+        value={value} onChange={handleChange} aria-label="感情スコア（1から10）"
+        disabled={disabled} orient="vertical"
       />
-      <div>現在: {value}</div>
-    </section>
+      {showLabel && <div className="emotion-label">現在: {value}</div>}
+    </div>
   );
 }
