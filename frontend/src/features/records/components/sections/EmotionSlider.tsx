@@ -1,5 +1,5 @@
 import { useId } from 'react';
-import type { SectionProps } from '../types';
+import type { SectionProps } from '../../types';
 
 type Props = SectionProps<number> & { className?: string; showLabel?: boolean };
 

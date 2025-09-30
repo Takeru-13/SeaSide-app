@@ -1,6 +1,6 @@
 // frontend/src/features/records/api/index.ts
 import { get, put } from '../../../shared/api/http';
-import type { MonthlyDay, RecordInput, RecordView } from '../types';
+import type { MonthlyDay, RecordView, UpsertPayload } from '../types';
 
 export async function getMonthly(ym: string, scope: 'me' | 'pair'): Promise<MonthlyDay[]> {
   const res = await get<unknown>(`/records?ym=${ym}&scope=${scope}`);
@@ -21,6 +21,7 @@ export async function getRecordByDate(date: string, scope?: 'me'|'pair'): Promis
   }
 }
 
-export async function upsertRecordByDate(date: string, input: RecordInput) {
-  return put<RecordView>(`/records/${date}`, input);
-}
+  export async function upsertRecordByDate(date: string, input: UpsertPayload) {
+   const res = await http.put(`/records/${date}`, input);
+   return res.data as RecordView;
+ }

@@ -1,5 +1,5 @@
 import EditForm from './EditForm';
-import type { EditFormValue } from './types';
+import type { EditFormValue } from '../types';
 import styles from "./editModal.module.css";
 
 export default function EditModal({
