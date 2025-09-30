@@ -2,8 +2,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import RegisterPage from './pages/RegisterPage';
 import LoginPage from './pages/LoginPage';
-import HomePage from './pages/HomePage';
-import RecordDetailPage from './pages/RecordDetailPage';
+import HomePage from './features/records/pages/HomeSection';
+import RecordDetailPage from './features/records/pages/RecordDetailSection';
 
 import RequireAuth from './features/auth/RequireAuth';
 import Header from "./features/components/Header";
