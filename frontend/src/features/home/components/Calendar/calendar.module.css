@@ -1,5 +1,0 @@
-/* features/home/components/Calendar/calendar.module.css */
-.wrapper { width: 100%; }
-.header { display:flex; align-items:center; justify-content:space-between; margin: 8px 0; }
-.title { font-weight: 600; }
-.dot { font-size: 10px; line-height: 1; margin-top: 2px; text-align: center; }

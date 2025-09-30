@@ -1,15 +1,17 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import RegisterPage from './pages/RegisterPage';
-import LoginPage from './pages/LoginPage';
-import HomePage from './pages/HomePage';
-import RecordDetailPage from './pages/RecordDetailPage';
+import RegisterPage from './features/auth/register/RegisterSection';
+import LoginPage from './features/auth/login/LoginSection';
+import HomePage from './features/records/pages/HomeSection';
+import RecordDetailPage from './features/records/pages/RecordDetailSection';
 
 import RequireAuth from './features/auth/RequireAuth';
+import Header from "./shared/ui/Header";
 
 export default function AppRoutes() {
   return (
     <BrowserRouter>
+      <Header />
       <Routes>
         {/* 非ログインでもOK */}
         <Route path="/" element={<Navigate to="/register" replace />} />

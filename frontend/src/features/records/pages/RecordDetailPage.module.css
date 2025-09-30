@@ -1,0 +1,65 @@
+/* ページ外枠 */
+.detail-wrap{ padding:12px; }
+
+/* 見出し pill */
+.detail-header{ margin:0 0 6px; }
+.detail-pill{
+  display:inline-grid; place-items:center; min-height:34px; padding:4px 16px;
+  background: linear-gradient(135deg,#cfeeff,#e9f7ff);
+  color:#28607a; font-weight:800; letter-spacing:.1em;
+  border:2px solid #9cc6da; border-radius:20px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.08), inset 0 2px 0 rgba(255,255,255,.8);
+}
+
+.detail-form{ display:grid; gap:10px; }
+
+/* 常に2列（上段：左カード＋右スライダー） */
+.detail-grid.detail-grid--hero{
+  display:grid; gap:10px;
+  grid-template-columns: minmax(0,1fr) 88px;
+}
+
+.detail-card{
+  background:#fff; border:2px solid #b4d1dc; border-radius:16px;
+  padding:10px; box-shadow:0 6px 18px rgba(0,0,0,.06);
+}
+.detail-card--slider{ padding:6px; display:grid; align-content:center; }
+.detail-card--span2{ grid-column: span 2; }
+
+/* 既存 panel と panel-box を流用 */
+.panel__title{
+  margin:0 0 8px; font-size:14px; font-weight:800; color:#2d5766;
+  background:#e1f0f5; border:2px solid #4a6b78; padding:6px 10px; border-radius:12px; display:inline-block;
+}
+.panel .panel-box{
+  background:#eef6fb; border:3px solid #4a6b78; border-radius:16px; padding:10px;
+}
+
+/* スライダー置き場 */
+.rail{ padding:0; display:grid; place-items:center; }
+
+/* スライダー寸法（縦） */
+:root{
+  --rail-w: 88px;
+  --slider-l: 320px; --slider-t: 40px; --thumb-w: 24px; --thumb-h: 56px;
+}
+.v-slider{ width: var(--rail-w); height: var(--slider-l); }
+
+/* 余白圧縮（Meal/Period） */
+.meal-row{ gap:8px; }
+.meal-input{ height:26px; font-size:12px; }
+.period-btn{ padding:6px 10px; font-size:12px; }
+
+/* CTA */
+.detail-actions{ display:grid; }
+.detail-actions .cta{
+  margin-top:6px; border:none; border-radius:20px; padding:14px 18px; font-size:18px; font-weight:800;
+  color:#17304a; background: linear-gradient(90deg,#ffd46b,#ff9b5e);
+  box-shadow: 0 8px 0 #c96d3a, 0 10px 18px rgba(0,0,0,.18);
+}
+
+/* バナー */
+.banner{ margin:0 0 10px; padding:10px 12px; border-radius:10px; font-size:13px; border:1px solid transparent; }
+.banner--warn{ background:#fff3cd; border-color:#ffeaa7; color:#856404; }
+.banner--info{ background:#f4f6ff; border-color:#d7defe; color:#3949ab; }
+.banner--error{ background:#ffe8e8; border-color:#ffc9c9; color:#b00020; }
