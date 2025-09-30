@@ -75,7 +75,7 @@ export default function EditForm({
         {/* 右：スライダー */}
         <section className="detail-card detail-card--slider">
           <div className="rail">
-            <EmotionSlider value={emotion} onChange={setEmotion} disabled={saving || readOnly} className="v-slider" />
+            <EmotionSlider value={emotion} onChange={setEmotion} disabled={saving || readOnly}  />
           </div>
         </section>
 

@@ -10,7 +10,7 @@ export default function MealSection({ value, onChange, disabled }: SectionProps<
         <span className="meal-badge">{label}</span>
         <button type="button" className="meal-input" onClick={() => toggle(keyName)}
           aria-pressed={on} disabled={disabled}>
-          {on ? '--' : '食べた'}
+          {on ? '食べた' : '食べてない'}
         </button>
       </div>
     );
