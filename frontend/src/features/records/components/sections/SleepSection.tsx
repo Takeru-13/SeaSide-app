@@ -1,6 +1,13 @@
-import type { SectionProps, SleepRecord } from "../types";
+// frontend/src/features/records/components/sections/SleepSection.tsx
+import type { RecordView, UpsertPayload } from '../../types';
 
-export default function SleepSection({ value, onChange }: SectionProps<SleepRecord>) {
+type Props = {
+  value: RecordView['sleep'];                   // { time: string }
+  onChange: (patch: UpsertPayload['sleep']) => void; // { time?: string }
+  disabled?: boolean;
+};
+
+export default function SleepSection({ value, onChange, disabled }: Props) {
   return (
     <section>
       <h4>睡眠</h4>
@@ -8,6 +15,7 @@ export default function SleepSection({ value, onChange }: SectionProps<SleepReco
         type="time"
         value={value.time}
         onChange={(e) => onChange({ time: e.target.value })}
+        disabled={disabled}
       />
     </section>
   );

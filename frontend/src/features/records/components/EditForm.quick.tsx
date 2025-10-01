@@ -1,12 +1,16 @@
+// frontend/src/features/home/components/EditModal/EditForm.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { EditFormValue, PeriodRecord } from './types';
 
-import MealSection from './editFormSections/MealSection';
-import SleepSection from './editFormSections/SleepSection';
-import MedicineSection from './editFormSections/MedicineSection';
-import PeriodSection from './editFormSections/PeriodSection';
-import EmotionSlider from './editFormSections/EmotionSlider';
+// ✅ 型は records/types からのみ（相対パスで3つ戻る）
+import type { RecordView, UpsertPayload } from '../types';
+type RV = RecordView;
+
+import MealSection from './sections/MealSection';
+import SleepSection from './sections/SleepSection';
+import MedicineSection from './sections/MedicineSection';
+import PeriodSection from './sections/PeriodSection';
+import EmotionSlider from './sections/EmotionSlider';
 
 import './EditForm.css';
 
@@ -15,38 +19,61 @@ function getErrorMessage(err: unknown) {
   return typeof err === 'string' ? err : '保存に失敗しました';
 }
 
-export default function EditForm({
-  initial, onCancel, onSave,
-}: {
-  initial: EditFormValue;
+type Props = {
+  /** モーダル初期表示用（toView と同形） */
+  initial: RecordView;
   onCancel: () => void;
-  onSave: (v: EditFormValue) => Promise<void>;
-}) {
+  /** 差分パッチを送る（PUT /records/:date の UpsertPayload） */
+  onSave: (patch: UpsertPayload) => Promise<void>;
+};
+
+export default function EditForm({ initial, onCancel, onSave }: Props) {
   const navigate = useNavigate();
-  const [meal, setMeal] = useState(initial.meal);
-  const [sleep, setSleep] = useState(initial.sleep);
-  const [medicine, setMedicine] = useState(initial.medicine);
-  const [period, setPeriod] = useState<PeriodRecord>(initial.period ?? 'none');
-  const [emotion, setEmotion] = useState<number>(initial.emotion ?? 5);
+
+  // ✅ 現在値（完全形）をフォーム state で保持
+  const [meal, setMeal] = useState<RV['meal']>(initial.meal);
+  const [sleep, setSleep] = useState<RV['sleep']>(initial.sleep);
+  const [medicine, setMedicine] = useState<RV['medicine']>(initial.medicine);
+  const [period, setPeriod] = useState<RV['period']>(initial.period);
+  const [emotion, setEmotion] = useState<number>(initial.emotion);
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleGoToDetail = () => navigate(`/records/${initial.date}`);
+
+  // ✅ セクションは「パッチ」を返す契約なので、ここで現在値にマージ
+  const onMealPatch = (patch: UpsertPayload['meal']) =>
+    setMeal((prev) => ({ ...prev, ...patch }));
+
+  const onSleepPatch = (patch: UpsertPayload['sleep']) =>
+    setSleep((prev) => ({ ...prev, ...patch }));
+
+  const onMedicinePatch = (patch: UpsertPayload['medicine']) =>
+    setMedicine((prev) => {
+      if (!patch || !('items' in patch)) return prev;
+      return { ...prev, items: patch.items ?? [] };
+    });
+
+  const onPeriodPatch = (v: UpsertPayload['period']) => {
+    if (!v) return;
+    setPeriod(v);
+  };
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaving(true);
     setError(null);
     try {
-      const normalized: EditFormValue = {
-        ...initial,
+      // ✅ UpsertPayload を組み立て（必要ならここで undefined を落とす）
+      const payload: UpsertPayload = {
         meal,
         sleep,
         medicine: { items: (medicine.items ?? []).map((s) => s.trim()).filter(Boolean) },
         period,
         emotion,
       };
-      await onSave(normalized);
+      await onSave(payload);
     } catch (err: unknown) {
       setError(getErrorMessage(err));
     } finally {
@@ -61,30 +88,36 @@ export default function EditForm({
           <section className="panel panel--meal">
             <h4 className="panel__title">食事</h4>
             <div className="panel-box">
-              <MealSection value={meal} onChange={setMeal} disabled={saving} />
+              {/* 子はパッチを返すので、ここでマージ */}
+              <MealSection value={meal} onChange={onMealPatch} disabled={saving} />
             </div>
           </section>
 
           <section className="panel">
             <h4 className="panel__title">睡眠</h4>
-            <SleepSection value={sleep} onChange={setSleep} disabled={saving} />
+            <SleepSection value={sleep} onChange={onSleepPatch} disabled={saving} />
           </section>
 
           <section className="panel">
             <h4 className="panel__title">服薬</h4>
-            <MedicineSection value={medicine} onChange={setMedicine} disabled={saving} />
+            <MedicineSection value={medicine} onChange={onMedicinePatch} disabled={saving} />
           </section>
 
           <section className="panel panel--period">
             <h4 className="panel__title">生理</h4>
             <div className="panel-box">
-              <PeriodSection value={period} onChange={setPeriod} disabled={saving} />
+              <PeriodSection value={period} onChange={onPeriodPatch} disabled={saving} />
             </div>
           </section>
         </div>
 
         <div className="rail">
-          <EmotionSlider value={emotion} onChange={setEmotion} disabled={saving} className="v-slider" />
+          <EmotionSlider
+            value={emotion}
+            onChange={(n) => setEmotion(n ?? 5)}  // 予防線（undefined を潰す）
+            disabled={saving}
+            className="v-slider"
+          />
         </div>
       </div>
 
@@ -96,10 +129,23 @@ export default function EditForm({
         </button>
 
         <div className="row-actions" style={{ display: 'grid', gridTemplateColumns: '1fr 72px', gap: 16 }}>
-          <button type="button" onClick={handleGoToDetail} disabled={saving}
-            className="chip chip--primary">詳しく入力・見る</button>
-          <button type="button" onClick={onCancel} disabled={saving} aria-label="閉じる"
-            className="chip chip--close">×</button>
+          <button
+            type="button"
+            onClick={handleGoToDetail}
+            disabled={saving}
+            className="chip chip--primary"
+          >
+            詳しく入力・見る
+          </button>
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={saving}
+            aria-label="閉じる"
+            className="chip chip--close"
+          >
+            ×
+          </button>
         </div>
       </div>
     </form>

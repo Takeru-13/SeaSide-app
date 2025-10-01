@@ -5,12 +5,14 @@ import { useMemo } from 'react';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import styles from './calendar.module.css';
-import type { DaySummary } from '../../types';
+
+import type { CalendarScoreDay, DateKey } from '../../types';
 
 type Props = {
   ym: string;
-  days: DaySummary[];
-  onPick: (dateISO: string) => void;
+  // ❌ DaySummary → ✅ CalendarScoreDay
+  days: CalendarScoreDay[];
+  onPick: (dateISO: DateKey) => void;
   onPrev: () => void;
   onNext: () => void;
 };
@@ -64,7 +66,7 @@ export default function CalendarView({ ym, days, onPick, onPrev, onNext }: Props
         }
 
         /* クリックで日付ISOを返す */
-        onClickDay={(d) => onPick(formatDateLocal(d))}
+        onClickDay={(d) => onPick(formatDateLocal(d) as DateKey)}
 
         /* 未来日は無効（それ以外は常にクリック可） */
         tileDisabled={({ date }) => formatDateLocal(date) > todayStr}

@@ -2,10 +2,16 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import { getMonthly, getRecordByDate, upsertRecordByDate } from '../../records/api';
-import type { RecordInput, RecordView } from '../../records/types';
+import type {
+  RecordView,
+  UpsertPayload,
+  MonthlyResponse,
+  Scope,
+  CalendarScoreDay,
+} from '../../records/types';
 
-import type { MonthData, Scope, DaySummary } from '../types';
-import type { EditFormValue } from '../components/EditModal/types';
+// Home用のローカル便宜型（UI専用）
+type MonthData = { ym: string; days: CalendarScoreDay[] };
 
 // 月の土台を生成
 function buildMonthSkeleton(ym: string): MonthData {
@@ -13,7 +19,7 @@ function buildMonthSkeleton(ym: string): MonthData {
   const m = Number(ym.slice(5, 7));
   const last = new Date(y, m, 0).getDate();
 
-  const days: DaySummary[] = Array.from({ length: last }, (_, i) => {
+  const days: CalendarScoreDay[] = Array.from({ length: last }, (_, i) => {
     const d = new Date(y, m - 1, i + 1);
     const date = d.toISOString().slice(0, 10);
     return { date, score: undefined };
@@ -22,30 +28,17 @@ function buildMonthSkeleton(ym: string): MonthData {
   return { ym, days };
 }
 
-// RecordView → EditFormValue（★ exercise / memo を反映）
-function toEditValue(r: RecordView): EditFormValue {
+// RecordView の空デフォルト（toView と同形）
+function makeEmptyView(date: string): RecordView {
   return {
-    date: r.date,
-    meal: r.meal ?? { breakfast: false, lunch: false, dinner: false },
-    sleep: r.sleep ?? { time: '' },
-    medicine: r.medicine ?? { items: [] },
-    period: r.period ?? 'none',
-    emotion: r.emotion ?? 5,
-    exercise: r.exercise ?? { items: [] },   // ★ 追加
-    memo: r.memo ?? { content: '' },         // ★ 追加
-  };
-}
-
-// EditFormValue → RecordInput（★ exercise / memo を反映）
-function toInput(v: EditFormValue): RecordInput {
-  return {
-    meal: v.meal,
-    sleep: v.sleep,
-    medicine: v.medicine,
-    period: v.period,
-    emotion: v.emotion,
-    exercise: v.exercise ?? { items: [] },
-    memo: v.memo ?? { content: '' },
+    date,
+    meal: { breakfast: false, lunch: false, dinner: false },
+    sleep: { time: '00:00' },
+    medicine: { items: [] },
+    period: 'none',
+    emotion: 5,
+    exercise: { items: [] },
+    memo: { content: '' },
   };
 }
 
@@ -56,21 +49,18 @@ export default function useHome() {
   const [ym, setYm] = useState(ymInit);
   const [scope, setScope] = useState<Scope>('me');
   const [month, setMonth] = useState<MonthData>(() => buildMonthSkeleton(ymInit));
-  const [editing, setEditing] = useState<EditFormValue | null>(null);
+  const [editing, setEditing] = useState<RecordView | null>(null);
   const [loading, setLoading] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
       const base = buildMonthSkeleton(ym);
+      const raw: MonthlyResponse = await getMonthly(ym, scope);
 
-      const raw = await getMonthly(ym, scope);
-
-      const daysFromApi: Array<{ date: string; emotion?: number | null; score?: number | null }> =
-        Array.isArray(raw) ? (raw as any) : (raw as any).days ?? [];
-
-      const pairs = daysFromApi.map((d) => {
-        const val = d.score ?? d.emotion;
+      // API は { days: [{ date, emotion|null }] } を返す
+      const pairs = (raw?.days ?? []).map((d) => {
+        const val = d.emotion; // UI では emotion → score に読み替え
         const normalized: number | undefined = val == null ? undefined : val;
         return [d.date, normalized] as const;
       });
@@ -94,25 +84,13 @@ export default function useHome() {
   const onSelectDate = useCallback(
     async (date: string) => {
       if (date > today) return;
+      // ペアスコープのクリックは編集ではなく「ペア閲覧モーダル」側で扱う
+      if (scope === 'pair') return;
+
       setLoading(true);
       try {
-        const rec = await getRecordByDate(date, scope);
-        if (rec) {
-          // ★ 取得できたらそのまま反映（逆転していたのを修正）
-          setEditing(toEditValue(rec));
-        } else {
-          // 未記録時はデフォルト
-          setEditing({
-            date,
-            meal: { breakfast: false, lunch: false, dinner: false },
-            sleep: { time: '' },
-            medicine: { items: [] },
-            period: 'none',
-            emotion: 5,
-            exercise: { items: [] },
-            memo: { content: '' },
-          });
-        }
+        const rec = await getRecordByDate(date); // 自分のみ（userId なし）
+        setEditing(rec ?? makeEmptyView(date));
       } finally {
         setLoading(false);
       }
@@ -120,22 +98,24 @@ export default function useHome() {
     [today, scope],
   );
 
-  const onSave = useCallback(
-    async (v: EditFormValue) => {
+  // クイック編集の保存：差分パッチを受け取って PUT
+  const onSaveQuick = useCallback(
+    async (patch: UpsertPayload) => {
+      if (!editing) return;
       setLoading(true);
       try {
-        await upsertRecordByDate(v.date, toInput(v));
-        await load();
-        setEditing(null);
+        await upsertRecordByDate(editing.date, patch);
+        await load();         // 保存後：月次再読込（emotion→score 反映）
+        setEditing(null);     // モーダル閉じる
       } finally {
         setLoading(false);
       }
     },
-    [load],
+    [editing, load],
   );
 
   return {
     state: { ym, scope, month, editing, todayStr: today, loading },
-    act: { setYm, setScope, onSelectDate, setEditing, onSave },
+    act: { setYm, setScope, onSelectDate, setEditing, onSaveQuick },
   };
 }

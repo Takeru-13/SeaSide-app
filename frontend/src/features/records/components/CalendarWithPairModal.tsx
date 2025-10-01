@@ -1,12 +1,35 @@
 // frontend/src/features/home/components/CalendarWithPairModal.tsx
 import { useCallback, useMemo, useState } from 'react';
-import CalendarView from './Calendar/Calendar';
-import EditModal from './EditModal/EditModal';
-import PairDetailModal from './PairDetailModal';
-import type { EditFormValue } from './EditModal/types';
+import CalendarView from './sections/Calendar';
+import EditModal from './EditModal';
+import PairRecordModal from './PairRecordModal';
 
-type Scope = 'me' | 'pair';
-type Day = { date: string; score?: number };
+// ✅ 型は“正”の場所からだけ import
+import type {
+  Scope,
+  DateKey,
+  CalendarScoreDay,
+  RecordView,
+  UpsertPayload,
+} from '../types';
+
+type Props = {
+  scope: Scope;                    // 'me' | 'pair'
+  ym: string;                      // 例: '2025-09'
+  days: CalendarScoreDay[];        // 例: [{ date: '2025-09-28', score: 7 }, ...]
+  onPrev?: () => void;
+  onNext?: () => void;
+  /**
+   * 自分の記録保存（PUT /records/:date）
+   * - クイック編集は差分パッチを送る設計
+   */
+  onSave?: (date: DateKey, patch: UpsertPayload) => Promise<void>;
+  /**
+   * 自分の記録を事前ロード（任意）
+   * - 返り値は toView と同形の RecordView
+   */
+  loadSelfRecord?: (date: DateKey) => Promise<RecordView | null>;
+};
 
 export default function CalendarWithPairModal({
   scope,
@@ -14,49 +37,51 @@ export default function CalendarWithPairModal({
   days,
   onPrev,
   onNext,
-  onSave,                 // 自分の記録保存 (PUT /records/:date など)
-  loadSelfRecord,         // 自分の記録を事前ロードしたい場合に注入（任意）
-}: {
-  scope: Scope;
-  ym: string;             // 例: '2025-09'
-  days: Day[];            // 例: [{ date: '2025-09-28', score: 7 }, ...]
-  onPrev?: () => void;
-  onNext?: () => void;
-  apiBase?: string;
-  onSave?: (v: EditFormValue) => Promise<void>;
-  loadSelfRecord?: (date: string) => Promise<EditFormValue | null>;
-}) {
+  onSave,
+  loadSelfRecord,
+}: Props) {
   const isPair = scope === 'pair';
 
-  // 自分用（編集可能）モーダル
-  const [editValue, setEditValue] = useState<EditFormValue | null>(null);
+  // 自分用（編集可能）モーダル：現在値の完全形（RecordView）を保持
+  const [editValue, setEditValue] = useState<RecordView | null>(null);
   // ペア用（閲覧専用）モーダル
-  const [pairDate, setPairDate] = useState<string | null>(null);
+  const [pairDate, setPairDate] = useState<DateKey | null>(null);
 
-  const makeEmpty = useCallback((date: string): EditFormValue => ({
-    date,
-    meal: { breakfast: false, lunch: false, dinner: false },
-    sleep: { time: '00:00' },
-    medicine: { items: [] },
-    period: 'none',
-    emotion: 5,
-    exercise: { items: [] },  // 追加
-    memo: { content: '' },    // 追加
-  }), []);
+  // 空の既定値（toView と同形）
+  const makeEmpty = useCallback(
+    (date: DateKey): RecordView => ({
+      date,
+      meal: { breakfast: false, lunch: false, dinner: false },
+      sleep: { time: '00:00' },
+      medicine: { items: [] },
+      period: 'none',
+      emotion: 5,
+      exercise: { items: [] },
+      memo: { content: '' },
+    }),
+    [],
+  );
 
-  const handlePick = useCallback(async (date: string) => {
-    if (isPair) {
-      // ペア → 専用モーダル（中でGETして表示）
-      setPairDate(date);
-      return;
-    }
-    // 自分 → 編集モーダル
-    let v: EditFormValue | null = null;
-    if (loadSelfRecord) {
-      try { v = await loadSelfRecord(date); } catch { /* noop */ }
-    }
-    setEditValue(v ?? makeEmpty(date));
-  }, [isPair, loadSelfRecord, makeEmpty]);
+  const handlePick = useCallback(
+    async (date: DateKey) => {
+      if (isPair) {
+        // ペア → 専用モーダル（中でGETして表示）
+        setPairDate(date);
+        return;
+      }
+      // 自分 → 編集モーダルを開く（事前ロードあれば使う）
+      let v: RecordView | null = null;
+      if (loadSelfRecord) {
+        try {
+          v = await loadSelfRecord(date);
+        } catch {
+          /* noop */
+        }
+      }
+      setEditValue(v ?? makeEmpty(date));
+    },
+    [isPair, loadSelfRecord, makeEmpty],
+  );
 
   const onPick = useMemo(() => handlePick, [handlePick]);
 
@@ -70,23 +95,25 @@ export default function CalendarWithPairModal({
       <CalendarView
         ym={ym}
         days={days}
-        onPick={onPick}      // ← HomeのCalendar.tsx と同じAPI（onPick）
-        onPrev={safeOnPrev}  // ← 必ず関数を渡す
-        onNext={safeOnNext}  // ← 必ず関数を渡す
+        onPick={onPick}      // DateKey を受け渡し
+        onPrev={safeOnPrev}
+        onNext={safeOnNext}
       />
 
-      {/* 自分：編集モーダル */}
+      {/* 自分：編集モーダル（差分パッチで保存） */}
       <EditModal
-        value={editValue}
+        value={editValue}                     // RecordView | null
         onClose={() => setEditValue(null)}
-        onSave={async (v) => {
-          if (onSave) await onSave(v);
+        onSave={async (patch: UpsertPayload) => {
+          if (onSave && editValue) {
+            await onSave(editValue.date as DateKey, patch);
+          }
           setEditValue(null);
         }}
       />
 
       {/* ペア：閲覧専用モーダル */}
-      <PairDetailModal
+      <PairRecordModal
         date={pairDate}
         onClose={() => setPairDate(null)}
       />

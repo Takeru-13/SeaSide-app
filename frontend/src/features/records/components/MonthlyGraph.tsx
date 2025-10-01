@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import styles from './monthlyGraph.module.css';
 
+
 type DayScore = { date: string; score?: number };
 
 export default function MonthlyGraph({

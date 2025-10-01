@@ -1,11 +1,10 @@
-// frontend/src/features/home/components/EditModal/editFormSections/MedicineSection.tsx
 import { useCallback, useMemo } from 'react';
-
-type Medicine = { items: string[] };
+import type { KeyboardEvent } from 'react';
+import type { RecordView, UpsertPayload } from '../../types';
 
 type Props = {
-  value: Medicine;                           // 例: { items: ["ビタミンC", "頭痛薬"] }
-  onChange: (next: Medicine) => void;        // 親(EditForm)の state を更新
+  value: RecordView['medicine'];                  // { items: string[] }（現在値）
+  onChange: (patch: UpsertPayload['medicine']) => void; // { items?: string[] }（パッチ）
   disabled?: boolean;
 };
 
@@ -17,7 +16,7 @@ export default function MedicineSection({ value, onChange, disabled }: Props) {
     (idx: number, text: string) => {
       const next = [...safeItems];
       next[idx] = text;
-      onChange({ items: next });
+      onChange({ items: next }); // 変更点だけ（今回は items 全体を差し替え）
     },
     [safeItems, onChange],
   );
@@ -35,7 +34,7 @@ export default function MedicineSection({ value, onChange, disabled }: Props) {
   );
 
   const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLInputElement>, idx: number) => {
+    (e: KeyboardEvent<HTMLInputElement>, idx: number) => {
       if (e.key === 'Enter') {
         e.preventDefault();
         // 最後の行で Enter → 行を追加
@@ -45,7 +44,7 @@ export default function MedicineSection({ value, onChange, disabled }: Props) {
     [safeItems, addItem],
   );
 
-  // 送信前に空要素を除外したい場合は、親でトリムする想定（toInput側でやってOK）
+  // 送信前に空要素を除外したい場合は、親でトリム（compact）する想定
   return (
     <section>
       <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>

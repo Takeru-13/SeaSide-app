@@ -1,34 +1,31 @@
-// バックエンド返却＝詳細表示用（EditFormValue と同形）
+export type DateKey = string;           // 'YYYY-MM-DD'
+export type Scope = 'me' | 'pair';
+
+export type MonthlyDay = { date: DateKey; emotion: number | null };
+export type MonthlyResponse = { ym: string; days: MonthlyDay[] };
+
+// UI便宜型（グラフ/カレンダー用）
+export type CalendarScoreDay = { date: DateKey; score?: number };
+
+// 詳細表示（BE toView と同形）
 export type RecordView = {
-  date: string;
+  date: DateKey;
   meal: { breakfast: boolean; lunch: boolean; dinner: boolean };
   sleep: { time: string };
   medicine: { items: string[] };
   period: 'none' | 'start' | 'during';
-  emotion: number;
-
+  emotion: number;                      // 1..10
   exercise: { items: string[] };
   memo: { content: string };
 };
 
-
-export type RecordInput = {
-  meal: { breakfast: boolean; lunch: boolean; dinner: boolean };
-  sleep: { time: string };
-  medicine: { items: string[] };
-  period: 'none' | 'start' | 'during';
-  emotion: number;
-
-  exercise: { items: string[] };
-  memo: { content: string };
-};
-
-export type MonthlyDay = {
-  date: string;
-  emotion: number | null;
-};
-
-export type MonthlyResponse = {
-  ym: string;
-  days: MonthlyDay[];
+// 保存Payload（クイックでも流用：全部optional）
+export type UpsertPayload = {
+  meal?: { breakfast?: boolean; lunch?: boolean; dinner?: boolean };
+  sleep?: { time?: string };
+  medicine?: { items?: string[] };
+  period?: 'none' | 'start' | 'during';
+  emotion?: number;                     // 1..10
+  exercise?: { items?: string[] };
+  memo?: { content?: string };
 };

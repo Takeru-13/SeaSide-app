@@ -1,24 +1,25 @@
+// frontend/src/features/records/components/EditModal.tsx
 import EditForm from './EditForm';
-import type { EditFormValue } from './types';
-import styles from "./editModal.module.css";
+import type { RecordView, UpsertPayload } from '../types';
+import styles from './EditModal.module.css';
 
-export default function EditModal({
-  value, onClose, onSave,
-}: {
-  value: EditFormValue | null;
+type Props = {
+  value: RecordView | null;
   onClose: () => void;
-  onSave: (v: EditFormValue) => Promise<void>;
-}) {
+  // 差分パッチで保存（PUT /records/:date）
+  onSave: (patch: UpsertPayload) => Promise<void>;
+};
+
+export default function EditModal({ value, onClose, onSave }: Props) {
   if (!value) return null;
+
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.card} onClick={(e)=>e.stopPropagation()}>
-
-
+      <div className={styles.card} onClick={(e) => e.stopPropagation()}>
         <EditForm initial={value} onCancel={onClose} onSave={onSave} />
-
-
-        <button className={styles.closeFab} onClick={onClose} aria-label="閉じる">✕</button>
+        <button className={styles.closeFab} onClick={onClose} aria-label="閉じる">
+          ✕
+        </button>
       </div>
     </div>
   );

@@ -1,12 +1,21 @@
-import type { SectionProps, MemoRecord } from '../../types';
+// frontend/src/features/records/components/sections/MemoSection.tsx
+import type { RecordView, UpsertPayload } from '../../types';
 
-export default function MemoSection({ value, onChange, disabled }: SectionProps<MemoRecord>) {
+type Props = {
+  value: RecordView['memo'];                   // { content: string }
+  onChange: (patch: UpsertPayload['memo']) => void; // { content?: string }
+  disabled?: boolean;
+};
+
+export default function MemoSection({ value, onChange, disabled }: Props) {
+  const content = value.content ?? '';
+
   return (
     <div>
       <h4>メモ</h4>
       <textarea
         placeholder="自由にメモを記入してください..."
-        value={value.content}
+        value={content}
         onChange={(e) => !disabled && onChange({ content: e.target.value })}
         disabled={disabled}
         rows={4}
@@ -17,13 +26,12 @@ export default function MemoSection({ value, onChange, disabled }: SectionProps<
           borderRadius: 8,
           border: '1px solid #ddd',
           resize: 'vertical',
-          fontFamily: 'inherit'
+          fontFamily: 'inherit',
         }}
       />
       <div style={{ fontSize: 12, color: '#666', textAlign: 'right', marginTop: 4 }}>
-        {value.content.length}/500文字
+        {content.length}/500文字
       </div>
     </div>
   );
 }
-
