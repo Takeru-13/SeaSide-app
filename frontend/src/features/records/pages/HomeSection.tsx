@@ -10,7 +10,6 @@ import EmptyPairCard from '../../pair/components/EmptyPairCard';
 
 import EditModalQuick from '../components/EditModalQuick';
 
-
 import MonthlyGraph from '../components/MonthlyGraph';
 import PairRecordModal from '../components/PairRecordModal';
 
@@ -19,6 +18,7 @@ import type { Scope } from '../types';
 import styles from './HomeSection.module.css';
 
 type MeResponse = { id: number; userName: string; email: string; iconUrl?: string };
+type PairStatus = { connected: boolean; partner?: { id: number } };
 
 export default function HomeSection() {
   // スコープ（自分 / ペア）をトップで保持
@@ -57,6 +57,30 @@ export default function HomeSection() {
       .catch(() => setMe(null));
   }, []);
 
+  // ペア名（ヘッダー表示用）
+  const [pairName, setPairName] = useState<string | null>(null);
+  useEffect(() => {
+    if (scope !== 'pair') return; // ペアタブの時だけ取得
+    (async () => {
+      try {
+        const status = await get<PairStatus>('/pair/status');
+        if (!status.connected || !status.partner?.id) {
+          setPairName('ペア');
+          return;
+        }
+        // パートナーの表示名を取得（存在しない場合は 'ペア' フォールバック）
+        try {
+          const u = await get<{ userName?: string }>(`/users/${status.partner.id}`);
+          setPairName(u.userName ?? 'ペア');
+        } catch {
+          setPairName('ペア');
+        }
+      } catch {
+        setPairName('ペア');
+      }
+    })();
+  }, [scope]);
+
   const handlePick = (date: string) => {
     if (date > todayStr) return;
     if (scope === 'pair') {
@@ -69,16 +93,22 @@ export default function HomeSection() {
   return (
     <section className={styles.wrapper}>
       <header className={styles.header}>
+        {scope === 'pair' ? (
+          <div className={styles.userBadge}>
+            <span className={styles.userName}>{pairName ?? 'ペア'}</span>
+            <span>の記録</span>
+          </div>
+        ) : (
+          me && (
+            <div className={styles.userBadge}>
+              <span className={styles.userName}>{me.userName}</span>
+              <span>の記録</span>
+            </div>
+          )
+        )}
         <div className={styles.scopeArea}>
           <ScopeToggle scope={scope} onChange={setScope} />
         </div>
-
-        {me && (
-          <div className={styles.userBadge}>
-            <span className={styles.userName}>{me.userName}</span>
-            <span>の記録</span>
-          </div>
-        )}
       </header>
 
       {scope === 'pair' ? <EmptyPairCard /> : null}

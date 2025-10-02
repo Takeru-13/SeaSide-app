@@ -84,7 +84,7 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
       <div className="sheet-card">
         <div className="matrix">
           <section className="panel panel--meal">
-            <h4 className="panel__title">食事</h4>
+            <h4 className="panel__title">🍚食事🍚</h4>
             <div className="panel-box">
               {/* 子はパッチを返すので、ここでマージ */}
               <MealSection value={meal} onChange={onMealPatch} disabled={saving} />
@@ -92,31 +92,37 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
           </section>
 
           <section className="panel">
-            <h4 className="panel__title">睡眠</h4>
+            <h4 className="panel__title">😪睡眠😪</h4>
             <SleepSection value={sleep} onChange={onSleepPatch} disabled={saving} />
           </section>
 
           <section className="panel">
-            <h4 className="panel__title">服薬</h4>
+            <h4 className="panel__title">💊服薬💊</h4>
             <MedicineSection value={medicine} onChange={onMedicinePatch} disabled={saving} />
           </section>
 
           <section className="panel panel--period">
-            <h4 className="panel__title">月経</h4>
+            <h4 className="panel__title">🩸月経🩸</h4>
             <div className="panel-box">
               <PeriodSection value={period} onChange={onPeriodPatch} disabled={saving} />
             </div>
           </section>
         </div>
 
-        <div className="rail">
-          <EmotionSlider
-            value={emotion}
-            onChange={(n) => setEmotion(n ?? 5)}  // 予防線（undefined を潰す）
-            disabled={saving}
-            className="v-slider"
-          />
+         <div className="rail">
+          <div className="v-slider panel">
+            {/* ← 追加：縦書きをスライダー本体だけに適用 */}
+            <div className="slider-rail">
+              <EmotionSlider
+                value={emotion}
+                onChange={(n) => setEmotion(n ?? 5)}
+                disabled={saving}
+              />
+            </div>
+            {/* ここは通常の横書き。真下に来る */}
+          </div>
         </div>
+            <div className="emotion-value" aria-live="polite">Lv {emotion}</div>
       </div>
 
       {error && <div className="alert alert--error">{error}</div>}

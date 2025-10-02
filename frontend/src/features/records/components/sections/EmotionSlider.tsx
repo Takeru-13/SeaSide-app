@@ -26,9 +26,6 @@ export default function EmotionSlider({
 
   return (
     <div className={`emotion-slider-root ${className}`}>
-      <label htmlFor={id} className="sr-only">
-        感情スコア（1〜10）
-      </label>
       <input
         id={id}
         type="range"

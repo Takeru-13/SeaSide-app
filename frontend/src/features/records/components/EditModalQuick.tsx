@@ -23,13 +23,13 @@ export default function EditModalQuick({ value, onClose, onSave, className }: Pr
 
   return (
     <div
-      className={`modal-overlay ${className ?? ''}`}   // ← ココを合わせる
+      className={`modal-overlay ${className ?? ''}`}   
       role="dialog"
       aria-modal="true"
       onClick={onClose}
     >
       <div
-        className="modal-sheet"                        // ← ココを合わせる
+        className="modal-sheet"                        
         onClick={(e) => e.stopPropagation()}
       >
         {/* ヘッダー */}
