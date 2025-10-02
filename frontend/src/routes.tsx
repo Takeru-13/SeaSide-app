@@ -21,7 +21,7 @@ export default function AppRoutes() {
         {/* ここから下は要ログイン */}
         <Route element={<RequireAuth />}>
           <Route path="/Home" element={<HomePage />} />
-          <Route path="/records/:dateKey" element={<RecordDetailPage />} />
+          <Route path="/records/:date" element={<RecordDetailPage />} />
         </Route>
 
         {/* 迷子はログインへ */}

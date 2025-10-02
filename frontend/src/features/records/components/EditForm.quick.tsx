@@ -12,8 +12,6 @@ import MedicineSection from './sections/MedicineSection';
 import PeriodSection from './sections/PeriodSection';
 import EmotionSlider from './sections/EmotionSlider';
 
-import './EditForm.css';
-
 function getErrorMessage(err: unknown) {
   if (err instanceof Error) return err.message;
   return typeof err === 'string' ? err : '保存に失敗しました';
@@ -27,7 +25,7 @@ type Props = {
   onSave: (patch: UpsertPayload) => Promise<void>;
 };
 
-export default function EditForm({ initial, onCancel, onSave }: Props) {
+export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
   const navigate = useNavigate();
 
   // ✅ 現在値（完全形）をフォーム state で保持

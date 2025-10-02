@@ -1,100 +1,72 @@
-import { useCallback, useMemo } from 'react';
-import type { KeyboardEvent } from 'react';
+// frontend/src/features/records/components/sections/MedicineSection.tsx
+import { useState } from 'react';
 import type { RecordView, UpsertPayload } from '../../types';
 
 type Props = {
-  value: RecordView['medicine'];                  // { items: string[] }（現在値）
-  onChange: (patch: UpsertPayload['medicine']) => void; // { items?: string[] }（パッチ）
+  value: RecordView['medicine'];
+  onChange: (patch: UpsertPayload['medicine']) => void;
   disabled?: boolean;
 };
 
 export default function MedicineSection({ value, onChange, disabled }: Props) {
-  // items のデフォルト配列生成を useMemo に退避して参照を安定化
-  const safeItems = useMemo(() => value.items ?? [], [value.items]);
+  const items = value.items ?? [];
+  const [newMed, setNewMed] = useState('');
 
-  const setItem = useCallback(
-    (idx: number, text: string) => {
-      const next = [...safeItems];
-      next[idx] = text;
-      onChange({ items: next }); // 変更点だけ（今回は items 全体を差し替え）
-    },
-    [safeItems, onChange],
-  );
+  const addMedicine = () => {
+    if (newMed.trim()) {
+      onChange({ items: [...items, newMed.trim()] });
+      setNewMed('');
+    }
+  };
 
-  const addItem = useCallback(() => {
-    onChange({ items: [...safeItems, ''] });
-  }, [safeItems, onChange]);
+  const removeMedicine = (idx: number) => {
+    onChange({ items: items.filter((_, i) => i !== idx) });
+  };
 
-  const removeItem = useCallback(
-    (idx: number) => {
-      const next = safeItems.filter((_, i) => i !== idx);
-      onChange({ items: next });
-    },
-    [safeItems, onChange],
-  );
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addMedicine();
+    }
+  };
 
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLInputElement>, idx: number) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        // 最後の行で Enter → 行を追加
-        if (idx === safeItems.length - 1) addItem();
-      }
-    },
-    [safeItems, addItem],
-  );
-
-  // 送信前に空要素を除外したい場合は、親でトリム（compact）する想定
   return (
-    <section>
-      <label style={{ display: 'block', marginBottom: 8, fontWeight: 600 }}>
-        服薬
-      </label>
-
-      <div style={{ display: 'grid', gap: 8 }}>
-        {safeItems.length === 0 && (
-          <button
-            type="button"
-            onClick={addItem}
-            disabled={disabled}
-            style={{ width: 'fit-content' }}
-          >
-            ＋ 行を追加
-          </button>
-        )}
-
-        {safeItems.map((v, idx) => (
-          <div key={idx} style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <input
-              type="text"
-              value={v}
-              placeholder="例）ロキソニン"
-              onChange={(e) => setItem(idx, e.target.value)}
-              onKeyDown={(e) => handleKeyDown(e, idx)}
-              disabled={disabled}
-              style={{ flex: 1, padding: '8px 10px' }}
-            />
+    <div className="medicine-content">
+      <div className="medicine-tags">
+        {items.map((med, i) => (
+          <span key={i} className="medicine-tag">
+            {med}
             <button
               type="button"
-              onClick={() => removeItem(idx)}
+              onClick={() => removeMedicine(i)}
               disabled={disabled}
-              aria-label="行を削除"
+              className="medicine-tag-remove"
+              aria-label="削除"
             >
-              －
+              ×
             </button>
-            {idx === safeItems.length - 1 && (
-              <button
-                type="button"
-                onClick={addItem}
-                disabled={disabled}
-                aria-label="行を追加"
-              >
-                ＋
-              </button>
-            )}
-          </div>
+          </span>
         ))}
       </div>
-    </section>
+      <div className="medicine-input">
+        <input
+          type="text"
+          value={newMed}
+          onChange={(e) => setNewMed(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="薬名を入力"
+          disabled={disabled}
+        />
+        <button
+          type="button"
+          onClick={addMedicine}
+          disabled={disabled}
+          className="medicine-add-btn"
+          aria-label="追加"
+        >
+          +
+        </button>
+      </div>
+    </div>
   );
 }

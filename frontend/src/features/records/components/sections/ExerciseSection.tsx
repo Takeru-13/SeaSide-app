@@ -25,7 +25,7 @@ export default function ExerciseSection({ value, onChange, disabled }: Props) {
 
   return (
     <div>
-      <h4>運動</h4>
+
       <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
         <input
           type="text"

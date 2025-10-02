@@ -7,7 +7,10 @@ import usePairCalendar from '../hooks/usePairCalendar';
 import CalendarView from '../components/sections/Calendar';
 import ScopeToggle from '../components/ScopeToggle';
 import EmptyPairCard from '../../pair/components/EmptyPairCard';
-import EditModal from '../components/EditModal';
+
+import EditModalQuick from '../components/EditModalQuick';
+
+
 import MonthlyGraph from '../components/MonthlyGraph';
 import PairRecordModal from '../components/PairRecordModal';
 
@@ -90,7 +93,7 @@ export default function HomeSection() {
 
       {/* 自分：クイック編集モーダル */}
       {selfState.editing && scope === 'me' && (
-        <EditModal
+        <EditModalQuick
           value={selfState.editing}
           onClose={() => selfAct.setEditing(null)}
           onSave={selfAct.onSaveQuick}
