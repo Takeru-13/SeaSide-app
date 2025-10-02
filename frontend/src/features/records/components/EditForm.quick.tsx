@@ -102,7 +102,7 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
           </section>
 
           <section className="panel panel--period">
-            <h4 className="panel__title">生理</h4>
+            <h4 className="panel__title">月経</h4>
             <div className="panel-box">
               <PeriodSection value={period} onChange={onPeriodPatch} disabled={saving} />
             </div>

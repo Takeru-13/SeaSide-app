@@ -1,0 +1,262 @@
+/* =========================================
+   PairRecordModal.css
+   EditForm.module.css と統一したデザイン
+========================================= */
+
+:root {
+  --pair-panel-bg-1: rgba(30, 27, 75, 0.85);
+  --pair-panel-bg-2: rgba(15, 23, 42, 0.9);
+  --pair-border: rgba(148, 163, 184, 0.25);
+  --pair-radius: 16px;
+  --pair-gap: 14px;
+}
+
+/* ========== オーバーレイ ========== */
+.pairOverlay {
+  position: fixed !important;
+  inset: 0 !important;
+  background: rgba(2, 6, 23, 0.75) !important;
+  backdrop-filter: blur(6px);
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+  z-index: 1100 !important;
+  animation: pairFadeIn 0.25s ease-out;
+}
+
+@keyframes pairFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ========== カード本体 ========== */
+.pairCard {
+  background: linear-gradient(180deg, var(--pair-panel-bg-1) 0%, var(--pair-panel-bg-2) 100%) !important;
+  border: 1px solid var(--pair-border) !important;
+  border-radius: var(--pair-radius) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
+  backdrop-filter: blur(10px);
+  width: min(760px, 96vw) !important;
+  max-width: 760px !important;
+  max-block-size: min(86vh, 900px);
+  display: grid !important;
+  grid-template-rows: auto 1fr auto !important;
+  overflow: hidden;
+  animation: pairSlideUp 0.3s ease-out;
+  margin: 0 auto;
+}
+
+@keyframes pairSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========== ヘッダー ========== */
+.pairHeader {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 16px 18px !important;
+  border-bottom: 1px solid var(--pair-border);
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.pairTitle {
+  margin: 0 !important;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+}
+
+.pairCloseBtn {
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.pairCloseBtn:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ========== 本文（スクロール領域） ========== */
+.pairBody {
+  padding: var(--pair-gap);
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  display: grid !important;
+  gap: var(--pair-gap) !important;
+  grid-template-columns: 1fr 1fr;
+  align-content: start;
+}
+
+/* スクロールバー */
+.pairBody::-webkit-scrollbar {
+  inline-size: 8px;
+}
+.pairBody::-webkit-scrollbar-track {
+  background: rgba(148, 163, 184, 0.08);
+  border-radius: 4px;
+}
+.pairBody::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.4);
+  border-radius: 4px;
+}
+.pairBody::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.6);
+}
+
+/* レスポンシブ：1カラム化 */
+@media (max-width: 720px) {
+  .pairBody {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ========== セクション共通 ========== */
+.pairSection {
+  background: linear-gradient(180deg, rgba(39, 39, 83, 0.45) 0%, rgba(16, 24, 40, 0.55) 100%);
+  border: 1px solid var(--pair-border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  backdrop-filter: blur(6px);
+  transition: all 0.2s;
+}
+
+.pairSection:hover {
+  border-color: rgba(139, 92, 246, 0.5);
+  box-shadow: 0 2px 12px rgba(139, 92, 246, 0.2);
+  transform: translateY(-1px);
+}
+
+.pairSectionTitle {
+  display: block;
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #e8edf5;
+  opacity: 1;
+}
+
+/* セクション内のテキスト */
+.pairSection div {
+  color: #e5e7eb;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ========== 感情セクション ========== */
+.pairEmotion .pairEmotionValue {
+  color: #f2f6ff !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
+}
+
+/* ========== 食事セクション ========== */
+.pairMeal .pairBadges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.pairMeal .pairBadges span {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--pair-border);
+  background: rgba(148, 163, 184, 0.12);
+  color: #e5eefc;
+  font-size: 13px;
+  margin: 0 !important;
+}
+
+/* ========== 運動セクション ========== */
+.pairExercise .pairChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+  color: #e5eefc;
+}
+
+/* ========== ステータス表示 ========== */
+.pairLoading {
+  padding: 20px;
+  text-align: center;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.pairError {
+  padding: 12px 14px;
+  margin: 12px;
+  color: #fecaca !important;
+  background: color-mix(in srgb, #ef4444 14%, transparent);
+  border: 1px solid color-mix(in srgb, #ef4444 36%, transparent);
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* ========== フッター ========== */
+.pairFooter {
+  padding: 12px 14px !important;
+  border-top: 1px solid var(--pair-border);
+  display: flex !important;
+  justify-content: flex-end !important;
+  gap: 10px !important;
+  background: linear-gradient(180deg, rgba(16, 24, 40, 0.5) 0%, rgba(39, 39, 83, 0.4) 100%);
+}
+
+.pairBtn {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--pair-border);
+  background: rgba(148, 163, 184, 0.12);
+  color: #e5e7eb;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pairBtn:hover {
+  background: rgba(148, 163, 184, 0.22);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+}
+
+/* ========== レスポンシブ調整 ========== */
+@media (max-width: 480px) {
+  .pairCard {
+    border-radius: 12px !important;
+  }
+  .pairHeader {
+    padding: 12px 14px !important;
+  }
+  .pairTitle {
+    font-size: 14px;
+  }
+  .pairSection {
+    padding: 10px 12px;
+    border-radius: 12px;
+  }
+}

@@ -1,96 +1,758 @@
-/* ==== モーダル共通 =============================== */
-:root {
-  --modal-z: 2147483000;           /* 充分に大きく */
-  --modal-bg: rgba(2, 6, 23, 0.6);  /* #020617 ≒ slate-950 の 60% */
-  --modal-sheet-bg: linear-gradient(135deg, #0b1220, #0f172a);
-  --modal-border: rgba(51, 65, 85, .55);
-  --modal-radius: 16px;
-  --modal-shadow: 0 14px 48px rgba(0,0,0,.45);
-}
-
-/* 背面スクロールロック（開いている間は body に this を付ける） */
-body.modal-open {
-  overflow: hidden;
-  overscroll-behavior: contain;
-  touch-action: none;
-}
-
-/* オーバーレイ（最上位に浮かす） */
+/* ===========================
+   モーダルオーバーレイ
+   =========================== */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: var(--modal-z);
-  display: grid;
-  place-items: center;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
   padding: 16px;
-  background: var(--modal-bg);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  /* スマホでアドレスバー分の揺れ対策 */
-  height: 100vh;
-}
-@supports (height: 100svh) {
-  .modal-overlay { height: 100svh; }
+  animation: fadeIn 0.25s ease-out;
 }
 
-/* シート本体 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===========================
+   モーダルシート
+   =========================== */
 .modal-sheet {
-  width: min(960px, 100%);
-  max-height: min(90vh, 720px);
-  background: var(--modal-sheet-bg);
-  border: 1px solid var(--modal-border);
-  border-radius: var(--modal-radius);
-  box-shadow: var(--modal-shadow);
+  background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  max-width: 920px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
-  isolation: isolate;               /* 自身で積層コンテキストを作る */
-  transform: translateY(8px) scale(.98);
-  opacity: 0;
-  animation: modal-in .16s ease-out forwards;
+  animation: slideUp 0.3s ease-out;
 }
 
-/* コンテンツ領域のスクロール */
-.modal-body {
-  padding: 24px;
-  overflow: auto;
-  max-height: calc(90vh - 180px);   /* ヘッダー/フッター分を除外 */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* ヘッダー/フッターの装飾は任意 */
+/* ===========================
+   モーダルヘッダー
+   =========================== */
 .modal-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 24px;
-  background: linear-gradient(90deg, #4f46e5, #7c3aed);
-  color: #fff;
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.modal-header p {
+  margin: 4px 0 0 0;
+  font-size: 0.875rem;
+  color: rgba(199, 210, 254, 0.9);
+}
+
+.modal-header button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.modal-header button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  opacity: 1 !important;
+}
+
+/* ===========================
+   モーダル本文
+   =========================== */
+.modal-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+}
+
+.modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb {
+  background: rgba(139, 92, 246, 0.5);
+  border-radius: 4px;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.7);
+}
+
+/* ===========================
+   モーダルフッター
+   =========================== */
 .modal-footer {
-  padding: 12px 24px;
-  background: rgba(2,6,23,.7);
-  border-top: 1px solid var(--modal-border);
+  height: 8px;
+  background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+  opacity: 0.6;
 }
 
-/* フェード/ポップイン */
-@keyframes modal-in {
-  from { opacity: 0; transform: translateY(8px) scale(.98); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+/* ===========================
+   背面スクロールロック
+   =========================== */
+body.modal-open {
+  overflow: hidden;
 }
 
-/* 閉じアニメを使うなら .is-closing を一時付与してからunmount */
-.modal-sheet.is-closing {
-  animation: modal-out .14s ease-in forwards;
-}
-@keyframes modal-out {
-  from { opacity: 1; transform: translateY(0) scale(1); }
-  to   { opacity: 0; transform: translateY(6px) scale(.985); }
-}
-
-/* 低速端末/アクセシビリティ */
-@media (prefers-reduced-motion: reduce) {
-  .modal-sheet { animation: none; opacity: 1; transform: none; }
+/* ===========================
+   編集シート
+   =========================== */
+.edit-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
-/* 小さめ画面のレイアウト崩れ防止 */
-@media (max-width: 860px) {
-  .modal-body { padding: 16px; max-height: calc(100svh - 180px); }
+.sheet-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 24px;
+}
+
+/* ===========================
+   マトリックスレイアウト
+   =========================== */
+.matrix {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .sheet-card {
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+  }
+  
+  .matrix {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* ===========================
+   パネル共通スタイル
+   =========================== */
+.panel {
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  transition: all 0.2s;
+}
+
+.panel:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.15);
+}
+
+.panel__title {
+  margin: 0 0 16px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #c7d2fe;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel__title::before {
+  content: '';
+  width: 4px;
+  height: 16px;
+  background: linear-gradient(180deg, #8b5cf6 0%, #6366f1 100%);
+  border-radius: 2px;
+}
+
+/* ===========================
+   食事セクション
+   =========================== */
+.panel-box {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.meal-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.meal-badge {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c7d2fe;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  min-width: 48px;
+  text-align: center;
+}
+
+.meal-input {
+  flex: 1;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #cbd5e1;
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.meal-input[aria-pressed="true"] {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  border-color: #8b5cf6;
+  color: white;
+}
+
+.meal-input:hover:not(:disabled) {
+  border-color: #8b5cf6;
+  transform: translateY(-1px);
+}
+
+.meal-input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===========================
+   睡眠セクション
+   =========================== */
+.panel section h4 {
+  margin: 0 0 12px 0;
+  font-size: 0.875rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.panel input[type="time"] {
+  width: 100%;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #cbd5e1;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 1.25rem;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.panel input[type="time"]:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+/* ===========================
+   服薬セクション
+   =========================== */
+.medicine-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.medicine-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-height: 36px;
+}
+
+.medicine-tag {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.medicine-tag-remove {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.medicine-tag-remove:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.medicine-input {
+  display: flex;
+  gap: 8px;
+}
+
+.medicine-input input[type="text"] {
+  flex: 1;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #cbd5e1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.medicine-input input[type="text"]:focus {
+  outline: none;
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+}
+
+.medicine-input input[type="text"]::placeholder {
+  color: #64748b;
+}
+
+.medicine-add-btn {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  border: none;
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.medicine-add-btn:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.medicine-add-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===========================
+   生理セクション
+   =========================== */
+.period-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #cbd5e1;
+  padding: 10px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.period-btn input[type="radio"] {
+  margin: 0;
+  width: 18px;
+  height: 18px;
+  accent-color: #8b5cf6;
+}
+
+.period-btn.is-selected {
+  background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+  border-color: #ec4899;
+  color: white;
+}
+
+.period-btn:hover {
+  border-color: #8b5cf6;
+  transform: translateY(-1px);
+}
+
+/* ===========================
+   レール（気分スライダー）
+   =========================== */
+.rail {
+  display: flex;
+  align-items: stretch;
+}
+
+.v-slider {
+  writing-mode: vertical-lr;
+  width: 120px;
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  transition: all 0.2s;
+}
+
+.v-slider:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.15);
+}
+
+.emotion-slider-root {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+}
+
+.emotion-slider-root input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 240px;
+  background: transparent;
+  cursor: pointer;
+  transform: rotate(180deg);
+}
+
+.emotion-slider-root input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(180deg, #ec4899 0%, #6366f1 50%, #8b5cf6 100%);
+  border-radius: 4px;
+}
+
+.emotion-slider-root input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border: 3px solid #8b5cf6;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s;
+}
+
+.emotion-slider-root input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.5);
+}
+
+.emotion-slider-root input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 8px;
+  background: linear-gradient(180deg, #ec4899 0%, #6366f1 50%, #8b5cf6 100%);
+  border-radius: 4px;
+}
+
+.emotion-slider-root input[type="range"]::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background: white;
+  border: 3px solid #8b5cf6;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.emotion-label {
+  writing-mode: horizontal-tb;
+  color: #c7d2fe;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ===========================
+   アラート
+   =========================== */
+.alert {
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.alert--error {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+
+/* ===========================
+   CTA（コールトゥアクション）
+   =========================== */
+.cta-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cta {
+  width: 100%;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  border: none;
+  color: white;
+  padding: 16px 32px;
+  border-radius: 12px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+}
+
+.cta:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.4);
+}
+
+.cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.row-actions {
+  display: grid;
+  grid-template-columns: 1fr 72px;
+  gap: 16px;
+}
+
+.chip {
+  padding: 12px 20px;
+  border-radius: 10px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.chip--primary {
+  background: rgba(30, 41, 59, 0.8);
+  color: #c7d2fe;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.chip--primary:hover:not(:disabled) {
+  background: rgba(30, 41, 59, 1);
+  border-color: #8b5cf6;
+  transform: translateY(-1px);
+}
+
+.chip--close {
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chip--close:hover:not(:disabled) {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+.chip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ===========================
+   レスポンシブ調整
+   =========================== */
+@media (max-width: 640px) {
+  .modal-sheet {
+    border-radius: 16px;
+    max-height: 95vh;
+  }
+
+  .modal-header {
+    padding: 10px;
+  }
+
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .modal-body {
+    padding: 20px;
+  }
+
+  .matrix {
+    gap: 12px;
+  }
+
+  .panel {
+    padding: 10px;
+  }
+
+  .v-slider {
+    width: 20px;
+    height: auto;
+    padding: 20px 16px;
+  }
+
+  .emotion-slider-root input[type="range"] {
+    height: 200px;
+    width: 100%;
+  }
+
+  .emotion-slider-root input[type="range"]::-webkit-slider-runnable-track {
+    height: 8px;
+    width: 100%;
+    background: linear-gradient(180deg, #ec4899 0%, #6366f1 50%, #8b5cf6 100%);
+  }
+
+  .emotion-slider-root input[type="range"]::-moz-range-track {
+    height: 8px;
+    width: 100%;
+    background: linear-gradient(180deg, #ec4899 0%, #6366f1 50%, #8b5cf6 100%);
+  }
+
+  .emotion-label {
+    font-size: 1.25rem;
+  }
+
+  .row-actions {
+    grid-template-columns: 1fr auto;
+  }
+}
+
+.v-slider,
+.emotion-slider-root,
+.emotion-slider-root input[type="range"] {
+  touch-action: none;         /* ← これが効きます */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* === スライダーの縦サイズを拡大（端末に応じて可変） === */
+.emotion-slider-root input[type="range"] {
+  height: 320px;              /* 既定: 240px → 320px に拡大 */
+}
+
+@media (max-width: 640px) {
+  .emotion-slider-root input[type="range"] {
+    height: clamp(280px, 60vh, 520px);  /* 最小280px〜最大520pxで画面高に追従 */
+  }
+}
+
+/* === 睡眠フォームの飛び出し防止（PC/タブレット共通） === */
+.panel input[type="time"] {
+  width: 100%;                 /* 既存維持 */
+  max-width: 280px;            /* 最大幅を制限して右カラムに収める */
+  box-sizing: border-box;      /* パディング込みで計算 */
+}
+
+/* === スマホ時は画面幅に応じて可変（狭い端末でも収まる） === */
+@media (max-width: 640px) {
+  .panel input[type="time"] {
+    max-width: clamp(160px, 48vw, 240px);
+    padding: 10px 12px;        /* 既存より少しだけ詰める */
+    font-size: 1.1rem;         /* iOS拡大回避は16px以上を確保（既存もOK） */
+  }
 }
 
 
+/* === スライダーを丸みのある見た目に調整 === */
+
+/* トラック部分をより丸く */
+.emotion-slider-root input[type="range"]::-webkit-slider-runnable-track {
+  border-radius: 999px; /* ←丸く */
+}
+.emotion-slider-root input[type="range"]::-moz-range-track {
+  border-radius: 999px;
+}
+
+/* つまみ部分を少し小さく＆丸く */
+.emotion-slider-root input[type="range"]::-webkit-slider-thumb {
+  border-radius: 50%;   /* 完全な円形 */
+}
+.emotion-slider-root input[type="range"]::-moz-range-thumb {
+  border-radius: 50%;
+}
+
+/* スライダー全体の枠（v-slider本体）も角丸を強調 */
+.v-slider {
+  border-radius: 20px;  /* 今16px → 少し丸める */
+}

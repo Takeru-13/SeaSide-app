@@ -39,7 +39,6 @@ export default function EmotionSlider({
         onChange={handleChange}
         disabled={disabled}
       />
-      {showLabel && <div className="emotion-label">現在: {value}</div>}
     </div>
   );
 }

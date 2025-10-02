@@ -1,0 +1,529 @@
+/* ================================
+   EditForm.module.css
+   すべて .editSheet 配下に閉じる
+=================================== */
+
+/* トークン（必要に応じて上書きOK） */
+:root {
+  --panel-bg-1: rgba(30, 27, 75, 0.85);
+  --panel-bg-2: rgba(15, 23, 42, 0.9);
+  --panel-border: rgba(148, 163, 184, 0.25);
+  --panel-radius: 16px;
+
+  --ring: 0 0 0 2px rgba(99, 102, 241, 0.35);
+  --error: #ef4444;
+
+  --gap-sm: 12px;
+  --gap-md: 16px;
+  --gap-lg: 20px;
+}
+
+/* まずは外部からの漏れ対策（初期化は必要に応じて調整） */
+.editSheet :where(h1,h2,h3,h4,h5,h6,p,ul,ol,button,input,label,section,div){
+  box-sizing: border-box;
+}
+
+/* フォーム全体 */
+.editSheet {
+  display: grid;
+  gap: var(--gap-lg);
+  padding: clamp(12px, 2.2vw, 20px);
+  width: min(92vw, 760px);
+}
+
+/* 上段：左に内容（matrix）、右に縦スライダー（rail） */
+.editSheet .sheetCard {
+  display: grid;
+  grid-template-columns: 1fr 84px;
+  gap: var(--gap-lg);
+  align-items: start;
+}
+
+/* 2列グリッドでパネルを縦に積む */
+.editSheet .matrix {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-lg);
+}
+
+/* パネル共通 */
+.editSheet .panel {
+  background: linear-gradient(180deg, var(--panel-bg-1) 0%, var(--panel-bg-2) 100%);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--panel-radius);
+  padding: var(--gap-md);
+  backdrop-filter: blur(6px);
+}
+
+/* 大きめに展開したいパネル（食事 / 生理 など） */
+.editSheet .panelMeal,
+.editSheet .panelPeriod {
+  grid-column: 1 / -1;
+}
+
+.editSheet .panelTitle {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  opacity: 0.85;
+  margin: 0 0 8px;
+}
+
+/* パネル内部ボックス（セクションの中身にさらに余白が必要な場合） */
+.editSheet .panelBox {
+  display: block;
+}
+
+/* 右レール（縦スライダー置き場） */
+.editSheet .rail {
+  position: sticky;
+  top: 12px;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  min-height: 280px;
+  padding: var(--gap-sm);
+  background: linear-gradient(180deg, var(--panel-bg-1) 0%, var(--panel-bg-2) 100%);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--panel-radius);
+}
+
+/* v-slider クラスは EmotionSlider 側に付いてくる想定 */
+.editSheet :where(.v-slider) {
+  /* スライダー自体の幅をコンテナ内で伸ばす */
+  inline-size: 28px;      /* 余白含めてちょうど良い太さに */
+  block-size: 100%;
+  display: block;
+}
+
+/* 下段のアクション行 */
+.editSheet .ctaRow {
+  display: flex;
+  gap: var(--gap-md);
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 主要ボタン */
+.editSheet .cta {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: rgba(99, 102, 241, 0.15);
+  color: #e5e7eb;
+  cursor: pointer;
+}
+.editSheet .cta:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+/* 右側の小ボタン群 */
+.editSheet .rowActions {
+  display: flex;
+  gap: var(--gap-sm);
+}
+
+.editSheet .chipPrimary,
+.editSheet .chipClose {
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--panel-border);
+  background: rgba(148, 163, 184, 0.12);
+  color: #e5e7eb;
+  cursor: pointer;
+}
+.editSheet .chipPrimary:focus-visible,
+.editSheet .chipClose:focus-visible {
+  outline: none;
+  box-shadow: var(--ring);
+}
+
+/* エラー */
+.editSheet .alertError {
+  color: #fecaca;
+  background: color-mix(in srgb, var(--error) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--error) 36%, transparent);
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
+/* 画面が狭いとき：レールを下に回す、matrix を1列に */
+@media (max-width: 720px) {
+  .editSheet .sheetCard {
+    grid-template-columns: 1fr;
+  }
+  .editSheet .matrix {
+    grid-template-columns: 1fr;
+  }
+  .editSheet .rail {
+    min-height: 220px;
+  }
+}
+
+/* さらに狭いとき：パネル余白や角を少し縮める */
+@media (max-width: 400px) {
+  .editSheet {
+    gap: var(--gap-md);
+  }
+  .editSheet .panel {
+    padding: 12px;
+    border-radius: 12px;
+  }
+  .editSheet .rail {
+    padding: 10px;
+    border-radius: 12px;
+  }
+}
+
+
+/* ============ 睡眠フォーム専用 ============ */
+.editSheet .panelSleep {
+  display: grid;
+  gap: 12px;
+}
+.editSheet .panelSleep :where(label){
+  font-size: 12px;
+  opacity: .8;
+}
+.editSheet .panelSleep .row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.editSheet .panelSleep :where(input[type="time"], input[type="number"], select, textarea) {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--panel-border);
+  background: rgba(2,6,23,.4);
+  color: #e5e7eb;
+  outline: none;
+}
+.editSheet .panelSleep :where(input, select, textarea):focus-visible {
+  box-shadow: var(--ring);
+}
+
+/* ============ 横スライダー（グラデ＋進捗塗り） ============ */
+/* 値は --val (0%〜100%) を使う。TSX側で渡している */
+.editSheet :where(.h-slider) {
+  --val: 50%;
+  --track-h: 12px;
+  --thumb-size: 20px;
+  --base: rgba(148,163,184,.25);  /* 未満域 */
+  /* 進捗側グラデ：青→紫→ピンク */
+  --fill1: #3b82f6;
+  --fill2: #8b5cf6;
+  --fill3: #ec4899;
+
+  appearance: none;
+  width: 100%;
+  height: var(--track-h);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, var(--fill1), var(--fill2), var(--fill3)) 0/ var(--val) 100% no-repeat,
+    linear-gradient(90deg, var(--base), var(--base)) 0/ 100% 100% no-repeat;
+  cursor: pointer;
+  touch-action: none; /* スクロール誤爆防止 */
+}
+
+/* WebKit */
+.editSheet :where(.h-slider::-webkit-slider-thumb) {
+  appearance: none;
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.45);
+  background: #0ea5e9; /* 親和性の高い水色 */
+  margin-top: calc((var(--track-h) - var(--thumb-size)) / 2);
+  box-shadow: 0 2px 10px rgba(14,165,233,.35);
+}
+.editSheet :where(.h-slider::-webkit-slider-runnable-track) {
+  height: var(--track-h);
+  border-radius: 999px;
+}
+
+/* Firefox */
+.editSheet :where(.h-slider::-moz-range-thumb) {
+  width: var(--thumb-size);
+  height: var(--thumb-size);
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.45);
+  background: #0ea5e9;
+  box-shadow: 0 2px 10px rgba(14,165,233,.35);
+}
+.editSheet :where(.h-slider::-moz-range-track) {
+  height: var(--track-h);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, var(--fill1), var(--fill2), var(--fill3)) 0/ var(--val) 100% no-repeat,
+    linear-gradient(90deg, var(--base), var(--base)) 0/ 100% 100% no-repeat;
+}
+
+/* きもちリッチなホバー */
+.editSheet :where(.h-slider:hover) {
+  filter: saturate(1.1);
+}
+
+/* ==== セクション見出しを白っぽく ==== */
+.editSheet .panelTitle {
+  color: #e8edf5;              /* 白に近い薄いブルーグレー */
+  opacity: 1;                  /* 以前 0.85 にしていた場合を上書き */
+  font-weight: 600;
+}
+
+/* ==== Emotion 専用のコンパクト化 ==== */
+.editSheet .panelCompact {
+  padding: 10px 12px;          /* パネル内余白を少し詰める */
+}
+
+.editSheet .panelEmotion {
+  /* タイトルとスライダーの間隔を詰める */
+  --track-h: 10px;             /* トラック高さを小さく */
+  --thumb-size: 18px;          /* つまみも少し小さく */
+}
+
+.editSheet .panelEmotion :where(.h-slider) {
+  margin-block: 6px 4px;       /* 不要な上下スペース削減 */
+}
+
+/* スライダーの上下の行間をさらに微調整したい場合 */
+.editSheet .panelEmotion .row,
+.editSheet .panelEmotion .panelBox {
+  margin: 0;
+  padding: 0;
+}
+
+/* もしパネル全体がまだ縦に伸びるなら、以下も有効（必要に応じて） */
+/* .editSheet .panelEmotion { min-height: unset; } */
+
+
+/* ===== Emotion セクションの縦余白を徹底的に詰める ===== */
+
+/* パネル自体の内側余白を小さく */
+.editSheet .panelEmotion {
+  padding: 8px 10px;           /* ここでまずギュッと */
+}
+
+/* Emotion セクション内のタイトルと要素の間隔を詰める */
+.editSheet .panelEmotion .panelTitle {
+  margin: 0 0 6px;
+}
+
+/* Sliderラッパーの余白・gapを最小化
+   （クラス名の揺れに強めにするために :where を使用） */
+.editSheet .panelEmotion :where(.emotion-slider-root, .emotion-slider, .slider-root) {
+  padding: 0;
+  margin: 0;
+  gap: 6px;
+  min-height: unset;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* もしラベルが中にあるなら小さく or 非表示にして高さを稼ぐ */
+.editSheet .panelEmotion :where(label) {
+  font-size: 11px;
+  opacity: .7;
+  margin: 0 0 4px;
+}
+/* 完全に消したいなら上を消して下を有効化 */
+.editSheet .panelEmotion :where(label) { display: none; }
+
+/* 横スライダー用のトラック＆つまみをコンパクト化 */
+.editSheet .panelEmotion {
+  --track-h: 10px;   /* 既定より低く */
+  --thumb-size: 18px;
+}
+
+/* input[type=range] 自体の上下マージンも削る */
+.editSheet .panelEmotion :where(input[type="range"], .h-slider) {
+  margin-block: 4px 2px;
+  inline-size: 100%;
+}
+
+/* WebKit トラック/サムの高さ・位置を微調整 */
+.editSheet .panelEmotion :where(.h-slider::-webkit-slider-runnable-track) {
+  height: var(--track-h);
+}
+.editSheet .panelEmotion :where(.h-slider::-webkit-slider-thumb) {
+  margin-top: calc((var(--track-h) - var(--thumb-size)) / 2);
+}
+
+/* Firefox 用 */
+.editSheet .panelEmotion :where(.h-slider::-moz-range-track) {
+  height: var(--track-h);
+}
+
+/* ======= Emotion 超コンパクト（ハードクランプ） ======= */
+
+/* パネル自体の余白も最小に */
+.editSheet .panelEmotion {
+  padding: 6px 10px;
+}
+
+/* タイトルも詰める */
+.editSheet .panelEmotion .panelTitle {
+  margin: 0 0 4px;
+  line-height: 1.2;
+}
+
+/* EmotionSlider 側の“高さ:100%/min-height”をリセット。
+   ラッパーの候補クラスを網羅し、念のため !important で上書き */
+.editSheet .panelEmotion :where(.emotion-slider-root, .emotion-slider, .slider-root, .range-root, .sliderWrap, .wrap, .container) {
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  gap: 0 !important;
+  background: transparent !important;
+  display: block !important;     /* 伸びないよう block に */
+}
+
+/* 万一インライン style で「height:100%」が入ってても潰す */
+.editSheet .panelEmotion :where([style*="height: 100%"]) {
+  height: auto !important;
+}
+
+/* スライダー行の高さを実質固定に（見た目 30〜36px 程度） */
+.editSheet .panelEmotion {
+  --track-h: 8px;         /* トラック薄め */
+  --thumb-size: 16px;     /* サム小さめ */
+}
+
+/* input 自体の上下マージンを0近くに */
+.editSheet .panelEmotion :where(input[type="range"], .h-slider) {
+  display: block;
+  inline-size: 100%;
+  margin-block: 2px 2px !important;
+}
+
+/* WebKit トラック/サムの位置を再計算 */
+.editSheet .panelEmotion :where(.h-slider::-webkit-slider-runnable-track) {
+  height: var(--track-h);
+}
+.editSheet .panelEmotion :where(.h-slider::-webkit-slider-thumb) {
+  margin-top: calc((var(--track-h) - var(--thumb-size)) / 2);
+}
+
+/* Firefox */
+.editSheet .panelEmotion :where(.h-slider::-moz-range-track) {
+  height: var(--track-h);
+}
+
+/* 仕上げ：パネルの“最低高さ”を完全解除（どこかで指定されてる場合に備えて） */
+.editSheet .panelEmotion {
+  min-height: 0 !important;
+}
+
+.editSheet .panelEmotion .emotion-slider-root {
+  display: block !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  height: auto !important;
+  background: none !important;
+}
+
+/* label は既に sr-only で非表示だが念のため */
+.editSheet .panelEmotion .emotion-slider-root label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* input[type="range"] のデフォルト余白をリセット */
+.editSheet .panelEmotion input[type="range"] {
+  display: block;
+  width: 100%;
+  padding: 0 !important;
+  margin: 0 !important;
+  height: 24px;  /* トラック + サムが収まる最小高 */
+  vertical-align: top;  /* インラインブロック扱いの隙間を消す */
+}
+
+/* パネル全体の gap も最小化 */
+.editSheet .panelEmotion {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;  /* タイトルとスライダーの間を最小に */
+  padding: 8px 10px;
+}
+.editSheet .panelEmotion .panelTitle { display: none; }
+
+なるほど！EditFormQuick.css は縦スライダー（右レール）用として残しつつ、EditModal内の感情パネルだけ横スライダー化したいわけですね。
+解決策
+EditForm.module.css に以下を追加してください：
+css/* ===== EditModal内の感情パネル専用：横スライダー化 ===== */
+
+/* emotion-slider-root を横スライダー仕様にリセット */
+.editSheet .panelEmotion .emotion-slider-root {
+  display: block !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  gap: 0 !important;
+  flex-direction: row !important;  /* flex の影響を完全に消す */
+  align-items: stretch !important;
+}
+
+/* 横スライダー用の input スタイル */
+.editSheet .panelEmotion .emotion-slider-root input[type="range"] {
+  writing-mode: horizontal-tb !important;  /* 縦 → 横に変更 */
+  transform: none !important;              /* rotate(180deg) を解除 */
+  width: 100% !important;
+  height: 20px !important;                 /* 縦の240px → 横の20px に */
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 横スライダーのトラックスタイル（既存の h-slider スタイルを継承） */
+.editSheet .panelEmotion .emotion-slider-root input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: var(--track-h, 8px);
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);  /* 横向きグラデ */
+  border-radius: 999px;
+}
+
+.editSheet .panelEmotion .emotion-slider-root input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: var(--track-h, 8px);
+  background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+  border-radius: 999px;
+}
+
+/* サムのスタイル（既存の h-slider を継承） */
+.editSheet .panelEmotion .emotion-slider-root input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: var(--thumb-size, 16px);
+  height: var(--thumb-size, 16px);
+  background: #0ea5e9;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(14, 165, 233, 0.35);
+  margin-top: 0;  /* 縦用の計算を解除 */
+}
+
+.editSheet .panelEmotion .emotion-slider-root input[type="range"]::-moz-range-thumb {
+  width: var(--thumb-size, 16px);
+  height: var(--thumb-size, 16px);
+  background: #0ea5e9;
+  border: 2px solid rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 10px rgba(14, 165, 233, 0.35);
+}
+
+/* ラベルは完全非表示 */
+.editSheet .panelEmotion .emotion-slider-root label {
+  display: none !important;
+}

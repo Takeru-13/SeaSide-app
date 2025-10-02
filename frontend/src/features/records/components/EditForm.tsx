@@ -9,7 +9,9 @@ import MealSection from './sections/MealSection';
 import SleepSection from './sections/SleepSection';
 import MedicineSection from './sections/MedicineSection';
 import PeriodSection from './sections/PeriodSection';
-import EmotionSlider from './sections/EmotionSlider';
+import EmotionSlider from './sections/EmotionSlider2';
+import ExerciseSection from './sections/ExerciseSection';
+import MemoSection from './sections/MemoSection';
 
 import styles from './EditForm.module.css';
 
@@ -36,6 +38,9 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
   const [period, setPeriod] = useState<RV['period']>(initial.period);
   const [emotion, setEmotion] = useState<number>(initial.emotion);
 
+  const [exercise, setExercise] = useState<RV['exercise']>(initial.exercise);
+  const [memo, setMemo] = useState<RV['memo']>(initial.memo);
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,6 +64,21 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
     setPeriod(v);
   };
 
+  // ★ 追加: 運動・メモのパッチハンドラ
+  const onExercisePatch = (patch: UpsertPayload['exercise']) =>
+    setExercise((prev) => ({
+      ...prev,
+      ...patch,
+      items: patch?.items ?? prev.items ?? [],
+    }));
+
+  const onMemoPatch = (patch: UpsertPayload['memo']) =>
+    setMemo((prev) => ({
+      ...prev,
+      ...patch,
+      content: patch?.content ?? prev.content ?? '',
+    }));
+
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaving(true);
@@ -68,9 +88,18 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
       const payload: UpsertPayload = {
         meal,
         sleep,
-        medicine: { items: (medicine.items ?? []).map((s) => s.trim()).filter(Boolean) },
+        medicine: {
+          items: (medicine.items ?? []).map((s) => s.trim()).filter(Boolean),
+        },
         period,
         emotion,
+        // ★ 追加: 運動・メモも送る
+        exercise: {
+          items: (exercise.items ?? []).map((s) => s.trim()).filter(Boolean),
+        },
+        memo: {
+          content: (memo.content ?? '').trim(),
+        },
       };
       await onSave(payload);
     } catch (err: unknown) {
@@ -91,7 +120,7 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
             </div>
           </section>
 
-          <section className={styles.panel}>
+          <section className={`${styles.panel} ${styles.panelSleep}`}>
             <h4 className={styles.panelTitle}>睡眠</h4>
             <SleepSection value={sleep} onChange={onSleepPatch} disabled={saving} />
           </section>
@@ -102,7 +131,7 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
           </section>
 
           <section className={`${styles.panel} ${styles.panelPeriod}`}>
-            <h4 className={styles.panelTitle}>生理</h4>
+            <h4 className={styles.panelTitle}>月経</h4>
             <div className={styles.panelBox}>
               <PeriodSection value={period} onChange={onPeriodPatch} disabled={saving} />
             </div>
@@ -110,14 +139,29 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
         </div>
 
         <div className={styles.rail}>
-          <EmotionSlider
-            value={emotion}
-            onChange={(n) => setEmotion(n ?? 5)}  // 念のためフォールバック
-            disabled={saving}
-            className="v-slider"
-          />
+          <section className={styles.panel}>
+            <h4 className={styles.panelTitle}>感情</h4>
+            <EmotionSlider
+              value={emotion}
+              onChange={(n) => setEmotion(n ?? 5)}
+              disabled={saving}
+              className="h-slider"
+            />
+            
+          </section>
         </div>
       </div>
+
+      {/* ★ 追加: 運動・メモ（縦並びセクション） */}
+      <section className={styles.panel}>
+        <h4 className={styles.panelTitle}>運動</h4>
+        <ExerciseSection value={exercise} onChange={onExercisePatch} disabled={saving} />
+      </section>
+
+      <section className={styles.panel}>
+        <h4 className={styles.panelTitle}>メモ</h4>
+        <MemoSection value={memo} onChange={onMemoPatch} disabled={saving} />
+      </section>
 
       {error && <div className={styles.alertError}>{error}</div>}
 
@@ -127,10 +171,13 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
         </button>
 
         <div className={styles.rowActions}>
-          <button type="button" onClick={handleGoToDetail} disabled={saving} className={styles.chipPrimary}>
-            詳しく入力・見る
-          </button>
-          <button type="button" onClick={onCancel} disabled={saving} aria-label="閉じる" className={styles.chipClose}>
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={saving}
+            aria-label="閉じる"
+            className={styles.chipClose}
+          >
             ×
           </button>
         </div>

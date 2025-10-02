@@ -1,5 +1,6 @@
 
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import BackgroundFX from "./shared/ui/BackgroundFX";
 import RegisterPage from './features/auth/register/RegisterSection';
 import LoginPage from './features/auth/login/LoginSection';
 import HomePage from './features/records/pages/HomeSection';
@@ -12,6 +13,7 @@ export default function AppRoutes() {
   return (
     <BrowserRouter>
       <Header />
+      <BackgroundFX />
       <Routes>
         {/* 非ログインでもOK */}
         <Route path="/" element={<Navigate to="/register" replace />} />

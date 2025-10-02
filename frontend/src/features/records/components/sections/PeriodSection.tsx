@@ -26,7 +26,7 @@ export default function PeriodSection({ value, onChange, disabled }: Props) {
     <>
       <Item v="none" label="無し" />
       <Item v="start" label="開始" />
-      <Item v="during" label="生理中" />
+      <Item v="during" label="月経中" />
     </>
   );
 }

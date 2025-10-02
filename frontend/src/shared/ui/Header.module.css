@@ -1,27 +1,36 @@
-:root{
-  --header-h: 100px;              /* ヘッダー高さ */
-  --logo-h:   50px;              /* ロゴの高さ */
-  --header-bg: rgba(248,252,253,.85);
-  --header-border: #b4d1dc;
+:root {
+  --header-h: 72px;                /* ヘッダー高さ（少し低めでスマートに） */
+  --logo-h: 48px;                  /* ロゴの高さ */
+  --header-bg: rgba(248, 252, 253, 0.75);
+  --header-border: #b4d1dc00;
 }
 
-/* 画面最上部に固定・中央寄せ */
-.header{
-  top: 0; left: 0; right: 0;
+/* 画面最上部に固定 */
+.header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
   height: calc(var(--header-h) + env(safe-area-inset-top));
   padding-top: env(safe-area-inset-top);
-  display: grid;
-  place-items: center;
-  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 
   border-bottom: 1px solid var(--header-border);
+  z-index: 1000;
 }
 
-/* ロゴ画像を変数でコントロール */
-.logo{
-  height: var(--logo-h);
-  width: auto;
+/* ロゴ画像 */
+.logo {
+  height: var(--logo-h);   /* 高さは変数で管理 */
+  width: auto;             /* アスペクト比維持 */
+  max-width: 400px;        /* 横幅の上限を決める */
   display: block;
   user-select: none;
+  object-fit: contain;     /* 中身が収まるように */
 }
-

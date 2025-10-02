@@ -32,7 +32,6 @@ export default function MedicineSection({ value, onChange, disabled }: Props) {
 
   return (
     <div className="medicine-content">
-      <div className="medicine-tags">
         {items.map((med, i) => (
           <span key={i} className="medicine-tag">
             {med}
@@ -47,7 +46,6 @@ export default function MedicineSection({ value, onChange, disabled }: Props) {
             </button>
           </span>
         ))}
-      </div>
       <div className="medicine-input">
         <input
           type="text"

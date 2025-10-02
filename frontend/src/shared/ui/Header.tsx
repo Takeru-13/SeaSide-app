@@ -1,9 +1,13 @@
-import "./Header.module.css";
+import styles from "./Header.module.css";
 
 export default function Header() {
   return (
-    <header className="header">
-      <img src="/logo-seaside-wordmark.svg" alt="SEA SIDE" className="logo" />
+    <header className={styles.header}>
+      <img
+        src="/SeaSide-app-logo.png"
+        alt="SeaSide"
+        className={styles.logo}
+      />
     </header>
   );
 }

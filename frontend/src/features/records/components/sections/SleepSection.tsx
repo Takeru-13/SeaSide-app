@@ -10,7 +10,6 @@ type Props = {
 export default function SleepSection({ value, onChange, disabled }: Props) {
   return (
     <section>
-      <h4>睡眠</h4>
       <input
         type="time"
         value={value.time}

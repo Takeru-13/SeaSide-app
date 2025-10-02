@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react';
 import type { RecordView, DateKey } from '../types';
 import { getRecordByDate } from '../api';
-import { get } from '../../../shared/api/http'
+import { get } from '../../../shared/api/http';
+import './PairRecordModal.css'; // ★ 見た目はここで上書き（ロジック変更なし）
 
 type Props = {
   /** 表示対象の日付（'YYYY-MM-DD'）。null のときは非表示 */
@@ -89,7 +90,8 @@ export default function PairRecordModal({ date, onClose, partnerId: partnerIdPro
       role="dialog"
       aria-modal="true"
       onClick={onClose}
-      style={{
+      className="pairOverlay"                       // ★ クラス付与
+      style={{                                      // 既存inlineは残す（互換のため）
         position: 'fixed',
         inset: 0,
         background: 'rgba(0,0,0,.25)',
@@ -101,6 +103,7 @@ export default function PairRecordModal({ date, onClose, partnerId: partnerIdPro
     >
       <div
         onClick={(e) => e.stopPropagation()}
+        className="pairCard"                         // ★ クラス付与
         style={{
           background: '#fff',
           padding: 16,
@@ -111,28 +114,33 @@ export default function PairRecordModal({ date, onClose, partnerId: partnerIdPro
           gap: 12,
         }}
       >
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ margin: 0 }}>{date} の詳細（ペア）</h3>
-          <button type="button" onClick={onClose}>
-            閉じる
+        <header
+          className="pairHeader"                     // ★ クラス付与
+          style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+        >
+          <h3 className="pairTitle" style={{ margin: 0 }}>
+            {date} の詳細（ペア）
+          </h3>
+          <button type="button" onClick={onClose} className="pairCloseBtn">
+            ✕
           </button>
         </header>
 
-        {loading && <div>読み込み中...</div>}
-        {errMsg && <div style={{ color: 'crimson' }}>{errMsg}</div>}
+        {loading && <div className="pairLoading">読み込み中...</div>}
+        {errMsg && <div className="pairError" style={{ color: 'crimson' }}>{errMsg}</div>}
 
         {!loading && record && (
-          <div style={{ display: 'grid', gap: 14 }}>
-            <section>
-              <strong>感情</strong>
-              <div aria-label="感情スコア" style={{ fontSize: 18, fontWeight: 600 }}>
+          <div className="pairBody" style={{ display: 'grid', gap: 14 }}>
+            <section className="pairSection pairEmotion">
+              <strong className="pairSectionTitle">感情</strong>
+              <div aria-label="感情スコア" className="pairEmotionValue" style={{ fontSize: 18, fontWeight: 600 }}>
                 {record.emotion} / 10
               </div>
             </section>
 
-            <section>
-              <strong>食事</strong>
-              <div style={{ marginTop: 6 }}>
+            <section className="pairSection pairMeal">
+              <strong className="pairSectionTitle">食事</strong>
+              <div className="pairBadges" style={{ marginTop: 6 }}>
                 <span style={{ marginRight: 6, opacity: record.meal.breakfast ? 1 : 0.5 }}>
                   朝食 {record.meal.breakfast ? '✅' : '—'}
                 </span>
@@ -145,35 +153,37 @@ export default function PairRecordModal({ date, onClose, partnerId: partnerIdPro
               </div>
             </section>
 
-            <section>
-              <strong>睡眠</strong>
+            <section className="pairSection pairSleep">
+              <strong className="pairSectionTitle">睡眠</strong>
               <div style={{ marginTop: 6 }}>就寝時間: {record.sleep.time || '00:00'}</div>
             </section>
 
-            <section>
-              <strong>服薬</strong>
+            <section className="pairSection pairMedicine">
+              <strong className="pairSectionTitle">服薬</strong>
               <div style={{ marginTop: 6 }}>
                 {record.medicine.items.length > 0 ? record.medicine.items.join(' / ') : '—'}
               </div>
             </section>
 
-            <section>
-              <strong>生理</strong>
+            <section className="pairSection pairPeriod">
+              <strong className="pairSectionTitle">月経</strong>
               <div style={{ marginTop: 6 }}>{record.period === 'none' ? '—' : record.period}</div>
             </section>
 
-            <section>
-              <strong>運動</strong>
-              <div style={{ marginTop: 6 }}>{record.exercise.items.join(' / ') || '—'}</div>
+            <section className="pairSection pairExercise">
+              <strong className="pairSectionTitle">運動</strong>
+              <div className="pairChips" style={{ marginTop: 6 }}>
+                {record.exercise.items.join(' / ') || '—'}
+              </div>
             </section>
 
-            <section>
-              <strong>メモ</strong>
+            <section className="pairSection pairMemo">
+              <strong className="pairSectionTitle">メモ</strong>
               <div style={{ marginTop: 6 }}>{record.memo.content || '—'}</div>
             </section>
 
-            <footer style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button type="button" onClick={onClose}>
+            <footer className="pairFooter" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <button type="button" onClick={onClose} className="pairBtn">
                 閉じる
               </button>
             </footer>
