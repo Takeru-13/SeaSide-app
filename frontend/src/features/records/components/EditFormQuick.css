@@ -1,0 +1,96 @@
+/* ==== モーダル共通 =============================== */
+:root {
+  --modal-z: 2147483000;           /* 充分に大きく */
+  --modal-bg: rgba(2, 6, 23, 0.6);  /* #020617 ≒ slate-950 の 60% */
+  --modal-sheet-bg: linear-gradient(135deg, #0b1220, #0f172a);
+  --modal-border: rgba(51, 65, 85, .55);
+  --modal-radius: 16px;
+  --modal-shadow: 0 14px 48px rgba(0,0,0,.45);
+}
+
+/* 背面スクロールロック（開いている間は body に this を付ける） */
+body.modal-open {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  touch-action: none;
+}
+
+/* オーバーレイ（最上位に浮かす） */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--modal-z);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: var(--modal-bg);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  /* スマホでアドレスバー分の揺れ対策 */
+  height: 100vh;
+}
+@supports (height: 100svh) {
+  .modal-overlay { height: 100svh; }
+}
+
+/* シート本体 */
+.modal-sheet {
+  width: min(960px, 100%);
+  max-height: min(90vh, 720px);
+  background: var(--modal-sheet-bg);
+  border: 1px solid var(--modal-border);
+  border-radius: var(--modal-radius);
+  box-shadow: var(--modal-shadow);
+  overflow: hidden;
+  isolation: isolate;               /* 自身で積層コンテキストを作る */
+  transform: translateY(8px) scale(.98);
+  opacity: 0;
+  animation: modal-in .16s ease-out forwards;
+}
+
+/* コンテンツ領域のスクロール */
+.modal-body {
+  padding: 24px;
+  overflow: auto;
+  max-height: calc(90vh - 180px);   /* ヘッダー/フッター分を除外 */
+}
+
+/* ヘッダー/フッターの装飾は任意 */
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 24px;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+  color: #fff;
+}
+.modal-footer {
+  padding: 12px 24px;
+  background: rgba(2,6,23,.7);
+  border-top: 1px solid var(--modal-border);
+}
+
+/* フェード/ポップイン */
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 閉じアニメを使うなら .is-closing を一時付与してからunmount */
+.modal-sheet.is-closing {
+  animation: modal-out .14s ease-in forwards;
+}
+@keyframes modal-out {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(6px) scale(.985); }
+}
+
+/* 低速端末/アクセシビリティ */
+@media (prefers-reduced-motion: reduce) {
+  .modal-sheet { animation: none; opacity: 1; transform: none; }
+}
+
+/* 小さめ画面のレイアウト崩れ防止 */
+@media (max-width: 860px) {
+  .modal-body { padding: 16px; max-height: calc(100svh - 180px); }
+}
+
+
