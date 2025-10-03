@@ -1,12 +1,12 @@
 /* カレンダー全体をカード風に */
 .calWrapper {
-  background: #ffffffee;
+  background: #ffffff09;
   border-radius: 20px;
   padding: 20px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
   max-width: min(420px, 100%);
   margin: 0 auto;
-  backdrop-filter: blur(6px);
+
 
   /* 可変トークン（中央重ね用に少し大きめ） */
   --tile-gap: clamp(2px, 1.2vw, 6px);
@@ -96,6 +96,16 @@
 :global(.react-calendar__tile abbr){
   display: inline-block;
   width: 100%;
+  color: rgb(218, 241, 255);
+  text-align: center;
+  line-height: 1;
+  letter-spacing: .02em;
+}
+:global(.react-calendar__tile abbr:hover){
+  
+  display: inline-block;
+  width: 100%;
+  color: rgb(23, 0, 127);
   text-align: center;
   line-height: 1;
   letter-spacing: .02em;

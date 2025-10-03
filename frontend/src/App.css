@@ -46,3 +46,6 @@
   padding-top: calc(var(--header-h) + env(safe-area-inset-top));
 }
 
+.body{
+  margin: 0;
+}

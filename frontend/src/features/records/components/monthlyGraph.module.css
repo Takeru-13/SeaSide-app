@@ -2,17 +2,16 @@
 
 /* ===== グラフカード（このファイル専用） ===== */
 .wrapper {
-  background: #ffffffee;
+  background: #ffffff00;
   border-radius: 20px;
   padding: 20px;
 
   /* ここで幅を統一 */
-  width: 100%;
-  max-width: 420px;
+  max-width: min(460px, 100%);
   margin: 15px auto;
 
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  backdrop-filter: blur(6px);
+
   box-sizing: border-box;
 }
 

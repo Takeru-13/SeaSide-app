@@ -133,12 +133,15 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
           <section className={`${styles.panel} ${styles.panelPeriod}`}>
             <h4 className={styles.panelTitle}>月経</h4>
             <div className={styles.panelBox}>
-              <PeriodSection value={period} onChange={onPeriodPatch} disabled={saving} />
+              <PeriodSection
+                value={period}
+                onChange={onPeriodPatch}
+                disabled={saving}
+              />
             </div>
           </section>
         </div>
 
-        <div className={styles.rail}>
           <section className={styles.panel}>
             <h4 className={styles.panelTitle}>感情</h4>
             <EmotionSlider
@@ -149,7 +152,8 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
             />
             
           </section>
-        </div>
+
+
       </div>
 
       {/* ★ 追加: 運動・メモ（縦並びセクション） */}

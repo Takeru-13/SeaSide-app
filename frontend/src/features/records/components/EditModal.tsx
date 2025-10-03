@@ -18,7 +18,7 @@ export default function EditModal({ value, onClose, onSave }: Props) {
       <div className={styles.card} onClick={(e) => e.stopPropagation()}>
         <EditForm initial={value} onCancel={onClose} onSave={onSave} />
         <button className={styles.closeFab} onClick={onClose} aria-label="閉じる">
-          ✕
+          <p className={styles.closeFab1}>✕</p>
         </button>
       </div>
     </div>

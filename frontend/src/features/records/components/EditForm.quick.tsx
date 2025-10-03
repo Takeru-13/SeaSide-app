@@ -119,11 +119,13 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
                 disabled={saving}
               />
             </div>
-            {/* ここは通常の横書き。真下に来る */}
+            <div className="emotion-value" aria-live="polite">
+              {emotion}
+           </div>
           </div>
         </div>
-            <div className="emotion-value" aria-live="polite">Lv {emotion}</div>
-      </div>
+            
+        </div>
 
       {error && <div className="alert alert--error">{error}</div>}
 

@@ -4,7 +4,7 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.629);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -19,7 +19,7 @@
    モーダルシート
    =========================== */
 .modal-sheet {
-  background: linear-gradient(180deg, #1e1b4b 0%, #0f172a 100%);
+  background: linear-gradient(180deg, #1e1b4b3c 0%, #0f172a89 100%);
   border-radius: 24px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   max-width: 920px;
@@ -39,7 +39,7 @@
    モーダルヘッダー
    =========================== */
 .modal-header {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #2a2cb5a7 0%, #8b5cf6 100%);
   padding: 24px 28px;
   display: flex;
   align-items: center;
@@ -350,7 +350,7 @@ body.modal-open { overflow: hidden; }
   border-radius: 20px;
   padding: 24px;
   display: flex;
-  flex-direction: column;
+
   align-items: center;
   justify-content: center;
   gap: 16px;
@@ -565,6 +565,9 @@ body.modal-open { overflow: hidden; }
   margin-top: 8px;
   font-size: 0.95rem;
   font-weight: 700;
+  padding: 5px 10px;
+  border: solid 1px;
+  border-radius: 10px;
   color: #c7d2fe;
   text-align: center;
   letter-spacing: .02em;
