@@ -28,8 +28,9 @@
 /* ロゴ画像 */
 .logo {
   height: var(--logo-h);   /* 高さは変数で管理 */
-  width: auto;             /* アスペクト比維持 */
-  max-width: 400px;        /* 横幅の上限を決める */
+  width: auto;   
+  min-width: 250px;          /* アスペクト比維持 */
+  max-width: 800px;        /* 横幅の上限を決める */
   display: block;
   user-select: none;
   object-fit: contain;     /* 中身が収まるように */

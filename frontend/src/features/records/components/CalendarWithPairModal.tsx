@@ -4,7 +4,10 @@ import CalendarView from './sections/Calendar';
 import EditModal from './EditModal';
 import PairRecordModal from './PairRecordModal';
 
-// ✅ 型は“正”の場所からだけ import
+
+
+
+// 型は“正”の場所からだけ import
 import type {
   Scope,
   DateKey,

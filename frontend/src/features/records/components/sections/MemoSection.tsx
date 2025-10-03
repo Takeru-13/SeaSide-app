@@ -11,8 +11,13 @@ export default function MemoSection({ value, onChange, disabled }: Props) {
   const content = value.content ?? '';
 
   return (
-    <div>
-      <h4>メモ</h4>
+    <div style={{
+      padding: '8px 10px',
+      maxWidth: '420px',
+          borderRadius: 8,
+          resize: 'vertical',
+        }}>
+
       <textarea
         placeholder="自由にメモを記入してください..."
         value={content}
@@ -21,7 +26,7 @@ export default function MemoSection({ value, onChange, disabled }: Props) {
         rows={4}
         maxLength={500}
         style={{
-          width: '100%',
+          width: '95%',
           padding: '8px 10px',
           borderRadius: 8,
           border: '1px solid #ddd',

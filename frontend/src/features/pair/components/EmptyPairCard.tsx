@@ -118,14 +118,15 @@ export default function EmptyPairCard({ onConnected }: { onConnected?: () => voi
 
   return (
     <div style={{
-      border: '1px dashed #bbb',
+      border: '1px solid #bbb',
       borderRadius: 12,
+      maxWidth: 420,
       padding: 16,
-      margin: '12px 0',
-      background: '#fafafa'
+      margin: '12px auto',
+      background: 'hsla(0, 0%, 48%, 0.43)'
     }}>
-      <h3 style={{ margin: 0, fontSize: 18 }}>ペアが未連携です</h3>
-      <p style={{ margin: '6px 0 12px', opacity: 0.8 }}>
+      <h3 style={{ margin: 0, fontSize: 18 ,color: '#cbcbcbff' }}>ペアが未連携です</h3>
+      <p style={{ margin: '6px 0 12px', opacity: 0.8 ,color: '#f0f0f0ff'}}>
         どちらかが招待コードを発行し、相手がそのコードを入力して接続します。
       </p>
 

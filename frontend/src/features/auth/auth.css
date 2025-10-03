@@ -14,7 +14,7 @@
 /* ====== カード（モーダルシート風） ====== */
 .auth-card{
   width: min(92vw, 480px);
-  background: linear-gradient(180deg, rgba(30,27,75,0.85) 0%, rgba(15,23,42,0.9) 100%);
+  background: linear-gradient(180deg, rgba(30, 27, 75, 0) 0%, rgba(15,23,42,0.9) 100%);
   border: 1px solid rgba(139,92,246,0.25);
   border-radius: 20px;
   box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
