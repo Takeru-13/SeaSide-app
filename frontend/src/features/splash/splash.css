@@ -1,0 +1,66 @@
+/* 画面全体のオーバーレイ */
+.ss-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000; /* 何があっても最前面 */
+  display: grid;
+  place-items: center;
+  background: radial-gradient(120% 120% at 50% 30%, #0b1026 0%, #060814 60%, #04060e 100%);
+  transition: opacity .6s ease;
+  will-change: opacity;
+}
+
+/* フェードアウト時に適用 */
+.ss-splash.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 中身 */
+.ss-splash__inner {
+  display: grid;
+  gap: 14px;
+  place-items: center;
+  text-align: center;
+}
+
+/* ロゴ画像 */
+.ss-splash__logo {
+  width: min(180px, 42vw);
+  height: auto;
+  filter: drop-shadow(0 0 12px rgba(99, 212, 255, .35));
+  animation: ss-pop .6s ease-out both, ss-glow 2.2s ease-in-out infinite;
+}
+
+/* タイトル（任意） */
+.ss-splash__brand {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, "Noto Sans JP", Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: .04em;
+  font-size: clamp(16px, 3.2vw, 18px);
+  color: #dff7ff;
+  text-shadow: 0 0 18px rgba(99, 212, 255, .28);
+  opacity: .92;
+}
+
+/* ふわっと拡大して現れる */
+@keyframes ss-pop {
+  from { transform: translateY(6px) scale(.92); opacity: 0; }
+  to   { transform: translateY(0) scale(1);     opacity: 1; }
+}
+
+/* うっすら鼓動するグロー */
+@keyframes ss-glow {
+  0%,100% { filter: drop-shadow(0 0 10px rgba(99,212,255,.30)); }
+  50%     { filter: drop-shadow(0 0 18px rgba(99,212,255,.55)); }
+}
+
+/* 低モーション: アニメを抑制 */
+@media (prefers-reduced-motion: reduce) {
+  .ss-splash,
+  .ss-splash * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

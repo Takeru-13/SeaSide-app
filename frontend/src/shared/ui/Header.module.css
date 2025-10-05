@@ -1,7 +1,7 @@
 :root {
-  --header-h: 72px;                /* ヘッダー高さ（少し低めでスマートに） */
-  --logo-h: 48px;                  /* ロゴの高さ */
-  --header-bg: rgba(248, 252, 253, 0.75);
+  --header-h: 72px;      /* ヘッダー高さ */
+  --logo-h: 48px;        /* ロゴ高さ（SVGは等比） */
+  --header-bg: rgba(0, 173, 216, 0);
   --header-border: #b4d1dc00;
 }
 
@@ -14,24 +14,48 @@
   height: calc(var(--header-h) + env(safe-area-inset-top));
   padding-top: env(safe-area-inset-top);
 
+  width: 100%;
+
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center;     /* ロゴを中央へ */
 
+  background: var(--header-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 
   border-bottom: 1px solid var(--header-border);
-  z-index: 0;
+  z-index: 1000;               /* 手前に出す */
 }
 
-/* ロゴ画像 */
+/* ロゴのクリック領域（リンク/非リンク共通） */
+.logoLink,
+.logoDisabled {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  line-height: 0;
+  padding-inline: 0;           /* ここは0。外側余白は .header で管理 */
+}
+
+/* ロゴ画像（CSS Modules!） */
 .logo {
-  height: var(--logo-h);   /* 高さは変数で管理 */
-  width: auto;   
-  min-width: 250px;          /* アスペクト比維持 */
-  max-width: 800px;        /* 横幅の上限を決める */
+  height: var(--logo-h);
+  width: auto;                 /* アスペクト比維持 */
+  max-width: 90vw;             /* 画面にはみ出さない保険 */
   display: block;
   user-select: none;
-  object-fit: contain;     /* 中身が収まるように */
+  object-fit: contain;
+}
+
+/* ログイン/登録時は非活性表示 */
+.logoDisabled {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* 画面幅が極端に狭いときの縮小 */
+@media (max-width: 360px) {
+  :root { --logo-h: 40px; }
 }

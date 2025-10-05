@@ -1,5 +1,4 @@
 // frontend/src/features/records/components/EditModalQuick.tsx
-import React, { useEffect } from 'react';
 import QuickEditForm from './EditForm.quick';
 import type { RecordView, UpsertPayload } from '../types';
 import './EditFormQuick.css';
@@ -14,12 +13,6 @@ type Props = {
 export default function EditModalQuick({ value, onClose, onSave, className }: Props) {
   if (!value) return null;
   const dateKey = String(value.date).slice(0, 10);
-
-  // 背面スクロールロック（CSSの body.modal-open と連動）
-  useEffect(() => {
-    document.body.classList.add('modal-open');
-    return () => document.body.classList.remove('modal-open');
-  }, []);
 
   return (
     <div

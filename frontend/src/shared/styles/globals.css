@@ -4,3 +4,15 @@
    padding: 0px;
 }
 
+
+:where(html, body, #root) {
+  max-width: 100%;
+  overflow-x: clip;          /* ← hidden よりもスクロールバー非発生が安定 */
+}
+:where(html, body, #root) { max-width: 100%; overflow-x: clip; }
+.seaside-bg .layer {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%); /* 中央基準にしてはみ出しを抑える */
+  min-width: 100%;             /* 100% でOK、vwは使わない */
+}

@@ -4,8 +4,8 @@
 ========================================= */
 
 :root {
-  --pair-panel-bg-1: rgba(30, 27, 75, 0.85);
-  --pair-panel-bg-2: rgba(15, 23, 42, 0.9);
+  --pair-panel-bg-1: rgba(137, 132, 201, 0.394);
+  --pair-panel-bg-2: rgba(15, 23, 42, 0);
   --pair-border: rgba(148, 163, 184, 0.25);
   --pair-radius: 16px;
   --pair-gap: 14px;
@@ -15,7 +15,7 @@
 .pairOverlay {
   position: fixed !important;
   inset: 0 !important;
-  background: rgba(2, 6, 23, 0.75) !important;
+  background: rgba(0, 0, 0, 0.217) !important;
   backdrop-filter: blur(6px);
   display: flex !important;
   align-items: center !important;
@@ -35,7 +35,7 @@
   background: linear-gradient(180deg, var(--pair-panel-bg-1) 0%, var(--pair-panel-bg-2) 100%) !important;
   border: 1px solid var(--pair-border) !important;
   border-radius: var(--pair-radius) !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.516) !important;
   backdrop-filter: blur(10px);
   width: min(760px, 96vw) !important;
   max-width: 760px !important;
@@ -65,7 +65,7 @@
   justify-content: space-between !important;
   padding: 16px 18px !important;
   border-bottom: 1px solid var(--pair-border);
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, #6365f1b0 0%, #ee00ff57 100%);
 }
 
 .pairTitle {
@@ -196,7 +196,7 @@
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 6px;
-  color: #e5eefc;
+  color: #e5f5fc;
 }
 
 /* ========== ステータス表示 ========== */

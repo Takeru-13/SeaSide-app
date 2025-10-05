@@ -14,7 +14,6 @@ export default function EmotionSlider({
   value,
   onChange,
   className = '',
-  showLabel = true,
   disabled,
 }: Props) {
   const id = useId();

@@ -1,6 +1,5 @@
 // frontend/src/features/records/components/EditForm.tsx
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 import type { RecordView, UpsertPayload } from '../types';
 type RV = RecordView;
@@ -29,8 +28,6 @@ type Props = {
 };
 
 export default function EditForm({ initial, onCancel, onSave }: Props) {
-  const navigate = useNavigate();
-
   // 現在値（完全形）をフォーム state で保持
   const [meal, setMeal] = useState<RV['meal']>(initial.meal);
   const [sleep, setSleep] = useState<RV['sleep']>(initial.sleep);
@@ -44,7 +41,8 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleGoToDetail = () => navigate(`/records/${initial.date}`);
+  // ★ 成功メッセージ（トースト）
+  const [success, setSuccess] = useState<string | null>(null);
 
   // 子セクションは「パッチ」を返す契約なので、ここで現在値にマージ
   const onMealPatch = (patch: UpsertPayload['meal']) =>
@@ -101,7 +99,12 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
           content: (memo.content ?? '').trim(),
         },
       };
+
       await onSave(payload);
+
+      // ★ 成功トースト（3秒で消える）
+      setSuccess('登録しました！');
+      setTimeout(() => setSuccess(null), 3000);
     } catch (err: unknown) {
       setError(getErrorMessage(err));
     } finally {
@@ -142,18 +145,15 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
           </section>
         </div>
 
-          <section className={styles.panel}>
-            <h4 className={styles.panelTitle}>感情</h4>
-            <EmotionSlider
-              value={emotion}
-              onChange={(n) => setEmotion(n ?? 5)}
-              disabled={saving}
-              className="h-slider"
-            />
-            
-          </section>
-
-
+        <section className={styles.panel}>
+          <h4 className={styles.panelTitle}>感情</h4>
+          <EmotionSlider
+            value={emotion}
+            onChange={(n) => setEmotion(n ?? 5)}
+            disabled={saving}
+            className="h-slider"
+          />
+        </section>
       </div>
 
       {/* ★ 追加: 運動・メモ（縦並びセクション） */}
@@ -167,7 +167,15 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
         <MemoSection value={memo} onChange={onMemoPatch} disabled={saving} />
       </section>
 
+      {/* エラー表示 */}
       {error && <div className={styles.alertError}>{error}</div>}
+
+      {/* ★ 成功トースト */}
+      {success && (
+        <div className={styles.alertSuccess} role="status" aria-live="polite">
+          {success}
+        </div>
+      )}
 
       <div className={styles.ctaRow}>
         <button type="submit" disabled={saving} className={styles.cta}>

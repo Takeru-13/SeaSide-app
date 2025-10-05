@@ -21,6 +21,9 @@ type MeResponse = { id: number; userName: string; email: string; iconUrl?: strin
 type PairStatus = { connected: boolean; partner?: { id: number } };
 
 export default function HomeSection() {
+  // ★ 背景だけ眺める Zen モード
+  const [isZen, setIsZen] = useState(false);
+
   // スコープ（自分 / ペア）をトップで保持
   const [scope, setScope] = useState<Scope>('me');
 
@@ -90,54 +93,90 @@ export default function HomeSection() {
     }
   };
 
+  // ★ 追加：モーダルが開いているか（自分＝クイック編集 or ペア＝閲覧）
+  const isModalOpen =
+    (scope === 'me' && !!selfState.editing) ||
+    (scope === 'pair' && !!pairDate);
+
   return (
     <section className={styles.wrapper}>
-      <header className={styles.header}>
-        {scope === 'pair' ? (
-          <div className={styles.userBadge}>
-            <span className={styles.userName}>{pairName ?? 'ペア'}</span>
-            <span>の記録</span>
-          </div>
-        ) : (
-          me && (
-            <div className={styles.userBadge}>
-              <span className={styles.userName}>{me.userName}</span>
-              <span>の記録</span>
+      {/* Zenモードではメインコンテンツを非表示 */}
+      {!isZen && (
+        <>
+          <header className={styles.header}>
+            {scope === 'pair' ? (
+              <div className={styles.userBadge}>
+                <span className={styles.userName}>{pairName ?? 'ペア'}</span>
+                <span>の記録</span>
+              </div>
+            ) : (
+              me && (
+                <div className={styles.userBadge}>
+                  <span className={styles.userName}>{me.userName}</span>
+                  <span>の記録</span>
+                </div>
+              )
+            )}
+            <div className={styles.scopeArea}>
+              <ScopeToggle scope={scope} onChange={setScope} />
             </div>
-          )
-        )}
-        <div className={styles.scopeArea}>
-          <ScopeToggle scope={scope} onChange={setScope} />
+          </header>
+
+          {scope === 'pair' ? <EmptyPairCard /> : null}
+
+          <CalendarView
+            ym={ym}
+            days={days}
+            onPick={handlePick}
+            onPrev={prevMonth}
+            onNext={nextMonth}
+          />
+
+          {/* 自分：クイック編集モーダル */}
+          {selfState.editing && scope === 'me' && (
+            <EditModalQuick
+              value={selfState.editing}
+              onClose={() => selfAct.setEditing(null)}
+              onSave={selfAct.onSaveQuick}
+            />
+          )}
+
+          {/* ペア：閲覧専用モーダル */}
+          {scope === 'pair' && pairDate && (
+            <PairRecordModal date={pairDate} onClose={() => setPairDate(null)} />
+          )}
+
+          <MonthlyGraph ym={ym} days={days} />
+
+          {loading && <div className={styles.loading}>読み込み中…</div>}
+        </>
+      )}
+
+      {/* 画面最下部の固定コントロール（モーダル中は非表示） */}
+      {!isModalOpen && (
+        <div className={styles.zenControls} aria-live="polite">
+          <button
+            type="button"
+            className={styles.zenBtn}
+            onClick={() => setIsZen(true)}
+            disabled={isZen}
+            aria-pressed={isZen}
+            title="背景だけ表示（全部消す）"
+          >
+            眺める
+          </button>
+          <button
+            type="button"
+            className={styles.zenBtn}
+            onClick={() => setIsZen(false)}
+            disabled={!isZen}
+            aria-pressed={!isZen}
+            title="元に戻す"
+          >
+            戻す
+          </button>
         </div>
-      </header>
-
-      {scope === 'pair' ? <EmptyPairCard /> : null}
-
-      <CalendarView
-        ym={ym}
-        days={days}
-        onPick={handlePick}
-        onPrev={prevMonth}
-        onNext={nextMonth}
-      />
-
-      {/* 自分：クイック編集モーダル */}
-      {selfState.editing && scope === 'me' && (
-        <EditModalQuick
-          value={selfState.editing}
-          onClose={() => selfAct.setEditing(null)}
-          onSave={selfAct.onSaveQuick}
-        />
       )}
-
-      {/* ペア：閲覧専用モーダル */}
-      {scope === 'pair' && pairDate && (
-        <PairRecordModal date={pairDate} onClose={() => setPairDate(null)} />
-      )}
-
-      <MonthlyGraph ym={ym} days={days} />
-
-      {loading && <div className={styles.loading}>読み込み中…</div>}
     </section>
   );
 }
