@@ -1,10 +1,12 @@
-import { Body, Controller, Post, Res, HttpCode } from '@nestjs/common';
+import { Body, Controller, Post, Res, HttpCode, Get, Req, UseGuards } from '@nestjs/common';
+import type { Response } from 'express';
+
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import type { Response } from 'express';
-import {  Get, Req, UseGuards } from '@nestjs/common';
+
 import { AuthGuard } from '../common/guards/auth.guard';
+import { COOKIE_NAME, SLIDING_MAX_AGE_MS } from './auth.const';
 
 @Controller('auth')
 export class AuthController {
@@ -23,19 +25,25 @@ export class AuthController {
   ) {
     const { token, user } = await this.service.login(dto.email, dto.password);
 
-    // Cookie に JWT を保存（開発用は secure:false）
-    res.cookie('access_token', token, {
+    // ★ Cookie に JWT を保存（48h・スライディングのベース）
+    res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
       sameSite: 'lax',
-      secure: false,
+      secure: process.env.NODE_ENV === 'production', // 本番は true
       path: '/',
+      maxAge: SLIDING_MAX_AGE_MS, // 48h
     });
 
     // フロントに返すのは安全なユーザー情報だけ
     return user;
   }
 
-  //test
+  @Post('logout')
+  @HttpCode(204)
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie(COOKIE_NAME, { path: '/' });
+  }
+
   @Get('me')
   @UseGuards(AuthGuard)
   getMe(@Req() req: any) {
