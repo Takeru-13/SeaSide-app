@@ -2,7 +2,7 @@
 import { useMemo } from 'react';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import styles from './calendar.module.css';
+import styles from './Calendar.module.css';
 
 import type { CalendarScoreDay, DateKey } from '../../types';
 
