@@ -1,6 +1,5 @@
 // frontend/src/features/records/components/sections/EmotionSlider2.tsx
-import { useMemo } from 'react';
-import type { RecordView, UpsertPayload } from '../../types';
+import type { RecordView} from '../../types';
 
 type Props = {
   value: RecordView['emotion'];                    // number
