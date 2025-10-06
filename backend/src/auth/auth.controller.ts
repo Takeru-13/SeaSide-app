@@ -28,8 +28,8 @@ export class AuthController {
     // ★ Cookie に JWT を保存（48h・スライディングのベース）
     res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production', // 本番は true
+      sameSite: 'none',
+      secure: true, // 本番は true
       path: '/',
       maxAge: SLIDING_MAX_AGE_MS, // 48h
     });
