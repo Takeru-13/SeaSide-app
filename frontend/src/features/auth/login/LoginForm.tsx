@@ -11,7 +11,7 @@ export default function LoginForm({ onSubmit }: Props) {
   return (
     <form
       onSubmit={(e)=>{ e.preventDefault(); onSubmit({ email, password }); }}
-      style={{ display:'grid', gap:10, maxWidth:360 }}
+      style={{ display:'grid', gap:10, maxWidth:360, margin:'auto' }}
     >
       <label htmlFor="email">email</label>
       <input
