@@ -8,6 +8,7 @@ import RecordDetailPage from './features/records/pages/RecordDetailSection';
 import RequireAuth from './features/auth/RequireAuth';
 import Header from "./shared/ui/Header";
 import RootGate from "./shared/router/RootGate";
+import RootRedirect from "./shared/router/RootRedirect"; // ← 追加
 import SplashGate from "./features/splash/SplashGate";
 import "./features/splash/splash.css";
 
@@ -30,9 +31,9 @@ export default function AppRoutes() {
               <Route path="/Home" element={<Navigate to="/home" replace />} />
             </Route>
 
-            {/* 入口/迷子は /home（未ログインなら上の RequireAuth が /register に送る） */}
-            <Route index element={<Navigate to="/home" replace />} />
-            <Route path="*" element={<Navigate to="/home" replace />} />
+            {/* ルートパスは認証状態で振り分け */}
+            <Route index element={<RootRedirect />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Route>
         </Routes>
       </BrowserRouter>

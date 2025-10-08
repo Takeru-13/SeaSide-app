@@ -18,7 +18,13 @@
   --gap-lg: 20px;
 }
 
-/* まずは外部からの漏れ対策（初期化は必要に応じて調整） */
+/* 応急＆保険：横スクロール抑止（グローバル） */
+:global(html, body) {
+  overflow-x: hidden;
+  margin: 0;
+}
+
+/* まずは外部からの漏れ対策（必要に応じて調整） */
 .editSheet :where(h1,h2,h3,h4,h5,h6,p,ul,ol,button,input,label,section,div){
   box-sizing: border-box;
 }
@@ -27,22 +33,33 @@
 .editSheet {
   display: grid;
   gap: var(--gap-lg);
-
-  max-width: min(420px, 100%);
-  margin :0 auto;
-}
-
-.detail-wrap{
-  width: 90vw;
+  width: 100%;
+  max-width: 680px;          /* コンテンツ幅の上限 */
   margin: 0 auto;
+  padding: 0 16px;           /* 端末端での見切れ防止 */
+  box-sizing: border-box;
 }
 
+.detail-wrap {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
 
-/* 2列グリッドでパネルを縦に積む */
+/* デフォルトは1カラム（スマホ） */
 .editSheet .matrix {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: var(--gap-lg);
+}
+
+/* 560px 以上で2カラム */
+@media (min-width: 560px){
+  .editSheet .matrix {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
 .h-slider {
@@ -56,6 +73,16 @@
   border-radius: var(--panel-radius);
   padding: var(--gap-md);
   backdrop-filter: blur(6px);
+  max-width: 100%;
+}
+
+/* 画像・入力・内部要素のはみ出しを抑制 */
+.editSheet .panel,
+.editSheet .panel * {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  box-sizing: border-box;
 }
 
 /* 大きめに展開したいパネル（食事 / 生理 など） */
@@ -64,6 +91,7 @@
   grid-column: 1 / -1;
 }
 
+/* タイトル */
 .editSheet .panelTitle {
   font-size: 13px;
   letter-spacing: 0.08em;
@@ -74,132 +102,97 @@
   padding-left: 3px;
 }
 
-
 /* 下段のアクション行 */
 .editSheet .ctaRow {
   display: flex;
   gap: var(--gap-md);
   align-items: center;
-  justify-content:space-around;
+  justify-content: space-around;
+  margin-bottom: 40px;
 }
 
-/* 主要ボタン */
+/* 主要ボタン（幅固定しない・100%で横伸び防止） */
 .editSheet .cta {
-  padding: 10px 16px;
-  border-radius: 999px;
-  border: 1px solid var(--panel-border);
-  background: rgba(99, 102, 241, 0.15);
-  color: #e5e7eb;
+  width: 100%;
+  padding: 16px 32px;
+  border-radius: 12px;
+  border: none;
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 700;
   cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+}
+.editSheet .cta:hover {
+  background: linear-gradient(135deg, #ae8cff 0%, #9d9ffa 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(139, 92, 246, 0.34);
 }
 .editSheet .cta:focus-visible {
   outline: none;
-  box-shadow: var(--ring);
+  box-shadow: var(--ring), 0 4px 16px rgba(139, 92, 246, 0.3);
 }
 
-.body{
-  margin: 0;
+/* 汎用ボタンの軽いホバー（他ボタン用の保険） */
+button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  opacity: 1 !important;
 }
 
+/* 閉じるFAB（右端切れを避けるため右寄せ＋十分なタップ面積） */
 .closeFab{
-
-
-  /* タップ領域(推奨44px以上) */
   width: 54px; 
   height: 44px;
-
-  /* 丸ボタン&中央寄せ */
   border-radius: 9999px;
   display: grid;
   place-items: center;
-
-  /* 視認性 */
-  font-size: 30px;   /* ✕ を大きく */
+  font-size: 30px;
   line-height: 1;
   padding: 0;
-
+  margin-left: auto; /* 右端寄せ */
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.25);
   backdrop-filter: blur(3px);
   cursor: pointer;
 }
-
 .closeFab:hover{
   background: rgba(255,255,255,0.14);
 }
-
 .closeFab:focus-visible{
-  outline: 2px solid #7dd3fc; /* 水色のフォーカスリング */
+  outline: 2px solid #7dd3fc;
   outline-offset: 2px;
 }
 
-.chipClose{
-  width:75px;
-  height:40px;
-    background: rgba(239, 68, 68, 0.1);
-    color: #fca5a5;
-    border: 1px solid rgba(239, 68, 68, 0.3);
-    font-size: 1.5rem;
-    align-items: center;
-    border-radius: 5px;
-    justify-content: center;
-}
-
-.chipClose:hover{
-  background: rgba(255,255,255,0.20);
-}
-
-/* 画面が広い時はさらに少しだけ大きく */
+/* 画面が広い時は少しサイズ調整 */
 @media (min-width: 480px){
   .closeFab{
     width: 48px;
     height: 48px;
     font-size: 24px;
-    
   }
 }
 
-.cta{
-    width: 100%;
-    background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-    border: none;
-    color: white;
-    padding: 16px 32px;
-    border-radius: 12px;
-    font-size: 1.125rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
-}
+/* 小さな閉じるチップ */
 .chipClose{
-  /* padding : 0 auto; */
-  align-items: center;
-  text-align: center;
+  width: 75px;
+  height: 40px;
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  font-size: 1.5rem;
+  border-radius: 5px;
+  display: grid;
+  place-items: center;
   margin: auto;
-}
-.ctaRow{
-  margin-bottom:40px;
-}
-.rowActions{
-  margin-bottom:40px;
-  margin: auto;
-}
-.cta:hover{
-    width: 100%;
-    background: linear-gradient(135deg, #ae8cff 0%, #9d9ffa 100%);
-    border: none;
-    border: none;
-    color: rgb(255, 255, 255);
-    border-radius: 3000px;
-    cursor: pointer;
-    transition: all 0.1s;
-    box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
 }
 
-button:hover {
-  background: rgba(255, 255, 255, 0.15);
-  opacity: 1 !important;
+/* 行アクションの余白調整（中央寄せ） */
+.rowActions{
+  margin-bottom: 40px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* 成功トースト（下部固定・フェードイン→保持→フェードアウト） */
