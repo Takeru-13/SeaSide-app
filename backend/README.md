@@ -6,13 +6,13 @@
     <img src="https://github.com/user-attachments/assets/cb8c3971-acd6-421d-a140-08971df54149" alt="SeaSide Banner" width="100%" />
   </a>
 </p>
-[🔗 デモサイト](https://seasede-app.netlify.app/)  
+[🔗 SeaSide](https://seasede-app.netlify.app/)  
 
 ---
 
 ## 📌 アプリの概要
 SeaSideは、日々の **感情・睡眠・食事・運動・体調** を  
-シンプルに記録できるカレンダーアプリです。  
+シンプルに記録できるモバイルファーストカレンダーアプリです。  
 
 特徴は「**ペアモード**」で、パートナーと共有しながら心地よく使える設計になっています。  
 
