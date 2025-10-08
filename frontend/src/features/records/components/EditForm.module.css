@@ -190,9 +190,8 @@ button:hover {
 
 /* 行アクションの余白調整（中央寄せ） */
 .rowActions{
-  margin-bottom: 40px;
-  margin-left: auto;
-  margin-right: auto;
+      margin: auto;
+
 }
 
 /* 成功トースト（下部固定・フェードイン→保持→フェードアウト） */
