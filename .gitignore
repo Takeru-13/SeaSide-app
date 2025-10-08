@@ -1,0 +1,12 @@
+# secrets & config
+.env
+*.env
+*.env.*
+**/.env
+**/.env.*
+netlify.toml
+**/netlify.toml
+.npmrc
+**/.npmrc
+vercel.json
+.vercel
