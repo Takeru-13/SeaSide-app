@@ -1,8 +1,11 @@
 # 🌊 SeaSide  
 ## ふたりで寄り添う、感情記録カレンダー
 
-<img src="https://github.com/user-attachments/assets/cb8c3971-acd6-421d-a140-08971df54149" alt="SeaSide Banner" style="width:100%;height:auto;" />
-
+<p align="center">
+  <a href="https://seasede-app.netlify.app/">
+    <img src="https://github.com/user-attachments/assets/cb8c3971-acd6-421d-a140-08971df54149" alt="SeaSide Banner" width="100%" />
+  </a>
+</p>
 [🔗 デモサイト](https://seasede-app.netlify.app/)  
 
 ---
