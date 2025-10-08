@@ -52,14 +52,14 @@ export default function SplashGate({ children, minMs = 900, oncePerSession = tru
       {visible && (
         <div className="ss-splash" aria-hidden>
           <div className="ss-splash__inner">
-            {/* 好きなロゴに差し替え可（/public 配下推奨） */}
-<img
-  src="/SeaSide-app-logo.svg"
-  alt="SeaSide"
-  className="ss-splash__logo"
-  decoding="async"
-/>
-            <p className="ss-splash__brand" aria-label="SeaSide">SeaSide</p>
+
+          <img
+            src="/SeaSide-app-logo.svg"
+            alt="SeaSide"
+            className="ss-splash__logo"
+            decoding="async"
+          />
+          <p className="ss-splash__brand" aria-label="SeaSide">SeaSide</p>
           </div>
         </div>
       )}

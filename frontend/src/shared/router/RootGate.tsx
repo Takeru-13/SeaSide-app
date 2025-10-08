@@ -21,7 +21,7 @@ export default function RootGate() {
     return () => { ignore = true; };
   }, []);
 
-  if (state === 'checking') return null;     // ここで Splash を出してもOK
+  if (state === 'checking') return null;
   if (state === 'authed')  return <Navigate to="/Home" replace />;
   return <Navigate to="/login" replace />;
 }
