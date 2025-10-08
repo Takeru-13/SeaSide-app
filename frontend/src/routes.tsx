@@ -1,4 +1,4 @@
-// src/routes.tsx （または AppRoutes.tsx）
+// src/routes.tsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import BackgroundFX from "./shared/ui/BackgroundFX";
 import RegisterPage from './features/auth/register/RegisterSection';
@@ -18,19 +18,19 @@ export default function AppRoutes() {
         <Header />
         <BackgroundFX />
         <Routes>
-          {/* ここを“レイアウトルート”として全体を包む.スマホで白くなる問題改善のため。 */}
           <Route element={<RootGate />}>
-            {/* 公開ルート */}
-            <Route path="/register" element={<RegisterPage />} />
+            {/* 公開 */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
-            {/* 認証必須ルート */}
+            {/* 認証必須 */}
             <Route element={<RequireAuth />}>
               <Route path="/home" element={<HomePage />} />
               <Route path="/records/:date" element={<RecordDetailPage />} />
+              <Route path="/Home" element={<Navigate to="/home" replace />} />
             </Route>
 
-            {/* 入口（/）と迷子（*）は /home へ */}
+            {/* 入口/迷子は /home（未ログインなら上の RequireAuth が /register に送る） */}
             <Route index element={<Navigate to="/home" replace />} />
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Route>

@@ -6,7 +6,6 @@ import { AuthModule } from './auth/auth.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { RecordsModule } from './records/records.module';
 
-// ★ これを必ず追加
 import { PairsModule } from './pairs/pairs.module';
 
 @Module({
@@ -14,7 +13,7 @@ import { PairsModule } from './pairs/pairs.module';
     AuthModule,
     PrismaModule,
     RecordsModule,
-    PairsModule, // ← 最重要：ここに入っていること
+    PairsModule, 
   ],
   controllers: [AppController],
   providers: [AppService],
