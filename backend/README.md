@@ -53,18 +53,13 @@ SeaSideは、感情や習慣をふたりで心地よく記録し合い、
 相手の状態をさりげなく見守れる“海辺”のようなカレンダーを目指しています。  
 
 ~~機嫌の悪いときの彼女は本当に怖いのでいち早く察せるように、という思いもあります。~~  
-
 ---
 
 ## 📸 スクリーンショット
-| Home画面（カレンダー＋感情アイコン） | 記録モーダル |
-| --- | --- |
-| ![Home](./screenshots/home.png) | ![Modal](./screenshots/modal.png) |
 
-| ペア切り替え画面 | グラフ画面 |
+| Home（カレンダー） | 記録モーダル |
 | --- | --- |
-| ![Pair](./screenshots/pair.png) | ![Graph](./screenshots/graph.png) |
-
+| <a href="https://github.com/user-attachments/assets/f48a3cca-4527-45e3-8c99-a896ce9063db"><img src="https://github.com/user-attachments/assets/f48a3cca-4527-45e3-8c99-a896ce9063db" alt="Home - Calendar" width="380" /></a> | <a href="https://github.com/user-attachments/assets/b90184b6-aec7-455f-9a22-cd9271110dd4"><img src="https://github.com/user-attachments/assets/b90184b6-aec7-455f-9a22-cd9271110dd4" alt="Record Modal" width="380" /></a> |
 ---
 
 ## 🔑 主な機能
@@ -93,10 +88,12 @@ SeaSideは、感情や習慣をふたりで心地よく記録し合い、
 ---
 
 ## 🚀 今後の改善点
-- AIによる月間記録の要約機能  
+- AIによる月間記録の要約機能
+- 常用薬ボタン 
 - 通知機能（薬のリマインドなど）  
 - ダークモード⇔ライトモード切り替え  
-- UI/UXのさらなる最適化  
+- UI/UXのさらなる最適化
+- PC向けスタイルの改善
 - スタイルをもっと軽量に、もっとモダンに  
 
 ---
