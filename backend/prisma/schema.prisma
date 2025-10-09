@@ -36,6 +36,8 @@ model Record {
   period    String // 'none' | 'start' | 'during'
   emotion   Int // 1〜10
 
+  tookDailyMed Boolean @default(false)
+
   exercise  Json @default("{}") // { items: string[] }
   memo      Json @default("{}") // { content: string }
   

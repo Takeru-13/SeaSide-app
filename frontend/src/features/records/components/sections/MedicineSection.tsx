@@ -1,70 +1,32 @@
 // frontend/src/features/records/components/sections/MedicineSection.tsx
-import { useState } from 'react';
-import type { RecordView, UpsertPayload } from '../../types';
+import styles from './MedicineSection.module.css';
 
 type Props = {
-  value: RecordView['medicine'];
-  onChange: (patch: UpsertPayload['medicine']) => void;
+  // 呼び出し元互換のため型としては受ける（使わないなら optional でOK）
+  value?: { items?: string[] };
+  onChange?: (patch?: { items?: string[] }) => void;
+
   disabled?: boolean;
+  tookDailyMed?: boolean;
+  onToggleDailyMed?: (next: boolean) => void;
 };
 
-export default function MedicineSection({ value, onChange, disabled }: Props) {
-  const items = value.items ?? [];
-  const [newMed, setNewMed] = useState('');
-
-  const addMedicine = () => {
-    if (newMed.trim()) {
-      onChange({ items: [...items, newMed.trim()] });
-      setNewMed('');
-    }
-  };
-
-  const removeMedicine = (idx: number) => {
-    onChange({ items: items.filter((_, i) => i !== idx) });
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      addMedicine();
-    }
-  };
+export default function MedicineSection(props: Props) {
+  // 使うものだけ取り出す（value/onChange は取り出さない＝未使用警告を回避）
+  const { disabled, tookDailyMed, onToggleDailyMed } = props;
 
   return (
-    <div className="medicine-content">
-        {items.map((med, i) => (
-          <span key={i} className="medicine-tag">
-            {med}
-            <button
-              type="button"
-              onClick={() => removeMedicine(i)}
-              disabled={disabled}
-              className="medicine-tag-remove"
-              aria-label="削除"
-            >
-              ×
-            </button>
-          </span>
-        ))}
-      <div className="medicine-input">
+    <div className={styles.box}>
+      {/* 常備薬チェック */}
+      <label className={styles.dailyMedRow}>
         <input
-          type="text"
-          value={newMed}
-          onChange={(e) => setNewMed(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="薬名を入力"
+          type="checkbox"
           disabled={disabled}
+          checked={!!tookDailyMed}
+          onChange={(e) => onToggleDailyMed?.(e.target.checked)}
         />
-        <button
-          type="button"
-          onClick={addMedicine}
-          disabled={disabled}
-          className="medicine-add-btn"
-          aria-label="追加"
-        >
-          +
-        </button>
-      </div>
+        毎日飲む薬を今日飲んだ（💊）
+      </label>
     </div>
   );
 }

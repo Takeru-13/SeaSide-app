@@ -15,6 +15,9 @@ export type RecordView = {
   medicine: { items: string[] };
   period: 'none' | 'start' | 'during';
   emotion: number;                      // 1..10
+
+  tookDailyMed: boolean;
+
   exercise: { items: string[] };
   memo: { content: string };
 };
@@ -26,6 +29,9 @@ export type UpsertPayload = {
   medicine?: { items?: string[] };
   period?: 'none' | 'start' | 'during';
   emotion?: number;                     // 1..10
+
+  tookDailyMed?: boolean;
+
   exercise?: { items?: string[] };
   memo?: { content?: string };
 };

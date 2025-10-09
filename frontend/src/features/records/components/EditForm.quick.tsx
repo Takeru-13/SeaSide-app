@@ -1,4 +1,4 @@
-// frontend/src/features/home/components/EditModal/EditForm.tsx
+// frontend/src/features/home/components/EditForm.quick.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -34,6 +34,8 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
   const [medicine, setMedicine] = useState<RV['medicine']>(initial.medicine);
   const [period, setPeriod] = useState<RV['period']>(initial.period);
   const [emotion, setEmotion] = useState<number>(initial.emotion);
+  // ✅ 追加：常備薬チェック（初期値は既存値を真偽化）
+  const [tookDailyMed, setTookDailyMed] = useState<boolean>(!!initial.tookDailyMed);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -63,13 +65,14 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
     setSaving(true);
     setError(null);
     try {
-      // ✅ UpsertPayload を組み立て（必要ならここで undefined を落とす）
+      // ✅ UpsertPayload を組み立て（undefined はAPI側で無視されるのでそのままでOK）
       const payload: UpsertPayload = {
         meal,
         sleep,
         medicine: { items: (medicine.items ?? []).map((s) => s.trim()).filter(Boolean) },
         period,
         emotion,
+        tookDailyMed, 
       };
       await onSave(payload);
     } catch (err: unknown) {
@@ -98,7 +101,14 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
 
           <section className="panel">
             <h4 className="panel__title">💊服薬💊</h4>
-            <MedicineSection value={medicine} onChange={onMedicinePatch} disabled={saving} />
+            <MedicineSection
+              value={medicine}
+              onChange={onMedicinePatch}
+              disabled={saving}
+              /* ↓ 追加：常備薬チェックをセクションに渡す */
+              tookDailyMed={tookDailyMed}
+              onToggleDailyMed={setTookDailyMed}
+            />
           </section>
 
           <section className="panel panel--period">
@@ -109,7 +119,7 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
           </section>
         </div>
 
-         <div className="rail">
+        <div className="rail">
           <div className="v-slider panel">
             {/* ← 追加：縦書きをスライダー本体だけに適用 */}
             <div className="slider-rail">
@@ -121,11 +131,10 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
             </div>
             <div className="emotion-value" aria-live="polite">
               {emotion}
-           </div>
+            </div>
           </div>
         </div>
-            
-        </div>
+      </div>
 
       {error && <div className="alert alert--error">{error}</div>}
 

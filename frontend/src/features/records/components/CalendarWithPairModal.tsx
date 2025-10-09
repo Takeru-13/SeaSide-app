@@ -59,6 +59,9 @@ export default function CalendarWithPairModal({
       medicine: { items: [] },
       period: 'none',
       emotion: 5,
+
+      tookDailyMed: false,
+
       exercise: { items: [] },
       memo: { content: '' },
     }),

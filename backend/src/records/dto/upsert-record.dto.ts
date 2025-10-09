@@ -79,6 +79,11 @@ export class UpsertRecordDto {
   @Max(10)
   emotion?: number;
 
+
+  // 常用薬を飲んだかどうか(ture/false falseがデフォルト)
+  @IsOptional()
+  @IsBoolean()
+  tookDailyMed?: boolean;
   // exercise: { items: string[] }
   @IsOptional()
   @ValidateNested()

@@ -1,10 +1,9 @@
+// auth.controller.ts
 import { Body, Controller, Post, Res, HttpCode, Get, Req, UseGuards } from '@nestjs/common';
 import type { Response } from 'express';
-
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-
 import { AuthGuard } from '../common/guards/auth.guard';
 import { COOKIE_NAME, SLIDING_MAX_AGE_MS } from './auth.const';
 
@@ -25,23 +24,28 @@ export class AuthController {
   ) {
     const { token, user } = await this.service.login(dto.email, dto.password);
 
-    // ★ Cookie に JWT を保存（48h・スライディングのベース）
+    // ←← ここから追加：環境でCookieのオプションを切替
+    const isProd = process.env.NODE_ENV === 'production';
     res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
-      sameSite: 'none',
-      secure: true, // 本番は true
       path: '/',
-      maxAge: SLIDING_MAX_AGE_MS, // 48h
+      maxAge: SLIDING_MAX_AGE_MS,       // 48h
+      secure: isProd,                   // 本番: true / ローカル: false
+      sameSite: isProd ? 'none' : 'lax' // 本番は cross-site 対応 / ローカルはlaxでOK
     });
 
-    // フロントに返すのは安全なユーザー情報だけ
-    return user;
+    return user; // 安全なユーザー情報のみ返す
   }
 
   @Post('logout')
   @HttpCode(204)
   logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie(COOKIE_NAME, { path: '/' });
+    const isProd = process.env.NODE_ENV === 'production';
+    res.clearCookie(COOKIE_NAME, {
+      path: '/',
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+    });
   }
 
   @Get('me')

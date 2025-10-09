@@ -1,0 +1,10 @@
+/* MedicineSection.module.css */
+.dailyMedRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 14px;
+  user-select: none;
+  opacity: .95;
+}
