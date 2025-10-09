@@ -2,11 +2,11 @@
 ## ふたりで寄り添う、感情記録カレンダー
 
 <p align="center">
-  <a href="https://seasede-app.netlify.app/">
+  <a href="https://seaside-app.netlify.app/">
     <img src="https://github.com/user-attachments/assets/cb8c3971-acd6-421d-a140-08971df54149" alt="SeaSide Banner" width="100%" />
   </a>
 </p>
-[🔗 SeaSide](https://seasede-app.netlify.app/)  
+[🔗 SeaSide](https://seaside-app.netlify.app/)  
 
 ---
 
@@ -29,7 +29,7 @@ SeaSideは、日々の **感情・睡眠・食事・運動・体調** を
 - 感情をクラゲアイコンで10段階可視化  
 - ペアモードでふたりの記録を並べて確認  
 - モバイルファースト & PWA対応  
-- ネオンを基調としたおしゃれな背景デザイン  
+- 星空と海のおちついたデザイン
 
 ---
 

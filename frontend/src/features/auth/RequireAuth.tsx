@@ -9,7 +9,7 @@ export default function RequireAuth() {
     let ignore = false;
     (async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE}/auth/me`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
           credentials: 'include',
         });
         if (!ignore) setState(res.ok ? 'ok' : 'guest');
@@ -20,7 +20,7 @@ export default function RequireAuth() {
     return () => { ignore = true; };
   }, []);
 
-  if (state === 'checking') return <div style={{padding:24}}>認証確認中…</div>;
-  if (state === 'guest')    return <Navigate to="/register" replace />; // ← ここを /register に
+  if (state === 'checking') return <div style={{padding:24, color:'white'}}>認証確認中…＊**</div>;
+  if (state === 'guest')    return <Navigate to="/login" replace />; 
   return <Outlet />;
 }

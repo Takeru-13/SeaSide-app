@@ -11,7 +11,7 @@ export default function RootRedirect() {
 
     (async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_BASE}/auth/me`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
           credentials: 'include',
           signal: controller.signal,
         });
@@ -41,5 +41,6 @@ export default function RootRedirect() {
   }
 
   // ログイン済みなら /home、未ログインなら /login
+  console.log("RequireAuth state:", state);
   return <Navigate to={state === 'authed' ? '/home' : '/login'} replace />;
 }

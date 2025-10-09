@@ -7,8 +7,7 @@ import HomePage from './features/records/pages/HomeSection';
 import RecordDetailPage from './features/records/pages/RecordDetailSection';
 import RequireAuth from './features/auth/RequireAuth';
 import Header from "./shared/ui/Header";
-import RootGate from "./shared/router/RootGate";
-import RootRedirect from "./shared/router/RootRedirect"; // ← 追加
+import RootRedirect from "./shared/router/RootRedirect";
 import SplashGate from "./features/splash/SplashGate";
 import "./features/splash/splash.css";
 
@@ -18,23 +17,23 @@ export default function AppRoutes() {
       <BrowserRouter>
         <Header />
         <BackgroundFX />
+
         <Routes>
-          <Route element={<RootGate />}>
-            {/* 公開 */}
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
+          {/* トップは状態で振り分け（Cookie有→/home、無→/login） */}
+          <Route path="/" element={<RootRedirect />} />
 
-            {/* 認証必須 */}
-            <Route element={<RequireAuth />}>
-              <Route path="/home" element={<HomePage />} />
-              <Route path="/records/:date" element={<RecordDetailPage />} />
-              <Route path="/Home" element={<Navigate to="/home" replace />} />
-            </Route>
+          {/* 公開ルート */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
-            {/* ルートパスは認証状態で振り分け */}
-            <Route index element={<RootRedirect />} />
-            <Route path="*" element={<Navigate to="/login" replace />} />
+          {/* 認証必須ルート */}
+          <Route element={<RequireAuth />}>
+            <Route path="/home" element={<HomePage />} />
+            <Route path="/records/:date" element={<RecordDetailPage />} />
           </Route>
+
+          {/* フォールバック */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </SplashGate>
