@@ -1,6 +1,6 @@
-// auth.controller.ts
+// backend/src/auth/auth.controller.ts
 import { Body, Controller, Post, Res, HttpCode, Get, Req, UseGuards } from '@nestjs/common';
-import type { Response } from 'express';
+import type { Request, Response } from 'express';          // ← 型だけ import（isolatedModules対策）
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
@@ -13,7 +13,7 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() dto: RegisterDto) {
-    return await this.service.register(dto);
+    return this.service.register(dto);
   }
 
   @Post('login')
@@ -23,19 +23,18 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
   ) {
     const { token, user } = await this.service.login(dto.email, dto.password);
+    const isProd = process.env.NODE_ENV === 'production';
 
-   const isProd = process.env.NODE_ENV === 'production';
-  
-   res.cookie(COOKIE_NAME, token, {
-     httpOnly: true,
-     path: '/',
-     maxAge: SLIDING_MAX_AGE_MS,        // 48h
-     secure: isProd,                    // 本番: true（必須）
-     sameSite: isProd ? 'none' : 'lax', // 本番: 'none'（必須）/ ローカル: 'lax'
-   });
+    res.cookie(COOKIE_NAME, token, {
+      httpOnly: true,
+      path: '/',
+      maxAge: SLIDING_MAX_AGE_MS,          // 48h
+      secure: isProd,                      // 本番: true
+      sameSite: isProd ? 'none' : 'lax',   // 本番: 'none'
+    });
 
-    
-    return user; // 安全なユーザー情報のみ返す
+    // 安全なユーザー情報のみ返す（必要に応じて整形）
+    return user;
   }
 
   @Post('logout')
@@ -46,6 +45,7 @@ export class AuthController {
       path: '/',
       secure: isProd,
       sameSite: isProd ? 'none' : 'lax',
+      httpOnly: true,
     });
   }
 
@@ -57,6 +57,17 @@ export class AuthController {
       userName: req.user.userName,
       email: req.user.email,
       iconUrl: req.user.iconUrl,
+    };
+  }
+
+  // --- 一時デバッグ用（確認後に削除してOK） ---
+  @Get('_debug')
+  debug(@Req() req: Request) {
+    const cookies = (req as any).cookies ?? {};
+    return {
+      origin: req.headers.origin ?? null,
+      hasCookie: Boolean(cookies[COOKIE_NAME]),
+      cookieKeys: Object.keys(cookies),
     };
   }
 }
