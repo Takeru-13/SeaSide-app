@@ -35,6 +35,7 @@ export class AuthController {
       partitioned: true as any,
     });
 
+    
     return user; // 安全なユーザー情報のみ返す
   }
 
