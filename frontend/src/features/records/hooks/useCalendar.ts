@@ -22,7 +22,7 @@ function buildMonthSkeleton(ym: string): MonthData {
   const days: CalendarScoreDay[] = Array.from({ length: last }, (_, i) => {
     const d = new Date(y, m - 1, i + 1);
     const date = d.toISOString().slice(0, 10);
-    return { date, score: undefined };
+    return { date, score: undefined, tookDailyMed: false};
   });
 
   return { ym, days };
@@ -66,9 +66,13 @@ export default function useHome() {
       });
 
       const map = new Map<string, number | undefined>(pairs);
+      const medSet = new Set<string>(
+        (raw?.days ?? []).filter(d => !!d.tookDailyMed).map(d => d.date)
+      );
 
       base.days.forEach((d) => {
         d.score = map.get(d.date);
+        d.tookDailyMed = medSet.has(d.date);
       });
 
       setMonth(base);

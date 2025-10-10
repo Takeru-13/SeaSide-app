@@ -205,3 +205,22 @@
   transform: translateY(1px);
   opacity: 0.95;
 }
+
+
+.tile { position: relative; }
+
+/* 中央アイコンの例（既にあればそのままでOK）
+.iconCenter { position: absolute; inset: 0; display: grid; place-items: center; }
+.iconCenterImg { width: 70%; height: auto; }
+*/
+
+.pillBadge {
+  position: absolute;
+  z-index: 10;  
+  left: 2px;
+  bottom: 3px;
+  font-size: 0.6rem;
+  line-height: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0,0,0,.35));
+}

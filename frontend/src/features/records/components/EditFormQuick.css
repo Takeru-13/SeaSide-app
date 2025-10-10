@@ -250,6 +250,10 @@ body.modal-open { overflow: hidden; }
   gap: 6px;
   font-weight: 500;
 }
+.medicine-tags:empty {
+  display: none;
+  min-height: 0;   /* 既存で min-height がある場合の打ち消し */
+}
 .medicine-tag-remove {
   background: rgba(255, 255, 255, 0.2);
   border: none;
@@ -276,6 +280,9 @@ body.modal-open { overflow: hidden; }
   border-radius: 10px;
   font-size: 0.875rem;
   transition: all 0.2s;
+}
+.field-label{
+  margin-left:4vw;
 }
 .medicine-input input[type="text"]:focus {
   outline: none;

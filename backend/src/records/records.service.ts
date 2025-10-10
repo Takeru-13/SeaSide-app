@@ -45,6 +45,7 @@ export class RecordsService {
       meal: any; sleep: any; medicine: any;
       period: string | null; emotion: number | null;
       exercise?: any; memo?: any;
+      tookDailyMed?: boolean;
     },
     dateStr: string,
   ) {
@@ -77,6 +78,7 @@ export class RecordsService {
       memo: {
         content: typeof memo.content === 'string' ? memo.content : '',
       },
+      tookDailyMed: !!rec?.tookDailyMed,
     };
   }
 
@@ -97,6 +99,7 @@ export class RecordsService {
       select: {
         date: true, meal: true, sleep: true, medicine: true,
         period: true, emotion: true, exercise: true, memo: true,
+        tookDailyMed: true, 
       },
     });
 
@@ -112,7 +115,7 @@ export class RecordsService {
     const { start, end } = this.monthRange(ym);
     const rows = await this.prisma.record.findMany({
       where: { userId: ownerId, date: { gte: start, lt: end } },
-      select: { date: true, emotion: true },
+      select: { date: true, emotion: true , tookDailyMed: true },
       orderBy: { date: 'asc' },
     });
 
@@ -121,48 +124,53 @@ export class RecordsService {
       days: rows.map((r) => ({
         date: r.date.toISOString().slice(0, 10),
         emotion: r.emotion ?? null,
+        tookDailyMed: !!(r as any).tookDailyMed,
       })),
     };
   }
 
   /** 保存（常に viewer のみ／他人保存は 403） */
   async upsert(date: string, viewerId: number, input: any) {
-    const dk = this.dateKey(date);
+  const dk = this.dateKey(date);
 
-    const data = {
-      userId: viewerId,
-      date: dk,
-      meal: {
-        breakfast: !!input?.meal?.breakfast,
-        lunch: !!input?.meal?.lunch,
-        dinner: !!input?.meal?.dinner,
-      },
-      sleep: { time: typeof input?.sleep?.time === 'string' ? input.sleep.time : '' },
-      medicine: {
-        items: Array.isArray(input?.medicine?.items) ? input.medicine.items : [],
-      },
-      period: (input?.period ?? 'none') as 'none' | 'start' | 'during',
-      emotion: this.clampEmotion(input?.emotion),
-      exercise: {
-        items: Array.isArray(input?.exercise?.items) ? input.exercise.items : [],
-      },
-      memo: {
-        content: typeof input?.memo?.content === 'string' ? input.memo.content : '',
-      },
-    };
+  const data = {
+    userId: viewerId,
+    date: dk,
+    meal: {
+      breakfast: !!input?.meal?.breakfast,
+      lunch: !!input?.meal?.lunch,
+      dinner: !!input?.meal?.dinner,
+    },
+    sleep: { time: typeof input?.sleep?.time === 'string' ? input.sleep.time : '' },
+    medicine: {
+      items: Array.isArray(input?.medicine?.items) ? input.medicine.items : [],
+    },
+    period: (input?.period ?? 'none') as 'none' | 'start' | 'during',
+    emotion: this.clampEmotion(input?.emotion),
+    exercise: {
+      items: Array.isArray(input?.exercise?.items) ? input.exercise.items : [],
+    },
+    memo: {
+      content: typeof input?.memo?.content === 'string' ? input.memo.content : '',
+    },
+    tookDailyMed: input?.tookDailyMed === true || input?.tookDailyMed === 'true', // ★ 追加
+  };
 
-    return this.prisma.record.upsert({
-      where: { userId_date: { userId: viewerId, date: dk } },
-      update: {
-        meal: data.meal, sleep: data.sleep, medicine: data.medicine,
-        period: data.period, emotion: data.emotion,
-        exercise: data.exercise, memo: data.memo,
-      },
-      create: data,
-      select: {
-        date: true, meal: true, sleep: true, medicine: true,
-        period: true, emotion: true, exercise: true, memo: true,
-      },
-    }).then((saved) => this.toView(saved, date));
-  }
+  return this.prisma.record.upsert({
+    where: { userId_date: { userId: viewerId, date: dk } },
+    update: {
+      meal: data.meal, sleep: data.sleep, medicine: data.medicine,
+      period: data.period, emotion: data.emotion,
+      exercise: data.exercise, memo: data.memo,
+      tookDailyMed: data.tookDailyMed, 
+    },
+    create: data,
+    select: {
+      date: true, meal: true, sleep: true, medicine: true,
+      period: true, emotion: true, exercise: true, memo: true,
+      tookDailyMed: true, 
+    },
+  }).then((saved) => this.toView(saved, date));
+}
+
 }

@@ -24,16 +24,15 @@ export class AuthController {
   ) {
     const { token, user } = await this.service.login(dto.email, dto.password);
 
-    // ←← ここから追加：環境でCookieのオプションを切替
-    const isProd = process.env.NODE_ENV === 'production';
-    res.cookie(COOKIE_NAME, token, {
-      httpOnly: true,
-      path: '/',
-      maxAge: SLIDING_MAX_AGE_MS,       // 48h
-      secure: isProd,                   // 本番: true / ローカル: false
-      sameSite: isProd ? 'none' : 'lax',
-      partitioned: true as any,
-    });
+   const isProd = process.env.NODE_ENV === 'production';
+  
+   res.cookie(COOKIE_NAME, token, {
+     httpOnly: true,
+     path: '/',
+     maxAge: SLIDING_MAX_AGE_MS,        // 48h
+     secure: isProd,                    // 本番: true（必須）
+     sameSite: isProd ? 'none' : 'lax', // 本番: 'none'（必須）/ ローカル: 'lax'
+   });
 
     
     return user; // 安全なユーザー情報のみ返す

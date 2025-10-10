@@ -50,7 +50,7 @@ export class AuthGuard implements CanActivate {
 
         res.cookie(COOKIE_NAME, fresh, {
           httpOnly: true,
-          sameSite: 'lax',
+          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
           secure: process.env.NODE_ENV === 'production',
           path: '/',
           maxAge: SLIDING_MAX_AGE_MS, // 48h

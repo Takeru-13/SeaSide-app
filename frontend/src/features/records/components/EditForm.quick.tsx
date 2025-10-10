@@ -1,8 +1,7 @@
-// frontend/src/features/home/components/EditForm.quick.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// ✅ 型は records/types からのみ（相対パスで3つ戻る）
+// ✅ 型は records/types から
 import type { RecordView, UpsertPayload } from '../types';
 type RV = RecordView;
 
@@ -28,13 +27,14 @@ type Props = {
 export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
   const navigate = useNavigate();
 
-  // ✅ 現在値（完全形）をフォーム state で保持
+  // ✅ 現在値（完全形）state
   const [meal, setMeal] = useState<RV['meal']>(initial.meal);
   const [sleep, setSleep] = useState<RV['sleep']>(initial.sleep);
   const [medicine, setMedicine] = useState<RV['medicine']>(initial.medicine);
   const [period, setPeriod] = useState<RV['period']>(initial.period);
   const [emotion, setEmotion] = useState<number>(initial.emotion);
-  // ✅ 追加：常備薬チェック（初期値は既存値を真偽化）
+
+  // ✅ 今日の服薬（boolean のみ）
   const [tookDailyMed, setTookDailyMed] = useState<boolean>(!!initial.tookDailyMed);
 
   const [saving, setSaving] = useState(false);
@@ -65,14 +65,14 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
     setSaving(true);
     setError(null);
     try {
-      // ✅ UpsertPayload を組み立て（undefined はAPI側で無視されるのでそのままでOK）
+      // ✅ UpsertPayload を組み立て
       const payload: UpsertPayload = {
         meal,
         sleep,
         medicine: { items: (medicine.items ?? []).map((s) => s.trim()).filter(Boolean) },
         period,
         emotion,
-        tookDailyMed, 
+        tookDailyMed, // ← 今日の服薬だけ
       };
       await onSave(payload);
     } catch (err: unknown) {
@@ -89,7 +89,6 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
           <section className="panel panel--meal">
             <h4 className="panel__title">🍚食事🍚</h4>
             <div className="panel-box">
-              {/* 子はパッチを返すので、ここでマージ */}
               <MealSection value={meal} onChange={onMealPatch} disabled={saving} />
             </div>
           </section>
@@ -100,14 +99,14 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
           </section>
 
           <section className="panel">
-            <h4 className="panel__title">💊服薬💊</h4>
+            {/* タイトルは MedicineSection 側のヘッダー（右にトグル付き）を使う */}
             <MedicineSection
               value={medicine}
               onChange={onMedicinePatch}
               disabled={saving}
-              /* ↓ 追加：常備薬チェックをセクションに渡す */
               tookDailyMed={tookDailyMed}
               onToggleDailyMed={setTookDailyMed}
+              /* showTitle デフォルト true を利用 */
             />
           </section>
 
@@ -121,7 +120,6 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
 
         <div className="rail">
           <div className="v-slider panel">
-            {/* ← 追加：縦書きをスライダー本体だけに適用 */}
             <div className="slider-rail">
               <EmotionSlider
                 value={emotion}

@@ -1,11 +1,13 @@
 export type DateKey = string;           // 'YYYY-MM-DD'
 export type Scope = 'me' | 'pair';
 
-export type MonthlyDay = { date: DateKey; emotion: number | null };
+export type MonthlyDay = { date: DateKey; emotion: number | null; tookDailyMed?: boolean; };
 export type MonthlyResponse = { ym: string; days: MonthlyDay[] };
 
 // UI便宜型（グラフ/カレンダー用）
-export type CalendarScoreDay = { date: DateKey; score?: number };
+export type CalendarScoreDay = {
+  tookDailyMed?: boolean; date: DateKey; score?: number 
+};
 
 // 詳細表示（BE toView と同形）
 export type RecordView = {
@@ -16,7 +18,7 @@ export type RecordView = {
   period: 'none' | 'start' | 'during';
   emotion: number;                      // 1..10
 
-  tookDailyMed: boolean;
+  tookDailyMed?: boolean;
 
   exercise: { items: string[] };
   memo: { content: string };

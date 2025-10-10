@@ -1,0 +1,75 @@
+/* ヘッダー本体を確実に横並びに */
+.medicine-header {
+  display: flex !important;
+  align-items: center;
+  justify-content: start; /* 左:タイトル / 右:操作群 */
+  gap: 12px;
+  flex-wrap: nowrap;              /* 折り返し禁止 */
+}
+
+/* タイトルが横幅を独占しないように */
+.medicine-header .medicine-title {
+  margin: 0;
+  flex: 0 1 auto;                 /* 必要なら縮む */
+  width: auto !important;         /* もし width:100% がどこかで当たっていたら打ち消す */
+  min-width: 0;                   /* 長いタイトルでも縮められるように */
+}
+
+/* 右側のアクション群を横並び固定 */
+.medicine-header .medicine-actions {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;                 /* 縮ませず右側に固める */
+  white-space: nowrap;            /* ボタンが折り返されないように */
+}
+
+.medicine-title{
+  color: white;
+}
+
+.field-label{
+  color: white;
+}
+
+
+/* ベース：未服用（暗め） */
+.pill-btn {
+  background: rgba(15, 23, 42, 0.6);            /* 暗め */
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: #cbd5e1;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .2s, box-shadow .2s, background .2s, border-color .2s, color .2s;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.15);
+}
+
+/* ホバー（未服用時） */
+.pill-btn:hover:not(:disabled)[aria-pressed="false"] {
+  border-color: #8b5cf6;
+  transform: translateY(-1px);
+}
+
+/* 押している＝飲んだ（青） */
+.pill-btn[aria-pressed="true"] {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  border: 1px solid #8b5cf6;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(99, 102, 241, 0.35);
+}
+
+/* ホバー（飲んだ時） */
+.pill-btn:hover:not(:disabled)[aria-pressed="true"] {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(99, 102, 241, 0.5);
+}
+
+/* 無効時 */
+.pill-btn:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  transform: none;
+}

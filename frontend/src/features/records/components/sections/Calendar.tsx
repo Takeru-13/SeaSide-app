@@ -1,4 +1,5 @@
-// react-calendarベース：月固定 + 中央にPNGを重ね表示（少し大きめ）
+// frontend/src/features/records/components/Calendar.tsx
+// react-calendarベース：月固定 + 中央にPNG + 左下に💊バッジ
 import { useMemo } from 'react';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -8,7 +9,7 @@ import type { CalendarScoreDay, DateKey } from '../../types';
 
 type Props = {
   ym: string;
-  days: CalendarScoreDay[]; // { date: 'YYYY-MM-DD', score?: number } を想定
+  days: CalendarScoreDay[]; // { date: 'YYYY-MM-DD', score?: number|null, tookDailyMed?: boolean }
   onPick: (dateISO: DateKey) => void;
   onPrev: () => void;
   onNext: () => void;
@@ -74,33 +75,47 @@ export default function CalendarView({ ym, days, onPick, onPrev, onNext }: Props
         /* 全タイルを重ね合わせの基準に */
         tileClassName={({ date }) => {
           const iso = formatDateLocal(date);
-          const hasIcon = days.some(d => d.date === iso && d.score != null);
+          // 何かしらのアイコン/バッジが乗る日かどうか（class名は任意）
+          const hasIcon = days.some(d => d.date === iso && (d.score != null || d.tookDailyMed));
           return hasIcon ? `${styles.tile} ${styles.hasIcon ?? ''}` : styles.tile;
         }}
 
-        /* 各日セルにPNGを中央重ね（未記録は出さない） */
+        /* 各日セルにPNG（中央）＋ 服薬なら左下に💊 を重ねる */
         tileContent={({ date }) => {
           const iso = formatDateLocal(date);
           const hit = days.find((d) => d.date === iso);
-          if (hit?.score != null) {
-            const level = clampLevel(hit.score);
-            const src = `/emotions/Lv${level}.png`;
-            return (
-              <div className={styles.iconCenter}>
-                <img
-                  src={src}
-                  alt={`Emotion Lv.${level}`}
-                  decoding="async"
-                  loading="eager"
-                  className={styles.iconCenterImg}
-                  /* 高DPI用がある場合は有効化
-                  srcSet={`/emotions/Lv${level}.png 1x, /emotions/Lv${level}@2x.png 2x, /emotions/Lv${level}@3x.png 3x`}
-                  */
-                />
-              </div>
-            );
-          }
-          return null;
+
+          if (!hit) return null;
+
+          const hasScore = hit.score != null;
+          const pill = !!hit.tookDailyMed;
+
+          if (!hasScore && !pill) return null;
+
+          const level = hasScore ? clampLevel(hit.score as number) : null;
+          const src = hasScore ? `/emotions/Lv${level}.png` : null;
+
+          return (
+            <>
+              {hasScore && (
+                <div className={styles.iconCenter}>
+                  <img
+                    src={src!}
+                    alt={`Emotion Lv.${level}`}
+                    decoding="async"
+                    loading="eager"
+                    className={styles.iconCenterImg}
+                    /* 高DPI用があれば有効化
+                    srcSet={`/emotions/Lv${level}.png 1x, /emotions/Lv${level}@2x.png 2x, /emotions/Lv${level}@3x.png 3x`}
+                    */
+                  />
+                </div>
+              )}
+              {pill && (
+                <span className={styles.pillBadge} aria-label="服薬済み">💊</span>
+              )}
+            </>
+          );
         }}
       />
     </div>
