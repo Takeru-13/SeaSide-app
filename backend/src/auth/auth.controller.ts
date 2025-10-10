@@ -31,7 +31,8 @@ export class AuthController {
       path: '/',
       maxAge: SLIDING_MAX_AGE_MS,       // 48h
       secure: isProd,                   // 本番: true / ローカル: false
-      sameSite: isProd ? 'none' : 'lax' // 本番は cross-site 対応 / ローカルはlaxでOK
+      sameSite: isProd ? 'none' : 'lax',
+      partitioned: true as any,
     });
 
     return user; // 安全なユーザー情報のみ返す
