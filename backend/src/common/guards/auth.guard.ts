@@ -47,13 +47,13 @@ export class AuthGuard implements CanActivate {
           { sub: payload.sub, email: payload.email, userName: payload.userName },
           { expiresIn: '48h', secret: process.env.JWT_SECRET },
         );
-
         res.cookie(COOKIE_NAME, fresh, {
           httpOnly: true,
-          sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-          secure: process.env.NODE_ENV === 'production',
           path: '/',
-          maxAge: SLIDING_MAX_AGE_MS, // 48h
+          maxAge: SLIDING_MAX_AGE_MS,
+          sameSite: 'none',
+          secure: true,
+          partitioned: true as any, // ★ login と完全一致が超重要
         });
       }
       // -------------------------------------------------------------------

@@ -28,9 +28,11 @@ export class AuthController {
     res.cookie(COOKIE_NAME, token, {
       httpOnly: true,
       path: '/',
-      maxAge: SLIDING_MAX_AGE_MS,          // 48h
-      secure: isProd,                      // 本番: true
-      sameSite: isProd ? 'none' : 'lax',   // 本番: 'none'
+      maxAge: SLIDING_MAX_AGE_MS,
+      sameSite: 'none',     // 3rd-party で必須
+      secure: true,         // https で必須
+      partitioned: true as any, // ★ CHIPS（TS型は any で回避）
+      // domain: 未指定推奨（まずは安定）
     });
 
     // 安全なユーザー情報のみ返す（必要に応じて整形）
