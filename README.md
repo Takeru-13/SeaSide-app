@@ -19,9 +19,11 @@ SeaSideは、日々の **感情・睡眠・食事・運動・体調** を
 ---
 
 ## 🎯 ターゲット
+- 自分自身とパートナー
 - 日々の気持ちや生活習慣を手軽に残したい人  
 - カップルやパートナーと共有したい人  
-- 自分の感情や体調を振り返りたい人  
+- 自分の感情や体調を振り返りたい人
+
 
 ---
 
@@ -98,6 +100,108 @@ SeaSideは、感情や習慣をふたりで心地よく記録し合い、
 - スタイルをもっと軽量に、もっとモダンに  
 
 ---
+
+## ーーーーー追記．メモーーーーーー
+  ログイン認証方式の変更（Cookie → Authorization        
+  ヘッダー）
+
+  問題: NetlifyとRenderのクロスオリジン環境でCookieがブロ     
+  ックされ、ログインできない
+
+  解決策: JWT
+  トークンをAuthorizationヘッダーで送信する方式に移行
+
+  変更内容:
+  - バックエンド:
+    - ログイン時にCookie設定を削除し、トークンをレスポンス    
+  で返すように変更
+    - AuthGuardをシンプル化（Authorizationヘッダーのみサポ    
+  ート）
+    - スライディングトークン延長機能を削除
+  - フロントエンド:
+    - トークンをlocalStorageに保存
+    - 全HTTPリクエストに自動的にAuthorization: Bearer
+  <token>ヘッダーを付与
+    - ログアウト時にlocalStorageをクリア
+
+  コミット: 91828d6 - Fix login error by migrating from       
+  Cookie to Authorization header authentication
+
+  ---
+  2.  部分更新機能の実装（データ上書き問題の修正）
+
+  問題:
+  - 詳細記録後にクイック記録すると、運動・メモが空で上書き    
+  されて消える
+  - クイック記録後に詳細記録すると、常用薬リストが空で上書    
+  きされて消える
+
+  解決策: バックエンドで部分更新をサポート、フロントエンド    
+  で送信フィールドを限定
+
+  変更内容:
+  - バックエンド (records.service.ts):
+    - 送信されたフィールドのみ更新、未送信フィールドは既存    
+  値を保持
+  - フロントエンド:
+    - クイック記録: meal, sleep, period, emotion,
+  tookDailyMed のみ送信
+    - クイック記録の薬リスト編集UIを非表示（showMedicineLi    
+  st={false}）
+    - 詳細記録: 全フィールドを送信（従来通り）
+
+  コミット: b663660 - Fix partial update issue: prevent       
+  data overwrite between quick and detail records
+
+  ---
+  3.  詳細記録から「常用薬」トグルを削除
+
+  問題: 詳細記録に不要な「常用薬」トグルが表示されていた      
+
+  解決策: MedicineSectionにshowTitle={false}を設定
+
+  変更内容:
+  - 詳細記録: 「服薬」タイトル + 薬リスト編集UIのみ表示       
+  - クイック記録: 「💊服薬💊」タイトル +
+  常用薬トグルのみ表示
+
+  コミット: e66ba57 - Remove tookDailyMed toggle from
+  detail record form
+
+  ---
+  4. 🎨 クイックモーダルのスライダー色変更
+
+  問題: スライダーの色が要望と異なっていた
+
+  解決策: グラデーションを変更
+
+  変更内容:
+  - 上（値10）: 赤 #ef4444
+  - 中央（値5）: 青紫 #6366f1
+  - 下（値1）: 青 #3b82f6
+
+  コミット: 2d94f8c - Update emotion slider gradient: red     
+  (top) to blue (bottom)
+
+  ---
+  5.  深夜にモーダルが開かないバグ修正
+
+  問題:
+  深夜2時頃に当日の日付をタップしてもモーダルが開かない       
+
+  原因: toISOString()がUTC時刻を返すため、日本時間との時差    
+  で1日ずれる
+
+  解決策:
+  ローカル時刻を使用するformatDateLocal()関数を実装
+
+  変更内容:
+  - Calendar.tsx: todayStrの計算をローカル時刻に変更
+  - HomeSection.tsx: 同上
+  - useCalendar.ts:
+  日付生成とtodayの計算をローカル時刻に変更
+  ---
+
 
 ## 👤 作者
 - 作者: **坂本 武龍 (Takeru)**  
