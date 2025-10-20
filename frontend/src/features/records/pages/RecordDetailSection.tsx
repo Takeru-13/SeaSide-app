@@ -2,6 +2,7 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import EditForm from '../components/EditForm';
 import { useRecordDetail } from '../hooks/useRecordDetail';
+import LoadingOverlay from '../../../shared/ui/LoadingOverlay'; // ← 追加
 import type { RecordView, UpsertPayload, DateKey } from '../types';
 
 export default function RecordDetailSection() {
@@ -23,16 +24,33 @@ export default function RecordDetailSection() {
     await save(patch);
   };
 
+  // エラーハンドリング
   if (!dateKey) return <p>日付が不正です。</p>;
-  if (loading) return <p>読み込み中...</p>;
   if (error) return <p className="banner banner--error">{error}</p>;
-  if (!data) return <p>記録が見つかりません。</p>;
 
   return (
     <section className="detail-wrap">
-      {readOnly && <div className="banner banner--info">ペアの記録を表示中（編集不可）</div>}
-      {/* EditForm は RecordView 初期値＋差分パッチ保存 */}
-      <EditForm initial={data as RecordView} onCancel={onCancel} onSave={onSave} />
+      {/* ★ ローディングオーバーレイ（全画面） */}
+      <LoadingOverlay 
+        isLoading={loading} 
+        message="詳細を読み込んでいます..."
+      />
+
+      {/* データがない場合 */}
+      {!loading && !data && <p>記録が見つかりません。</p>}
+
+      {/* データがある場合 */}
+      {!loading && data && (
+        <>
+          {readOnly && (
+            <div className="banner banner--info">
+              ペアの記録を表示中（編集不可）
+            </div>
+          )}
+          {/* EditForm は RecordView 初期値＋差分パッチ保存 */}
+          <EditForm initial={data as RecordView} onCancel={onCancel} onSave={onSave} />
+        </>
+      )}
     </section>
   );
 }

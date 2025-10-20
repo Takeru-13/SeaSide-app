@@ -7,6 +7,7 @@ import usePairCalendar from '../hooks/usePairCalendar';
 import CalendarView from '../components/sections/Calendar';
 import ScopeToggle from '../components/ScopeToggle';
 import EmptyPairCard from '../../pair/components/EmptyPairCard';
+import LoadingOverlay from '../../../shared/ui/LoadingOverlay'; // ← 追加
 
 import EditModalQuick from '../components/EditModalQuick';
 
@@ -21,20 +22,14 @@ type MeResponse = { id: number; userName: string; email: string; iconUrl?: strin
 type PairStatus = { connected: boolean; partner?: { id: number } };
 
 export default function HomeSection() {
-  // ★ 背景だけ眺める Zen モード
   const [isZen, setIsZen] = useState(false);
-
-  // スコープ（自分 / ペア）をトップで保持
   const [scope, setScope] = useState<Scope>('me');
 
-  // 自分スコープ：{ state, act } 形
   const self = useCalendar();
   const { state: selfState, act: selfAct } = self;
 
-  // ペアスコープ：フラット形
   const pair = usePairCalendar();
 
-  // 表示用の値を scope で切替
   const ym = scope === 'me' ? selfState.ym : pair.ym;
   const days = scope === 'me' ? selfState.month.days : pair.days;
   const loading = scope === 'me' ? selfState.loading : pair.loading;
@@ -49,10 +44,8 @@ export default function HomeSection() {
     else pair.next();
   };
 
-  // ペア詳細モーダルの日付
   const [pairDate, setPairDate] = useState<string | null>(null);
 
-  // /auth/me の取得（任意表示）
   const [me, setMe] = useState<MeResponse | null>(null);
   useEffect(() => {
     get<MeResponse>('/auth/me')
@@ -60,10 +53,9 @@ export default function HomeSection() {
       .catch(() => setMe(null));
   }, []);
 
-  // ペア名（ヘッダー表示用）
   const [pairName, setPairName] = useState<string | null>(null);
   useEffect(() => {
-    if (scope !== 'pair') return; // ペアタブの時だけ取得
+    if (scope !== 'pair') return;
     (async () => {
       try {
         const status = await get<PairStatus>('/pair/status');
@@ -71,7 +63,6 @@ export default function HomeSection() {
           setPairName('ペア');
           return;
         }
-        // パートナーの表示名を取得（存在しない場合は 'ペア' フォールバック）
         try {
           const u = await get<{ userName?: string }>(`/users/${status.partner.id}`);
           setPairName(u.userName ?? 'ペア');
@@ -89,18 +80,22 @@ export default function HomeSection() {
     if (scope === 'pair') {
       setPairDate(date);
     } else {
-      selfAct.onSelectDate(date); // 自分スコープはクイック編集モーダルを開く
+      selfAct.onSelectDate(date);
     }
   };
 
-  // ★ 追加：モーダルが開いているか（自分＝クイック編集 or ペア＝閲覧）
   const isModalOpen =
     (scope === 'me' && !!selfState.editing) ||
     (scope === 'pair' && !!pairDate);
 
   return (
     <section className={styles.wrapper}>
-      {/* Zenモードではメインコンテンツを非表示 */}
+      {/* ★ ローディングオーバーレイ（全画面） */}
+      <LoadingOverlay 
+        isLoading={loading} 
+        message="読み込み中。。。🐟️ 🐡 🦈"
+      />
+
       {!isZen && (
         <>
           <header className={styles.header}>
@@ -132,7 +127,6 @@ export default function HomeSection() {
             onNext={nextMonth}
           />
 
-          {/* 自分：クイック編集モーダル */}
           {selfState.editing && scope === 'me' && (
             <EditModalQuick
               value={selfState.editing}
@@ -141,18 +135,14 @@ export default function HomeSection() {
             />
           )}
 
-          {/* ペア：閲覧専用モーダル */}
           {scope === 'pair' && pairDate && (
             <PairRecordModal date={pairDate} onClose={() => setPairDate(null)} />
           )}
 
           <MonthlyGraph ym={ym} days={days} />
-
-          {loading && <div className={styles.loading}>読み込み中…</div>}
         </>
       )}
 
-      {/* 画面最下部の固定コントロール（モーダル中は非表示） */}
       {!isModalOpen && (
         <div className={styles.zenControls} aria-live="polite">
           <button
@@ -181,7 +171,6 @@ export default function HomeSection() {
   );
 }
 
-/** 'YYYY-MM' に月シフトを適用 */
 function shiftYm(ym: string, delta: number): string {
   const y = Number(ym.slice(0, 4));
   const m = Number(ym.slice(5, 7));

@@ -1,0 +1,163 @@
+/* frontend/src/shared/ui/LoadingOverlay.module.css */
+
+/* 基本オーバーレイ */
+.overlay {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  animation: fadeIn 0.2s ease-in;
+}
+
+/* 全画面表示 */
+.fullScreen {
+  position: fixed;
+  inset: 0;
+}
+
+/* 親要素内での絶対配置 */
+.absolute {
+  position: absolute;
+  inset: 0;
+}
+
+/* コンテンツ中央 */
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 32px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  animation: scaleIn 0.3s ease-out;
+}
+
+/* スピナー全体 */
+.spinner {
+  position: relative;
+  width: 64px;
+  height: 64px;
+}
+
+/* ぐるぐる回るリング（3重） */
+.spinnerRing {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border: 4px solid transparent;
+  border-radius: 50%;
+  animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+}
+
+/* 1つ目のリング */
+.spinnerRing:nth-child(1) {
+  border-top-color: #3b82f6;
+  animation-delay: -0.45s;
+}
+
+/* 2つ目のリング */
+.spinnerRing:nth-child(2) {
+  border-top-color: #8b5cf6;
+  animation-delay: -0.3s;
+}
+
+/* 3つ目のリング */
+.spinnerRing:nth-child(3) {
+  border-top-color: #ec4899;
+  animation-delay: -0.15s;
+}
+
+/* メッセージテキスト */
+.message {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f2937;
+  letter-spacing: 0.02em;
+  text-align: center;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+/* アニメーション定義 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .overlay {
+    background: rgba(0, 0, 0, 0.6);
+  }
+  
+  .content {
+    background: rgba(30, 30, 30, 0.95);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  }
+  
+  .message {
+    color: #f3f4f6;
+  }
+  
+  .spinnerRing:nth-child(1) {
+    border-top-color: #60a5fa;
+  }
+  
+  .spinnerRing:nth-child(2) {
+    border-top-color: #a78bfa;
+  }
+  
+  .spinnerRing:nth-child(3) {
+    border-top-color: #f472b6;
+  }
+}
+
+/* アニメーション削減設定 */
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .content,
+  .message {
+    animation: none;
+  }
+  
+  .spinnerRing {
+    animation: spin 2s linear infinite;
+  }
+}

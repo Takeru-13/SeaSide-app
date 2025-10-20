@@ -135,3 +135,126 @@
   opacity: .55;
   cursor: not-allowed;
 }
+
+/* frontend/src/features/auth/auth.css */
+/* 既存のスタイルはそのまま維持 */
+
+/* ========================================
+   フッター（リンク部分）のモダンスタイル
+   ======================================== */
+
+.auth-footer {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  text-align: center;
+}
+
+.auth-footer-text {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* モダンなリンクボタン */
+.auth-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* リンクテキスト */
+.auth-link-text {
+  color: #fff;
+  transition: color 0.3s ease;
+}
+
+/* ホバー時 */
+.auth-link:hover {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+}
+
+.auth-link:hover .auth-link-text {
+  color: #ffd700; /* ゴールド色 */
+}
+
+/* クリック時 */
+.auth-link:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+/* 矢印アイコン */
+.auth-link-arrow {
+  color: #fff;
+  transition: all 0.3s ease;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.auth-link:hover .auth-link-arrow {
+  transform: translateX(4px);
+  color: #ffd700; /* 矢印もゴールド色 */
+}
+
+/* モバイル対応 */
+@media (max-width: 640px) {
+  .auth-footer-text {
+    font-size: 13px;
+  }
+
+  .auth-link {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+}
+
+/* ダークモード対応 */
+@media (prefers-color-scheme: dark) {
+  .auth-footer {
+    border-top-color: rgba(255, 255, 255, 0.1);
+  }
+
+  .auth-link {
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+  }
+
+  .auth-link:hover {
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+  }
+
+  .auth-link:hover .auth-link-text,
+  .auth-link:hover .auth-link-arrow {
+    color: #ffe066; /* ダークモードではやや薄いゴールド */
+  }
+}
+
+/* アニメーション削減設定 */
+@media (prefers-reduced-motion: reduce) {
+  .auth-link,
+  .auth-link-text,
+  .auth-link-arrow {
+    transition: none;
+  }
+
+  .auth-link:hover {
+    transform: none;
+  }
+
+  .auth-link:hover .auth-link-arrow {
+    transform: none;
+  }
+}

@@ -63,3 +63,9 @@
 .banner--warn{ background:#fff3cd; border-color:#ffeaa7; color:#856404; }
 .banner--info{ background:#f4f6ff; border-color:#d7defe; color:#3949ab; }
 .banner--error{ background:#ffe8e8; border-color:#ffc9c9; color:#b00020; }
+
+.contentContainer {
+  position: relative;
+  min-height: 400px; /* ローディング表示時の最低高さ */
+  width: 100%;
+}
