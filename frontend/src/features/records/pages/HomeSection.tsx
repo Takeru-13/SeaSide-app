@@ -21,6 +21,14 @@ import styles from './HomeSection.module.css';
 type MeResponse = { id: number; userName: string; email: string; iconUrl?: string };
 type PairStatus = { connected: boolean; partner?: { id: number } };
 
+// ローカル日付をYYYY-MM-DDに変換（UTCではなく）
+function formatDateLocal(date: Date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 export default function HomeSection() {
   const [isZen, setIsZen] = useState(false);
   const [scope, setScope] = useState<Scope>('me');
@@ -33,7 +41,8 @@ export default function HomeSection() {
   const ym = scope === 'me' ? selfState.ym : pair.ym;
   const days = scope === 'me' ? selfState.month.days : pair.days;
   const loading = scope === 'me' ? selfState.loading : pair.loading;
-  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  // ローカル時刻で今日の日付を取得（UTCではなく）
+  const todayStr = useMemo(() => formatDateLocal(new Date()), []);
 
   const prevMonth = () => {
     if (scope === 'me') selfAct.setYm(shiftYm(selfState.ym, -1));

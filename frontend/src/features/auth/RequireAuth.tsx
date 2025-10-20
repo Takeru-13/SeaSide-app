@@ -1,6 +1,7 @@
 // src/features/auth/RequireAuth.tsx
 import { Navigate, Outlet } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { tokenStorage } from '../../shared/api/http';
 
 export default function RequireAuth() {
   const [state, setState] = useState<'checking'|'ok'|'guest'>('checking');
@@ -9,18 +10,37 @@ export default function RequireAuth() {
     let ignore = false;
     (async () => {
       try {
+        const token = tokenStorage.get();
+        if (!token) {
+          if (!ignore) setState('guest');
+          return;
+        }
+
         const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          credentials: 'include',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
         });
-        if (!ignore) setState(res.ok ? 'ok' : 'guest');
+        if (!ignore) {
+          if (res.ok) {
+            setState('ok');
+          } else {
+            // トークンが無効な場合はクリア
+            tokenStorage.clear();
+            setState('guest');
+          }
+        }
       } catch {
-        if (!ignore) setState('guest');
+        if (!ignore) {
+          tokenStorage.clear();
+          setState('guest');
+        }
       }
     })();
     return () => { ignore = true; };
   }, []);
 
   if (state === 'checking') return <div style={{padding:24, color:'white'}}>認証確認中…＊**</div>;
-  if (state === 'guest')    return <Navigate to="/login" replace />; 
+  if (state === 'guest')    return <Navigate to="/login" replace />;
   return <Outlet />;
 }

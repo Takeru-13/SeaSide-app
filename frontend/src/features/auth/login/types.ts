@@ -4,6 +4,11 @@ export type AuthUser = {
   email: string;
 };
 
+export type LoginRes = {
+  token: string;
+  user: AuthUser;
+};
+
 export type LoginReq = {
   email: string;
   password: string;

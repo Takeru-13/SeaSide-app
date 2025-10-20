@@ -130,7 +130,12 @@ export default function EditForm({ initial, onCancel, onSave }: Props) {
 
           <section className={styles.panel}>
             <h4 className={styles.panelTitle}>服薬</h4>
-            <MedicineSection value={medicine} onChange={onMedicinePatch} disabled={saving} />
+            <MedicineSection
+              value={medicine}
+              onChange={onMedicinePatch}
+              disabled={saving}
+              showTitle={false}  // 外側でタイトルを表示するので、内部タイトル（常用薬トグル含む）は非表示
+            />
           </section>
 
           <section className={`${styles.panel} ${styles.panelPeriod}`}>

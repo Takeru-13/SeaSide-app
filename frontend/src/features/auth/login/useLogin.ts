@@ -1,6 +1,7 @@
 // frontend/src/features/auth/login/useLogin.ts
 import { useState } from "react";
-import { loginApi } from './api'; // ← loginApi のまま（修正なし）
+import { loginApi } from './api'; 
+import { tokenStorage } from '../../../shared/api/http';
 import type { AuthUser, LoginReq } from './types';
 
 export function useLogin() {
@@ -12,7 +13,10 @@ export function useLogin() {
     setError(null);
 
     try {
-      return await loginApi(data);
+      const result = await loginApi(data);
+      // トークンをlocalStorageに保存
+      tokenStorage.set(result.token);
+      return result.user;
     } catch (e) {
       // エラーオブジェクトをそのまま保存（Toast側で変換）
       setError(e);

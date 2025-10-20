@@ -13,6 +13,14 @@ import type {
 // Home用のローカル便宜型（UI専用）
 type MonthData = { ym: string; days: CalendarScoreDay[] };
 
+// ローカル日付をYYYY-MM-DDに変換（UTCではなく）
+function formatDateLocal(date: Date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
+
 // 月の土台を生成
 function buildMonthSkeleton(ym: string): MonthData {
   const y = Number(ym.slice(0, 4));
@@ -21,7 +29,7 @@ function buildMonthSkeleton(ym: string): MonthData {
 
   const days: CalendarScoreDay[] = Array.from({ length: last }, (_, i) => {
     const d = new Date(y, m - 1, i + 1);
-    const date = d.toISOString().slice(0, 10);
+    const date = formatDateLocal(d);  // ローカル時刻で日付文字列を生成
     return { date, score: undefined, tookDailyMed: false};
   });
 
@@ -43,7 +51,8 @@ function makeEmptyView(date: string): RecordView {
 }
 
 export default function useHome() {
-  const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  // ローカル時刻で今日の日付を取得（UTCではなく）
+  const today = useMemo(() => formatDateLocal(new Date()), []);
   const ymInit = today.slice(0, 7);
 
   const [ym, setYm] = useState(ymInit);

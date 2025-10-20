@@ -13,6 +13,9 @@ type Props = {
 
   /** 見出し（服薬）をこのコンポーネント内で出すか */
   showTitle?: boolean;
+
+  /** 薬のリスト編集UIを表示するか（クイック記録では非表示） */
+  showMedicineList?: boolean;
 };
 
 export default function MedicineSection({
@@ -22,6 +25,7 @@ export default function MedicineSection({
   tookDailyMed,
   onToggleDailyMed,
   showTitle = true,
+  showMedicineList = true,
 }: Props) {
   const items = value.items ?? [];
   const [newMed, setNewMed] = useState('');
@@ -76,44 +80,48 @@ export default function MedicineSection({
   </div>
 )}
 
-      {/* 既存：薬タグの一覧 */}
-      <div className="medicine-tags">
-        {items.map((med, i) => (
-          <span key={i} className="medicine-tag">
-            {med}
+      {/* 薬タグの一覧（クイック記録では非表示） */}
+      {showMedicineList && (
+        <>
+          <div className="medicine-tags">
+            {items.map((med, i) => (
+              <span key={i} className="medicine-tag">
+                {med}
+                <button
+                  type="button"
+                  onClick={() => removeMedicine(i)}
+                  disabled={disabled}
+                  className="medicine-tag-remove"
+                  aria-label="削除"
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
+
+          {/* 薬名の追加入力 */}
+          <div className="medicine-input">
+            <input
+              type="text"
+              value={newMed}
+              onChange={(e) => setNewMed(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="薬名を入力"
+              disabled={disabled}
+            />
             <button
               type="button"
-              onClick={() => removeMedicine(i)}
+              onClick={addMedicine}
               disabled={disabled}
-              className="medicine-tag-remove"
-              aria-label="削除"
+              className="medicine-add-btn"
+              aria-label="追加"
             >
-              ×
+            +
             </button>
-          </span>
-        ))}
-      </div>
-
-      {/* 既存：薬名の追加入力 */}
-      <div className="medicine-input">
-        <input
-          type="text"
-          value={newMed}
-          onChange={(e) => setNewMed(e.target.value)}
-          onKeyPress={handleKeyPress}
-          placeholder="薬名を入力"
-          disabled={disabled}
-        />
-        <button
-          type="button"
-          onClick={addMedicine}
-          disabled={disabled}
-          className="medicine-add-btn"
-          aria-label="追加"
-        >
-        +
-        </button>
-      </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

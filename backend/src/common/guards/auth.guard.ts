@@ -5,12 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Request, Response } from 'express';
-import {
-  COOKIE_NAME,
-  REFRESH_THRESHOLD_SEC,
-  SLIDING_MAX_AGE_MS,
-} from '../../auth/auth.const';
+import { Request } from 'express';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -19,44 +14,20 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const http = context.switchToHttp();
     const req = http.getRequest<Request & { user?: any }>();
-    const res = http.getResponse<Response>();
 
-    // 1) Cookie 優先 / 2) Authorization: Bearer fallback
+    // Authorization: Bearer <token> から取得
     const bearer = req.headers['authorization']?.toString();
-    const headerToken = bearer?.startsWith('Bearer ') ? bearer.slice(7) : undefined;
-    const cookieToken = (req as any).cookies?.[COOKIE_NAME];
-    const token = cookieToken || headerToken;
+    const token = bearer?.startsWith('Bearer ') ? bearer.slice(7) : undefined;
 
     if (!token) throw new UnauthorizedException('No token');
 
     try {
-      // payload に iat/exp を含む（sign 時の secret と一致させる）
       const payload = this.jwt.verify(token, {
         secret: process.env.JWT_SECRET,
-      }) as { sub: number; email: string; userName: string; iat?: number; exp?: number };
+      }) as { sub: number; email: string; userName: string };
 
       // コントローラで使う最小ユーザ情報
       req.user = { id: payload.sub, email: payload.email, userName: payload.userName };
-
-      // ---- スライディング延長：残りが閾値未満なら再発行して Set-Cookie ----
-      const now = Math.floor(Date.now() / 1000);
-      const remaining = (payload.exp ?? now) - now;
-
-      if (remaining <= REFRESH_THRESHOLD_SEC) {
-        const fresh = await this.jwt.signAsync(
-          { sub: payload.sub, email: payload.email, userName: payload.userName },
-          { expiresIn: '48h', secret: process.env.JWT_SECRET },
-        );
-        res.cookie(COOKIE_NAME, fresh, {
-          httpOnly: true,
-          path: '/',
-          maxAge: SLIDING_MAX_AGE_MS,
-          sameSite: 'none',
-          secure: true,
-          partitioned: true as any, // ★ login と完全一致が超重要
-        });
-      }
-      // -------------------------------------------------------------------
 
       return true;
     } catch {

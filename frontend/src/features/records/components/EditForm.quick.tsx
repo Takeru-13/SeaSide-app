@@ -65,14 +65,15 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
     setSaving(true);
     setError(null);
     try {
-      // ✅ UpsertPayload を組み立て
+      // ✅ クイック記録: 必要なフィールドのみ送信（部分更新）
+      // medicine, exercise, memo は送らない → 既存値を保持
       const payload: UpsertPayload = {
         meal,
         sleep,
-        medicine: { items: (medicine.items ?? []).map((s) => s.trim()).filter(Boolean) },
         period,
         emotion,
         tookDailyMed, // ← 今日の服薬だけ
+        // medicine, exercise, memo は送信しない
       };
       await onSave(payload);
     } catch (err: unknown) {
@@ -99,14 +100,14 @@ export default function EditFormQuick({ initial, onCancel, onSave }: Props) {
           </section>
 
           <section className="panel">
-            {/* タイトルは MedicineSection 側のヘッダー（右にトグル付き）を使う */}
+            {/* クイック記録: 常用薬トグルのみ表示、薬リストは非表示 */}
             <MedicineSection
               value={medicine}
               onChange={onMedicinePatch}
               disabled={saving}
               tookDailyMed={tookDailyMed}
               onToggleDailyMed={setTookDailyMed}
-              /* showTitle デフォルト true を利用 */
+              showMedicineList={false}  // 薬リスト編集UIを非表示
             />
           </section>
 

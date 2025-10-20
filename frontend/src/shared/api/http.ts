@@ -1,11 +1,29 @@
 // frontend/src/shared/api/http.ts
 const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:3000';
+const TOKEN_KEY = 'auth_token';
+
+// トークンの保存・取得・削除
+export const tokenStorage = {
+  get: () => localStorage.getItem(TOKEN_KEY),
+  set: (token: string) => localStorage.setItem(TOKEN_KEY, token),
+  clear: () => localStorage.removeItem(TOKEN_KEY),
+};
 
 export async function http<T>(path: string, init: RequestInit = {}): Promise<T> {
+  const token = tokenStorage.get();
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(init.headers as Record<string, string> || {}),
+  };
+
+  // トークンがあればAuthorizationヘッダーを追加
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${BASE}${path}`, {
     ...init,
-    headers: { 'Content-Type': 'application/json', ...(init.headers || {}) },
-    credentials: 'include',
+    headers,
   });
   if (!res.ok) {
     const text = await res.text();
@@ -16,10 +34,16 @@ export async function http<T>(path: string, init: RequestInit = {}): Promise<T> 
 
 // 追加：404は例外にせず null を返すGET
 export async function getOrNull<T>(path: string): Promise<T | null> {
+  const token = tokenStorage.get();
+  const headers: Record<string, string> = { 'Accept': 'application/json' };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
   const res = await fetch(`${BASE}${path}`, {
     method: 'GET',
-    headers: { 'Accept': 'application/json' },
-    credentials: 'include',
+    headers,
   });
   if (res.status === 404) return null;
   if (!res.ok) {
