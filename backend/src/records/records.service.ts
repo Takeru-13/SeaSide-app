@@ -129,48 +129,99 @@ export class RecordsService {
     };
   }
 
-  /** 保存（常に viewer のみ／他人保存は 403） */
+  /** 保存（常に viewer のみ／他人保存は 403） - 部分更新対応 */
   async upsert(date: string, viewerId: number, input: any) {
-  const dk = this.dateKey(date);
+    const dk = this.dateKey(date);
 
-  const data = {
-    userId: viewerId,
-    date: dk,
-    meal: {
-      breakfast: !!input?.meal?.breakfast,
-      lunch: !!input?.meal?.lunch,
-      dinner: !!input?.meal?.dinner,
-    },
-    sleep: { time: typeof input?.sleep?.time === 'string' ? input.sleep.time : '' },
-    medicine: {
-      items: Array.isArray(input?.medicine?.items) ? input.medicine.items : [],
-    },
-    period: (input?.period ?? 'none') as 'none' | 'start' | 'during',
-    emotion: this.clampEmotion(input?.emotion),
-    exercise: {
-      items: Array.isArray(input?.exercise?.items) ? input.exercise.items : [],
-    },
-    memo: {
-      content: typeof input?.memo?.content === 'string' ? input.memo.content : '',
-    },
-    tookDailyMed: input?.tookDailyMed === true || input?.tookDailyMed === 'true', // ★ 追加
-  };
+    // 既存レコードを取得（部分更新のため）
+    const existing = await this.prisma.record.findUnique({
+      where: { userId_date: { userId: viewerId, date: dk } },
+      select: {
+        meal: true, sleep: true, medicine: true,
+        period: true, emotion: true, exercise: true, memo: true,
+        tookDailyMed: true,
+      },
+    });
 
-  return this.prisma.record.upsert({
-    where: { userId_date: { userId: viewerId, date: dk } },
-    update: {
-      meal: data.meal, sleep: data.sleep, medicine: data.medicine,
-      period: data.period, emotion: data.emotion,
-      exercise: data.exercise, memo: data.memo,
-      tookDailyMed: data.tookDailyMed, 
-    },
-    create: data,
-    select: {
-      date: true, meal: true, sleep: true, medicine: true,
-      period: true, emotion: true, exercise: true, memo: true,
-      tookDailyMed: true, 
-    },
-  }).then((saved) => this.toView(saved, date));
-}
+    // 送信されたフィールドのみ更新、未送信は既存値を保持
+    const updateData: any = {};
+
+    // meal: 送信されていれば更新
+    if (input?.meal !== undefined) {
+      updateData.meal = {
+        breakfast: !!input.meal.breakfast,
+        lunch: !!input.meal.lunch,
+        dinner: !!input.meal.dinner,
+      };
+    }
+
+    // sleep: 送信されていれば更新
+    if (input?.sleep !== undefined) {
+      updateData.sleep = {
+        time: typeof input.sleep.time === 'string' ? input.sleep.time : '',
+      };
+    }
+
+    // medicine: 送信されていれば更新（常用薬リスト）
+    if (input?.medicine !== undefined) {
+      updateData.medicine = {
+        items: Array.isArray(input.medicine.items) ? input.medicine.items : [],
+      };
+    }
+
+    // period: 送信されていれば更新
+    if (input?.period !== undefined) {
+      updateData.period = input.period as 'none' | 'start' | 'during';
+    }
+
+    // emotion: 送信されていれば更新
+    if (input?.emotion !== undefined) {
+      updateData.emotion = this.clampEmotion(input.emotion);
+    }
+
+    // exercise: 送信されていれば更新
+    if (input?.exercise !== undefined) {
+      updateData.exercise = {
+        items: Array.isArray(input.exercise.items) ? input.exercise.items : [],
+      };
+    }
+
+    // memo: 送信されていれば更新
+    if (input?.memo !== undefined) {
+      updateData.memo = {
+        content: typeof input.memo.content === 'string' ? input.memo.content : '',
+      };
+    }
+
+    // tookDailyMed: 送信されていれば更新
+    if (input?.tookDailyMed !== undefined) {
+      updateData.tookDailyMed = input.tookDailyMed === true || input.tookDailyMed === 'true';
+    }
+
+    // 新規作成時のデフォルト値
+    const createData = {
+      userId: viewerId,
+      date: dk,
+      meal: updateData.meal ?? { breakfast: false, lunch: false, dinner: false },
+      sleep: updateData.sleep ?? { time: '' },
+      medicine: updateData.medicine ?? { items: [] },
+      period: updateData.period ?? 'none',
+      emotion: updateData.emotion ?? 5,
+      exercise: updateData.exercise ?? { items: [] },
+      memo: updateData.memo ?? { content: '' },
+      tookDailyMed: updateData.tookDailyMed ?? false,
+    };
+
+    return this.prisma.record.upsert({
+      where: { userId_date: { userId: viewerId, date: dk } },
+      update: updateData,  // 送信されたフィールドのみ更新
+      create: createData,
+      select: {
+        date: true, meal: true, sleep: true, medicine: true,
+        period: true, emotion: true, exercise: true, memo: true,
+        tookDailyMed: true,
+      },
+    }).then((saved) => this.toView(saved, date));
+  }
 
 }
