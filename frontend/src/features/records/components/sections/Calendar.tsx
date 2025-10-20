@@ -28,7 +28,8 @@ const clampLevel = (n: number) => Math.min(10, Math.max(1, Math.floor(n)));
 
 export default function CalendarView({ ym, days, onPick, onPrev, onNext }: Props) {
   const value = useMemo(() => new Date(`${ym}-01`), [ym]);
-  const todayStr = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  // ローカル時刻で今日の日付を取得（UTCではなく）
+  const todayStr = useMemo(() => formatDateLocal(new Date()), []);
 
   return (
     <div className={styles.calWrapper}>
