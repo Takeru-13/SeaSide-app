@@ -1,8 +1,8 @@
 import { http } from '../../../shared/api/http';
-import type { AuthUser, LoginReq } from './types';
+import type { LoginReq, LoginRes } from './types';
 
 export function loginApi(data: LoginReq) {
-  return http<AuthUser>('/auth/login', {
+  return http<LoginRes>('/auth/login', {
     method: 'POST',
     body: JSON.stringify(data),
   });
