@@ -9,6 +9,7 @@ type StatusResponse =
 export default function EmptyPairCard({ onConnected }: { onConnected?: () => void }) {
   const [loading, setLoading] = useState(false);
   const [connected, setConnected] = useState(false);
+  const [checking, setChecking] = useState(true); // ★ 初期チェック中フラグ
 
   // 招待コードの状態
   const [invite, setInvite] = useState<InviteResponse | null>(null);
@@ -20,24 +21,27 @@ export default function EmptyPairCard({ onConnected }: { onConnected?: () => voi
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
 
-  // 初期：接続状態チェック（hookは常に呼ぶ）
+  // 初期：接続状態チェック
   useEffect(() => {
     let ignore = false;
     (async () => {
       try {
         const st = await get<StatusResponse>('/pair/status');
-        if (!ignore && st.connected) {
-          setConnected(true);
-          onConnected?.();
+        if (!ignore) {
+          if (st.connected) {
+            setConnected(true);
+            onConnected?.();
+          }
+          setChecking(false); // ★ チェック完了
         }
       } catch {
-        /* 無視 */
+        if (!ignore) setChecking(false); // ★ エラーでもチェック完了
       }
     })();
     return () => { ignore = true; };
   }, [onConnected]);
 
-  // カウントダウン（hookは常に呼ぶ。invite が無ければ即 return）
+  // カウントダウン
   useEffect(() => {
     if (!invite) {
       if (timerRef.current) {
@@ -98,7 +102,7 @@ export default function EmptyPairCard({ onConnected }: { onConnected?: () => voi
     try {
       await post('/pair/connect', { code });
       setInfo('ペア接続に成功しました。');
-      setConnected(true);   // 状態更新（でも hooks の順序は不変）
+      setConnected(true);
       onConnected?.();
     } catch (e: any) {
       setError(e?.message ?? '接続に失敗しました。コードと有効期限を確認してください。');
@@ -113,7 +117,10 @@ export default function EmptyPairCard({ onConnected }: { onConnected?: () => voi
     return `${m}:${s}`;
   }, [remainingSec]);
 
-  // ★ ここで条件分岐：hooks は上で常に同じ順序で呼ばれている
+  // ★ チェック中は何も表示しない
+  if (checking) return null;
+  
+  // ★ 連携済みなら何も表示しない
   if (connected) return null;
 
   return (
@@ -125,8 +132,8 @@ export default function EmptyPairCard({ onConnected }: { onConnected?: () => voi
       margin: '12px auto',
       background: 'hsla(0, 0%, 48%, 0.43)'
     }}>
-      <h3 style={{ margin: 0, fontSize: 18 ,color: '#cbcbcbff' }}>ペアが未連携です</h3>
-      <p style={{ margin: '6px 0 12px', opacity: 0.8 ,color: '#f0f0f0ff'}}>
+      <h3 style={{ margin: 0, fontSize: 18, color: '#cbcbcbff' }}>ペアが未連携です</h3>
+      <p style={{ margin: '6px 0 12px', opacity: 0.8, color: '#f0f0f0ff' }}>
         どちらかが招待コードを発行し、相手がそのコードを入力して接続します。
       </p>
 

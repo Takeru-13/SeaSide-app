@@ -224,4 +224,24 @@ export class RecordsService {
     }).then((saved) => this.toView(saved, date));
   }
 
+  // 月次の詳細データを取得（AI要約用）
+async getMonthlyDetails(ym: string, userId: number) {
+  const y = Number(ym.slice(0, 4));
+  const m = Number(ym.slice(5, 7));
+  const lastDay = new Date(y, m, 0).getDate();
+
+  const records = await this.prisma.record.findMany({
+    where: {
+      userId,
+      date: {
+        gte: new Date(y, m - 1, 1),
+        lte: new Date(y, m - 1, lastDay),
+      },
+    },
+    orderBy: { date: 'asc' },
+  });
+
+  return records;
+}
+
 }

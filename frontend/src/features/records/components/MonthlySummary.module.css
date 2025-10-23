@@ -1,0 +1,86 @@
+.card {
+  position: relative;
+  background: rgba(30, 41, 59, 0.6);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  margin: 16px 0;
+  transition: all 0.2s;
+  min-height: 120px;
+  margin: 0 auto;
+  width: 75vw;
+  margin-bottom: 100px;
+}
+
+.card:hover {
+  border-color: rgba(139, 92, 246, 0.4);
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.15);
+}
+
+.title {
+  margin: 0 0 16px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #c7d2fe;
+  text-align: center;
+  gap: 8px;
+}
+
+.button {
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  border: none;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  width: 50vw;
+  margin-left: 19%;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(139, 92, 246, 0.4);
+}
+
+.button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.content {
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 10px;
+  padding: 16px;
+  color: #e2e8f0;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.error {
+  margin-top: 12px;
+  color: #fca5a5;
+  font-size: 0.875rem;
+}
+
+/* モバイル対応 */
+@media (max-width: 640px) {
+  .card {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .content {
+    font-size: 0.875rem;
+    padding: 12px;
+  }
+}

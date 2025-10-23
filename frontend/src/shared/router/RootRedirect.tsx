@@ -1,6 +1,7 @@
-// src/shared/router/RootRedirect.tsx
+// frontend/src/shared/router/RootRedirect.tsx
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
+import { tokenStorage } from '../api/http';
 
 export default function RootRedirect() {
   const [state, setState] = useState<'checking' | 'authed' | 'guest'>('checking');
@@ -11,10 +12,23 @@ export default function RootRedirect() {
 
     (async () => {
       try {
+        // ★ トークンを取得 Cookieから変更
+        const token = tokenStorage.get();
+        
+        if (!token) {
+          // トークンがなければゲスト
+          if (!ignore) setState('guest');
+          return;
+        }
+
+        // トークンがあれば /auth/me で検証
         const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-          credentials: 'include',
+          headers: {
+            'Authorization': `Bearer ${token}`, // ★ Authorizationヘッダー
+          },
           signal: controller.signal,
         });
+        
         if (!ignore) setState(res.ok ? 'authed' : 'guest');
       } catch {
         if (!ignore) setState('guest');
@@ -33,7 +47,9 @@ export default function RootRedirect() {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100vh'
+        height: '100vh',
+        fontSize: '18px',
+        color: '#6366f1'
       }}>
         Loading...
       </div>
@@ -41,6 +57,6 @@ export default function RootRedirect() {
   }
 
   // ログイン済みなら /home、未ログインなら /login
-  console.log("RequireAuth state:", state);
+  console.log("RootRedirect state:", state);
   return <Navigate to={state === 'authed' ? '/home' : '/login'} replace />;
 }

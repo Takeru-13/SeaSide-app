@@ -50,3 +50,9 @@ export async function upsertRecordByDate(date: DateKey, input: UpsertPayload) {
   const saved = await put<RecordView>(`/records/${date}`, input);
   return toView(saved);
 }
+
+
+//月次AI要約を取得
+export async function getMonthlySummary(yearMonth: string) {
+  return get<{ summary: string }>(`/records/summary/${yearMonth}`);
+}

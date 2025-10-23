@@ -18,6 +18,8 @@ import { get } from '../../../shared/api/http';
 import type { Scope } from '../types';
 import styles from './HomeSection.module.css';
 
+import MonthlySummary from '../components/MonthlySummary';
+
 type MeResponse = { id: number; userName: string; email: string; iconUrl?: string };
 type PairStatus = { connected: boolean; partner?: { id: number } };
 
@@ -92,6 +94,7 @@ export default function HomeSection() {
       selfAct.onSelectDate(date);
     }
   };
+  
 
   const isModalOpen =
     (scope === 'me' && !!selfState.editing) ||
@@ -149,7 +152,12 @@ export default function HomeSection() {
           )}
 
           <MonthlyGraph ym={ym} days={days} />
+
+          {/* ★ AI要約を追加 */}
+          <MonthlySummary yearMonth={ym} />
         </>
+        
+
       )}
 
       {!isModalOpen && (
