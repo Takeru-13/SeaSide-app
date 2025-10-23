@@ -79,7 +79,7 @@ SeaSideは、感情や習慣をふたりで心地よく記録し合い、
 - **Frontend:** React + Vite + TypeScript + React Router + CSS Modules  
 - **Backend:** NestJS + Prisma + PostgreSQL (Neon)  
 - **Infra:** Netlify (Frontend) + Render / Neon (API, DB)  
-- **その他:** Chart.js, PWA Manifest, JWT Cookie Auth  
+- **その他:** Chart.js, PWA Manifest, JWT  
 
 ---
 
