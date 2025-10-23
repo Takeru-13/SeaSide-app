@@ -19,7 +19,7 @@ export default function MonthlySummary({ yearMonth }: Props) {
       const result = await getMonthlySummary(yearMonth);
       setSummary(result.summary);
     } catch (err) {
-      setError('開発中だよ。もうちょっとまってね');
+      setError('もう一度試してみてください。エラーが続いたら開発者に教えてね');
       console.error(err);
     } finally {
       setLoading(false);
@@ -28,9 +28,9 @@ export default function MonthlySummary({ yearMonth }: Props) {
 
   return (
     <div className={styles.card}>
-      <LoadingOverlay isLoading={loading} message="AI要約を生成中..." fullScreen={false} />
+      <LoadingOverlay isLoading={loading} message="AI先生がまとめています...🤔結構時間かかるかも" fullScreen={false} />
       
-      <h3 className={styles.title}>✨ 今月のAI要約</h3>
+      <h3 className={styles.title}>🦀今月のAI要約(β版)🐢</h3>
       
       {!summary ? (
         <button onClick={handleGenerate} disabled={loading} className={styles.button}>
