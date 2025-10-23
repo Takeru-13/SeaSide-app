@@ -124,9 +124,6 @@ SeaSideは、感情や習慣をふたりで心地よく記録し合い、
   <token>ヘッダーを付与
     - ログアウト時にlocalStorageをクリア
 
-  コミット: 91828d6 - Fix login error by migrating from       
-  Cookie to Authorization header authentication
-
   ---
   2.  部分更新機能の実装（データ上書き問題の修正）
 
@@ -150,8 +147,6 @@ SeaSideは、感情や習慣をふたりで心地よく記録し合い、
   st={false}）
     - 詳細記録: 全フィールドを送信（従来通り）
 
-  コミット: b663660 - Fix partial update issue: prevent       
-  data overwrite between quick and detail records
 
   ---
   3.  詳細記録から「常用薬」トグルを削除
@@ -164,9 +159,6 @@ SeaSideは、感情や習慣をふたりで心地よく記録し合い、
   - 詳細記録: 「服薬」タイトル + 薬リスト編集UIのみ表示       
   - クイック記録: 「💊服薬💊」タイトル +
   常用薬トグルのみ表示
-
-  コミット: e66ba57 - Remove tookDailyMed toggle from
-  detail record form
 
   ---
   4. 🎨 クイックモーダルのスライダー色変更
