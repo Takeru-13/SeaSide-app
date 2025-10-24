@@ -12,7 +12,7 @@ type Props = {
  * 感情スライダー（横スライダー版）
  * - 1〜10 の横スライダー。グラデ＋進捗は .h-slider のCSSを流用
  */
-export default function EmotionSlider({ value, onChange, disabled, className }: Props) {
+export default function EmotionSlider({ value, onChange, disabled }: Props) {
   const level = value ?? 5;
 
   // スライダー変更
