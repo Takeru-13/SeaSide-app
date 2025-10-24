@@ -7,6 +7,7 @@ import { AuthGuard } from '../common/guards/auth.guard';
 
 @Module({
   imports: [
+    ConfigModule, // ★ AuthGuardがConfigServiceを使うために必要
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

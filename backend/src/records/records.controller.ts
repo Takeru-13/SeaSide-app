@@ -24,7 +24,7 @@ export class RecordsController {
     @Query('scope') scope: Scope = 'me',
     @Req() req: any,
   ) {
-    const viewerId = Number(req.user.id);
+    const viewerId = Number(req.user.sub); // ★ .id → .sub
     const res = await this.records.getMonthly(ym, viewerId, scope);
     return res;
   }
@@ -32,19 +32,19 @@ export class RecordsController {
   /** AI要約 - カレンダーより先に定義 */
   @Get('summary/:yearMonth')
   async getMonthlySummary(
-  @Param('yearMonth') yearMonth: string,
-  @Req() req: any,
-) {
-  const viewerId = Number(req.user.id);
-  
-  // その月の詳細レコードを取得
-  const records = await this.records.getMonthlyDetails(yearMonth, viewerId);
-  
-  // Gemini APIで要約生成
-  const summary = await this.aiService.generateMonthlySummary(records);
-  
-  return { summary };
-}
+    @Param('yearMonth') yearMonth: string,
+    @Req() req: any,
+  ) {
+    const viewerId = Number(req.user.sub); // ★ .id → .sub
+    
+    // その月の詳細レコードを取得
+    const records = await this.records.getMonthlyDetails(yearMonth, viewerId);
+    
+    // Gemini APIで要約生成
+    const summary = await this.aiService.generateMonthlySummary(records);
+    
+    return { summary };
+  }
 
   /** 詳細：自分 or ペア（?userId= 指定。未指定なら自分） */
   @Get(':date')
@@ -53,7 +53,7 @@ export class RecordsController {
     @Query('userId') userId: string | undefined,
     @Req() req: any,
   ) {
-    const viewerId = Number(req.user.id);
+    const viewerId = Number(req.user.sub); // ★ .id → .sub
     const targetUserId = userId ? Number(userId) : undefined;
 
     const data = await this.records.getByDateForUser(date, viewerId, targetUserId);
@@ -70,7 +70,7 @@ export class RecordsController {
     @Query('userId') userId?: string,
   ) {
     console.log('DTO>', JSON.stringify(body));
-    const viewerId = Number(req.user.id);
+    const viewerId = Number(req.user.sub); // ★ .id → .sub
     if (userId && Number(userId) !== viewerId) {
       throw new ForbiddenException('Cannot save other user record');
     }

@@ -1,9 +1,9 @@
 /* ================================
    EditForm.module.css
-   すべて .editSheet 配下に閉じる
+   iOS Safari互換性改善版
 =================================== */
 
-/* トークン（必要に応じて上書きOK） */
+/* トークン */
 :root {
   --panel-bg-1: rgba(30, 27, 75, 0.85);
   --panel-bg-2: rgba(15, 23, 42, 0.9);
@@ -24,7 +24,7 @@
   margin: 0;
 }
 
-/* まずは外部からの漏れ対策（必要に応じて調整） */
+/* まずは外部からの漏れ対策 */
 .editSheet :where(h1,h2,h3,h4,h5,h6,p,ul,ol,button,input,label,section,div){
   box-sizing: border-box;
 }
@@ -34,9 +34,9 @@
   display: grid;
   gap: var(--gap-lg);
   width: 100%;
-  max-width: 680px;          /* コンテンツ幅の上限 */
+  max-width: 680px;
   margin: 0 auto;
-  padding: 0 16px;           /* 端末端での見切れ防止 */
+  padding: 0 16px;
   box-sizing: border-box;
 }
 
@@ -66,12 +66,80 @@
   padding-top: 20px;
 }
 
+/* ========== 横スライダー（感情用） ========== */
+input[type="range"].h-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 999px;
+  outline: none;
+  background: linear-gradient(
+    90deg,
+    #ef4444 0%,
+    #f59e0b calc(var(--val, 50%) / 2),
+    #10b981 var(--val, 50%),
+    #3b82f6 100%
+  );
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+input[type="range"].h-slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Webkit（Chrome, Safari） */
+input[type="range"].h-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #8b5cf6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+input[type="range"].h-slider::-webkit-slider-thumb:hover:not(:disabled) {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+/* Firefox */
+input[type="range"].h-slider::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #8b5cf6;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+input[type="range"].h-slider::-moz-range-thumb:hover:not(:disabled) {
+  transform: scale(1.15);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+/* Firefox用のトラック */
+input[type="range"].h-slider::-moz-range-track {
+  height: 8px;
+  border-radius: 999px;
+  background: transparent;
+}
+
 /* パネル共通 */
 .editSheet .panel {
   background: linear-gradient(180deg, var(--panel-bg-1) 0%, var(--panel-bg-2) 100%);
   border: 1px solid var(--panel-border);
   border-radius: var(--panel-radius);
   padding: var(--gap-md);
+  -webkit-backdrop-filter: blur(6px); /* ★ Safari用 */
   backdrop-filter: blur(6px);
   max-width: 100%;
 }
@@ -85,7 +153,7 @@
   box-sizing: border-box;
 }
 
-/* 大きめに展開したいパネル（食事 / 生理 など） */
+/* 大きめに展開したいパネル */
 .editSheet .panelMeal,
 .editSheet .panelPeriod {
   grid-column: 1 / -1;
@@ -111,7 +179,7 @@
   margin-bottom: 40px;
 }
 
-/* 主要ボタン（幅固定しない・100%で横伸び防止） */
+/* 主要ボタン */
 .editSheet .cta {
   width: 100%;
   padding: 16px 32px;
@@ -124,24 +192,28 @@
   transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
   background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
   box-shadow: 0 4px 16px rgba(139, 92, 246, 0.3);
+  /* iOS用のタップハイライト色を調整 */
+  -webkit-tap-highlight-color: rgba(139, 92, 246, 0.2);
 }
+
 .editSheet .cta:hover {
   background: linear-gradient(135deg, #ae8cff 0%, #9d9ffa 100%);
   transform: translateY(-1px);
   box-shadow: 0 6px 18px rgba(139, 92, 246, 0.34);
 }
+
 .editSheet .cta:focus-visible {
   outline: none;
   box-shadow: var(--ring), 0 4px 16px rgba(139, 92, 246, 0.3);
 }
 
-/* 汎用ボタンの軽いホバー（他ボタン用の保険） */
+/* 汎用ボタンの軽いホバー */
 button:hover {
   background: rgba(255, 255, 255, 0.15);
   opacity: 1 !important;
 }
 
-/* 閉じるFAB（右端切れを避けるため右寄せ＋十分なタップ面積） */
+/* 閉じるFAB */
 .closeFab{
   width: 54px; 
   height: 44px;
@@ -151,15 +223,19 @@ button:hover {
   font-size: 30px;
   line-height: 1;
   padding: 0;
-  margin-left: auto; /* 右端寄せ */
+  margin-left: auto;
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.25);
+  -webkit-backdrop-filter: blur(3px); /* ★ Safari用 */
   backdrop-filter: blur(3px);
   cursor: pointer;
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0.1);
 }
+
 .closeFab:hover{
   background: rgba(255,255,255,0.14);
 }
+
 .closeFab:focus-visible{
   outline: 2px solid #7dd3fc;
   outline-offset: 2px;
@@ -188,17 +264,18 @@ button:hover {
   margin: auto;
 }
 
-/* 行アクションの余白調整（中央寄せ） */
+/* 行アクションの余白調整 */
 .rowActions{
-      margin: auto;
-
+  margin: auto;
 }
 
-/* 成功トースト（下部固定・フェードイン→保持→フェードアウト） */
+/* 成功トースト */
 .alertSuccess {
   position: fixed;
   left: 50%;
-  bottom: calc(16px + env(safe-area-inset-bottom));
+  bottom: 16px;
+  /* ★ env()をfallbackつきで使用 */
+  bottom: max(16px, env(safe-area-inset-bottom, 16px));
   transform: translateX(-50%);
   min-width: 200px;
   max-width: 90vw;
@@ -220,14 +297,25 @@ button:hover {
   from { opacity: 0; transform: translate(-50%, 8px); }
   to   { opacity: 1; transform: translate(-50%, 0); }
 }
+
 @keyframes toastStay {
   from { opacity: 1; }
   to   { opacity: 1; }
 }
+
 @keyframes toastOut {
   to   { opacity: 0; transform: translate(-50%, 8px); }
 }
 
+/* ★ iOS Safari自動ズーム防止 */
 input, textarea, select {
-    font-size: 16px;
+  font-size: 16px;
+  /* iOS用のスタイルをリセット */
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* inputのフォーカス時のズーム防止 */
+input:focus, textarea:focus, select:focus {
+  font-size: 16px;
 }

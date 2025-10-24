@@ -38,20 +38,27 @@ export default function EmotionSlider({ value, onChange, disabled, className }: 
           {level}
         </span>
       </div>
-
-      <input
-        type="range"
-        min={1}
-        max={10}
-        step={1}
-        value={level}
-        onChange={(e) => handleChange(Number(e.target.value))}
-        disabled={disabled}
-        className={className ?? "h-slider"}
-        style={{ ['--val' as any]: `${valPercent}%` }}
-        aria-label="感情量（1〜10）"
-        
-      />
+<input
+  type="range"
+  min={1}
+  max={10}
+  step={1}
+  value={level}
+  onChange={(e) => handleChange(Number(e.target.value))}
+  disabled={disabled}
+  className="h-slider"
+  style={{
+    WebkitAppearance: 'none',
+    appearance: 'none',
+    width: '100%',
+    height: '8px',
+    borderRadius: '999px',
+    outline: 'none',
+    background: `linear-gradient(90deg, #3b82f6 0%, #10b981 ${valPercent / 2}%, #f59e0b ${valPercent}%, #ef4444 100%)`,
+    cursor: 'pointer',
+  }}
+  aria-label="感情量（1〜10）"
+/>
 
       <div className="ticks" style={{
         display: 'flex',
