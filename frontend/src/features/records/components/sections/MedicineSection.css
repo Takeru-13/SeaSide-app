@@ -73,3 +73,7 @@
   cursor: not-allowed;
   transform: none;
 }
+
+input, textarea, select {
+    font-size: 16px;
+}

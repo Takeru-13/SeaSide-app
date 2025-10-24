@@ -1,37 +1,35 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+// backend/src/common/guards/auth.guard.ts
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Request } from 'express';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private readonly jwt: JwtService) {}
+  constructor(
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const http = context.switchToHttp();
-    const req = http.getRequest<Request & { user?: any }>();
+    const request = context.switchToHttp().getRequest();
+    const authHeader = request.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new UnauthorizedException('認証トークンがありません');
+    }
 
-    // Authorization: Bearer <token> から取得
-    const bearer = req.headers['authorization']?.toString();
-    const token = bearer?.startsWith('Bearer ') ? bearer.slice(7) : undefined;
-
-    if (!token) throw new UnauthorizedException('No token');
-
+    const token = authHeader.substring(7); // "Bearer " を除去
+    
     try {
-      const payload = this.jwt.verify(token, {
-        secret: process.env.JWT_SECRET,
-      }) as { sub: number; email: string; userName: string };
-
-      // コントローラで使う最小ユーザ情報
-      req.user = { id: payload.sub, email: payload.email, userName: payload.userName };
-
+      const payload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('JWT_SECRET'),
+      });
+      
+      // requestオブジェクトにユーザー情報を追加
+      request.user = payload;
       return true;
-    } catch {
-      throw new UnauthorizedException('Invalid token');
+    } catch (error) {
+      throw new UnauthorizedException('無効または期限切れのトークンです');
     }
   }
 }

@@ -589,3 +589,7 @@ body.modal-open { overflow: hidden; }
 .matrix{
   gap: 5px;
 }
+
+input, textarea, select {
+    font-size: 16px;
+}

@@ -52,7 +52,7 @@ export default function ExerciseSection({ value, onChange, disabled }: Props) {
               padding: '4px 8px',
               background: '#f0f0f0',
               borderRadius: 16,
-              fontSize: 14,
+              fontSize: 16,
             }}
           >
             <span>{item}</span>
@@ -79,3 +79,4 @@ export default function ExerciseSection({ value, onChange, disabled }: Props) {
     </div>
   );
 }
+
