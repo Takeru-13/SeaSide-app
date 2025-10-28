@@ -23,7 +23,7 @@ export class AuthService {
     // ★ 48時間トークン（exp 付き）
     const payload = { sub: user.id, email: user.email, userName: user.userName };
     const token = await this.jwt.signAsync(payload, {
-      expiresIn: '48h',
+      expiresIn: '168h',
       secret: process.env.JWT_SECRET, // verify と同一
     });
 
