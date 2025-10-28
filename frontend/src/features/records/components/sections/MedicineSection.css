@@ -2,7 +2,6 @@
 
 /* ヘッダー本体を確実に横並びに */
 .medicine-header {
-  display: flex !important;
   align-items: center;
   justify-content: start;
   gap: 12px;
@@ -12,18 +11,15 @@
 /* タイトルが横幅を独占しないように */
 .medicine-header .medicine-title {
   margin: 0;
-  flex: 0 1 auto;
   width: auto !important;
   min-width: 0;
 }
 
 /* 右側のアクション群を横並び固定 */
 .medicine-header .medicine-actions {
-  display: inline-flex !important;
   align-items: center;
   gap: 8px;
   flex: 0 0 auto;
-  white-space: nowrap;
 }
 
 .medicine-title{

@@ -119,7 +119,8 @@ body.modal-open { overflow: hidden; }
 .edit-sheet { display: flex; flex-direction: column; gap: 12px; }
 .sheet-card {
   display: grid;
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr 50px;
+   align-items: start;
   gap: 12px;
 }
 
@@ -237,7 +238,7 @@ body.modal-open { overflow: hidden; }
 /* ===========================
    服薬セクション
    =========================== */
-.medicine-content { display: flex; flex-direction: column; gap: 12px; }
+.medicine-content { display: flex; flex-direction: column; gap: 12px; justify-content: space-around;}
 .medicine-tags { display: flex; flex-wrap: wrap; gap: 8px; min-height: 36px; }
 .medicine-tag {
   background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
@@ -350,7 +351,8 @@ body.modal-open { overflow: hidden; }
 .v-slider {
   writing-mode: vertical-lr;
   /* flex-direction: column; */
-  width: 120px;
+  width: 100%;
+  max-width: 50px;
   background: rgba(30, 41, 59, 0.6);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(139, 92, 246, 0.2);
@@ -362,6 +364,7 @@ body.modal-open { overflow: hidden; }
   justify-content: center;
   gap: 16px;
   transition: all 0.2s;
+  box-sizing: border-box;
 }
 .v-slider:hover {
   border-color: rgba(139, 92, 246, 0.4);
@@ -515,10 +518,13 @@ body.modal-open { overflow: hidden; }
   .matrix { gap: 12px; }
   .panel { padding: 10px; }
 
+  .rail {
+    width: 50px;
+    min-width: 50px;
+  }
   .v-slider {
-    width: 20px;
+    max-width: 50px;
     height: auto;
-    padding: 20px 16px;
   }
   .emotion-slider-root input[type="range"] {
     height: clamp(280px, 60vh, 520px);
