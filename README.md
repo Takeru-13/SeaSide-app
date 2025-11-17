@@ -63,6 +63,19 @@ SeaSideは、感情や習慣をふたりで心地よく記録し合い、
 | Home（カレンダー） | 記録モーダル |
 | --- | --- |
 | <a href="https://github.com/user-attachments/assets/b90184b6-aec7-455f-9a22-cd9271110dd4"><img src="https://github.com/user-attachments/assets/b90184b6-aec7-455f-9a22-cd9271110dd4" alt="Record Modal" width="380" /></a> | <a href="https://github.com/user-attachments/assets/f48a3cca-4527-45e3-8c99-a896ce9063db"><img src="https://github.com/user-attachments/assets/f48a3cca-4527-45e3-8c99-a896ce9063db" alt="Home - Calendar" width="380" /></a> |
+
+
+
+<img width="401" height="796" alt="スクリーンショット 2025-11-17 102131" src="https://github.com/user-attachments/assets/1d977106-672d-4334-8a81-79f6a768ed29" />
+<img width="265" height="573" alt="スクリーンショット 2025-11-17 102242" src="https://github.com/user-attachments/assets/96ef8d18-0aca-4baf-b309-b01cb3461102" />
+
+| Home（カレンダー） | 記録モーダル |
+| --- | --- |
+| <a href="https://github.com/user-attachments/assets/b90184b6-aec7-455f-9a22-cd9271110dd4"><img src="https://github.com/user-attachments/assets/b90184b6-aec7-455f-9a22-cd9271110dd4" alt="Record Modal" width="380" /></a>|<img width="401" height="796" alt="スクリーンショット 2025-11-17 102131" src="https://github.com/user-attachments/assets/1d977106-672d-4334-8a81-79f6a768ed29" /> |
+
+| 気分推移グラフ | クイック記録 |
+| --- | --- |
+|<img width="265" height="573" alt="スクリーンショット 2025-11-17 102242" src="https://github.com/user-attachments/assets/96ef8d18-0aca-4baf-b309-b01cb3461102" />| 画像4 |
 ---
 
 ## 🔑 主な機能
