@@ -102,7 +102,7 @@ export default function useHome() {
 
       setLoading(true);
       try {
-        const rec = await getRecordByDate(date); // 自分のみ（userId なし）
+        const rec = await getRecordByDate(date).catch(() => null); // 自分のみ（userId なし）
         setEditing(rec ?? makeEmptyView(date));
       } finally {
         setLoading(false);

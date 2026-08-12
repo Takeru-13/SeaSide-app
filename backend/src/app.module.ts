@@ -8,12 +8,15 @@ import { RecordsModule } from './records/records.module';
 
 import { PairsModule } from './pairs/pairs.module';
 
+import { UsersModule } from './users/users.module'; 
+
 @Module({
   imports: [
     AuthModule,
     PrismaModule,
     RecordsModule,
     PairsModule, 
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService],

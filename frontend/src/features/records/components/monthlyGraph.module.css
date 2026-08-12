@@ -34,6 +34,8 @@
   font-size: 0.9rem;
   background: #f8fafa;
   border-radius: 12px;
+  max-width: 440px;
+  margin: 15px auto;
 }
 
 /* ===== グラフの中身を必ず横幅100%に ===== */

@@ -57,7 +57,6 @@ export class RecordsController {
     const targetUserId = userId ? Number(userId) : undefined;
 
     const data = await this.records.getByDateForUser(date, viewerId, targetUserId);
-    if (!data) throw new NotFoundException();
     return data;
   }
 
