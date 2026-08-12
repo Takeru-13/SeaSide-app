@@ -116,7 +116,7 @@ input[type="range"].h-slider::-moz-range-thumb {
   border-radius: 50%;
   background: #ffffff;
   border: 3px solid #8b5cf6;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 8px rgba(255, 12, 12, 0.2);
   cursor: pointer;
   transition: all 0.2s;
 }
@@ -255,8 +255,8 @@ button:hover {
   width: 75px;
   height: 40px;
   background: rgba(239, 68, 68, 0.1);
-  color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ff5c5c;
+  border: 1px solid rgba(239, 68, 68, 0.573);
   font-size: 1.5rem;
   border-radius: 5px;
   display: grid;

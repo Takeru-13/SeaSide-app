@@ -62,7 +62,8 @@ SeaSideは、感情や習慣をふたりで心地よく記録し合い、
 
 | Home（カレンダー） | 記録モーダル |
 | --- | --- |
-| <a href="https://github.com/user-attachments/assets/b90184b6-aec7-455f-9a22-cd9271110dd4"><img src="https://github.com/user-attachments/assets/b90184b6-aec7-455f-9a22-cd9271110dd4" alt="Record Modal" width="380" /></a> | <a href="https://github.com/user-attachments/assets/f48a3cca-4527-45e3-8c99-a896ce9063db"><img src="https://github.com/user-attachments/assets/f48a3cca-4527-45e3-8c99-a896ce9063db" alt="Home - Calendar" width="380" /></a> |
+| <a href="https://github.com/user-attachments/assets/b90184b6-aec7-455f-9a22-cd9271110dd4"><img src="https://github.com/user-attachments/assets/b90184b6-aec7-455f-9a22-cd9271110dd4" alt="Record Modal" width="380" /></a> |<img width="265" height="573" alt="スクリーンショット 2025-11-17 102242" src="https://github.com/user-attachments/assets/38a3292f-6be0-4721-8818-acc15e4090e2" />|
+
 ---
 
 ## 🔑 主な機能
@@ -104,7 +105,7 @@ SeaSideは、感情や習慣をふたりで心地よく記録し合い、
 
 ## ーーーーーアップデート・バグ修正ーーーーーー
 
-### 📅 2025-01-XX
+### 📅 2025-10-20
 
 #### 1. ログイン認証方式の変更（Cookie → Authorization ヘッダー）
 
